@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { 
   X, 
   Layers, 
@@ -16,13 +16,17 @@ import {
   Cpu,
   AlertTriangle,
   HelpCircle,
-  Loader2
+  Loader2,
+  ShieldCheck,
+  History,
+  Clock
 } from 'lucide-react';
 import { StatusBadge } from '../ui/StatusBadge';
 import { Button } from '../ui/Button';
 import { EvidencePreview } from './EvidencePreview';
 import { Link } from 'react-router-dom';
 import apiClient from '../../services/apiClient';
+import { useAuth } from '../../context/useAuth';
 
 export const EvidenceDetailPanel = ({
   evidence,
@@ -33,9 +37,53 @@ export const EvidenceDetailPanel = ({
   onClose,
   onUpdateStatus,
 }) => {
+  const { currentUser } = useAuth();
   const [aiAnalysis, setAiAnalysis] = useState(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [aiError, setAiError] = useState(null);
+
+  // Phase 23 Verification & Audit States
+  const [verifications, setVerifications] = useState([]);
+  const [loadingVerifications, setLoadingVerifications] = useState(false);
+  const [decisionReason, setDecisionReason] = useState('');
+  const [submittingDecision, setSubmittingDecision] = useState(false);
+  const [decisionFeedback, setDecisionFeedback] = useState(null);
+
+  const evidenceId = evidence?.id;
+  const projectId = evidence?.projectId;
+
+  const fetchVerifications = useCallback(async () => {
+    if (!evidenceId) return;
+    setLoadingVerifications(true);
+    try {
+      const data = await apiClient.getVerifications(projectId || 'proj-1', {
+        evidenceId: evidenceId,
+      });
+      setVerifications(Array.isArray(data) ? data : []);
+    } catch (err) {
+      console.warn('Failed to load verifications for evidence:', err.message);
+    } finally {
+      setLoadingVerifications(false);
+    }
+  }, [evidenceId, projectId]);
+
+  useEffect(() => {
+    let isMounted = true;
+    if (evidenceId) {
+      apiClient.getVerifications(projectId || 'proj-1', { evidenceId })
+        .then((data) => {
+          if (isMounted && Array.isArray(data)) {
+            setVerifications(data);
+          }
+        })
+        .catch((err) => {
+          console.warn('Failed to load verifications in effect:', err.message);
+        });
+    }
+    return () => {
+      isMounted = false;
+    };
+  }, [evidenceId, projectId]);
 
   if (!evidence) return null;
 
@@ -48,10 +96,57 @@ export const EvidenceDetailPanel = ({
         projectId: evidence.projectId || 'proj-1',
       });
       setAiAnalysis(result);
+      fetchVerifications();
     } catch (err) {
       setAiError(err.message || 'AI service unavailable');
     } finally {
       setIsAnalyzing(false);
+    }
+  };
+
+  const handleDecision = async (decision) => {
+    if (!decisionReason.trim()) {
+      setDecisionFeedback({ type: 'error', message: 'A review reason is required to record a decision.' });
+      return;
+    }
+
+    setSubmittingDecision(true);
+    setDecisionFeedback(null);
+    try {
+      const targetId = aiAnalysis?.scheduleLink?.activityId || evidence.activityId || 'ACT-UNLINKED';
+      const targetType = 'schedule_link';
+
+      const payload = {
+        projectId: evidence.projectId || 'proj-1',
+        evidenceId: evidence.id,
+        targetType,
+        targetId,
+        reason: decisionReason.trim(),
+        sourceAnalysisId: aiAnalysis?.analysisId || null,
+        reviewer: {
+          userId: currentUser?.id || 'USR-LOCAL',
+          name: currentUser?.name || 'Authorized Reviewer',
+          role: currentUser?.role || 'project_manager',
+        },
+        candidateContext: aiAnalysis?.scheduleLink || {},
+      };
+
+      if (decision === 'verified') {
+        await apiClient.verifyFinding(payload);
+        setDecisionFeedback({ type: 'success', message: 'Finding successfully verified and recorded in audit history.' });
+        onUpdateStatus?.(evidence.id, 'verified');
+      } else {
+        await apiClient.rejectFinding(payload);
+        setDecisionFeedback({ type: 'success', message: 'Finding successfully rejected and recorded in audit history.' });
+        onUpdateStatus?.(evidence.id, 'rejected');
+      }
+
+      setDecisionReason('');
+      await fetchVerifications();
+    } catch (err) {
+      setDecisionFeedback({ type: 'error', message: err.message || 'Failed to submit verification decision.' });
+    } finally {
+      setSubmittingDecision(false);
     }
   };
 
@@ -472,86 +567,235 @@ export const EvidenceDetailPanel = ({
           </div>
         </div>
 
-        {/* Section E: Review & Audit Workflow */}
-        <div className="space-y-2">
-          <h3 className="text-3xs font-semibold uppercase tracking-wider text-slate-400">
-            QA Review & Sign-off State
-          </h3>
-          <div className="rounded-xl border border-surface-border bg-surface-subtle p-3.5 space-y-3">
-            <div className="grid grid-cols-2 gap-2 text-xs font-mono">
-              <div>
-                <span className="text-3xs text-slate-400 block uppercase">Reviewer</span>
-                <span className="text-slate-200 font-medium">
-                  {evidence.review?.reviewer || 'Pending Assignment'}
-                </span>
-              </div>
-              <div>
-                <span className="text-3xs text-slate-400 block uppercase">Reviewed At</span>
-                <span className="text-slate-200">
-                  {evidence.review?.reviewedAt
-                    ? new Date(evidence.review.reviewedAt).toLocaleDateString()
-                    : 'Awaiting Audit'}
-                </span>
-              </div>
+        {/* Section E: Human Verification & Audit Workflow (Phase 23) */}
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-1.5">
+              <ShieldCheck className="h-4 w-4 text-emerald-400" />
+              <h3 className="text-3xs font-semibold uppercase tracking-wider text-slate-200">
+                Human Verification & Audit Workflow
+              </h3>
             </div>
+            <span className="text-3xs font-mono text-emerald-400">Phase 23</span>
+          </div>
 
-            {evidence.review?.note && (
-              <div className="rounded-lg bg-surface/80 p-2.5 border border-surface-border text-xs text-slate-300 italic">
-                "{evidence.review.note}"
+          <div className="rounded-xl border border-surface-border bg-surface-subtle p-4 space-y-4">
+            {/* Verification State Banner */}
+            {(() => {
+              const latestVer = verifications[0] || null;
+              const isVerified = latestVer?.status === 'verified' || evidence.status === 'verified';
+              const isRejected = latestVer?.status === 'rejected' || evidence.status === 'rejected';
+
+              if (isVerified) {
+                return (
+                  <div className="rounded-lg border border-emerald-500/30 bg-emerald-950/30 p-3 space-y-1">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-1.5 font-bold text-emerald-300 text-xs">
+                        <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0" />
+                        <span>HUMAN VERIFIED (Authoritative Finding)</span>
+                      </div>
+                      <span className="text-3xs font-mono text-emerald-400/80">
+                        {latestVer?.verificationId || 'VER-RECORDED'}
+                      </span>
+                    </div>
+                    <p className="text-3xs text-emerald-200/90">
+                      Approved by <span className="font-semibold">{latestVer?.reviewer?.name || 'Project Manager'}</span> ({latestVer?.reviewer?.role || 'PM'}) on {latestVer?.decidedAt ? new Date(latestVer.decidedAt).toLocaleString() : new Date().toLocaleDateString()}.
+                    </p>
+                    {latestVer?.reason && (
+                      <p className="text-3xs text-emerald-300 italic pt-1 border-t border-emerald-500/20">
+                        "{latestVer.reason}"
+                      </p>
+                    )}
+                  </div>
+                );
+              }
+
+              if (isRejected) {
+                return (
+                  <div className="rounded-lg border border-rose-500/30 bg-rose-950/30 p-3 space-y-1">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-1.5 font-bold text-rose-300 text-xs">
+                        <XCircle className="h-4 w-4 text-rose-400 shrink-0" />
+                        <span>HUMAN REJECTED (Non-Authoritative)</span>
+                      </div>
+                      <span className="text-3xs font-mono text-rose-400/80">
+                        {latestVer?.verificationId || 'VER-REJECTED'}
+                      </span>
+                    </div>
+                    <p className="text-3xs text-rose-200/90">
+                      Rejected by <span className="font-semibold">{latestVer?.reviewer?.name || 'Site Engineer'}</span> ({latestVer?.reviewer?.role || 'SE'}).
+                    </p>
+                    {latestVer?.reason && (
+                      <p className="text-3xs text-rose-300 italic pt-1 border-t border-rose-500/20">
+                        "{latestVer.reason}"
+                      </p>
+                    )}
+                  </div>
+                );
+              }
+
+              return (
+                <div className="rounded-lg border border-amber-500/30 bg-amber-950/25 p-3 space-y-1">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-1.5 font-bold text-amber-300 text-xs">
+                      <HelpCircle className="h-4 w-4 text-amber-400 shrink-0" />
+                      <span>AI-ASSISTED CANDIDATE (Awaiting Human Review)</span>
+                    </div>
+                    <span className="text-3xs font-mono text-amber-400/80">UNVERIFIED</span>
+                  </div>
+                  <p className="text-3xs text-amber-200/90">
+                    This finding is derived from AI schedule-linkage telemetry and requires formal review by an authorized engineer before entering project baseline intelligence.
+                  </p>
+                </div>
+              );
+            })()}
+
+            {/* Role-Based Decision Form */}
+            {currentUser?.role === 'contractor' ? (
+              <div className="rounded-lg bg-surface/60 p-3 border border-surface-border text-3xs text-slate-400">
+                <span className="font-semibold text-slate-300 block mb-0.5">Contractor Read-Only Access</span>
+                Authoritative verification and rejection decisions are restricted to Project Authority, Project Manager, Site Engineer, and Discipline Managers.
+              </div>
+            ) : (
+              <div className="space-y-2 border-t border-surface-border/60 pt-3">
+                <div className="flex items-center justify-between">
+                  <label className="text-3xs font-semibold uppercase text-slate-300 flex items-center gap-1">
+                    <span>Record Human Decision Note</span>
+                    <span className="text-rose-400">*</span>
+                  </label>
+                  <span className="text-3xs font-mono text-slate-400">
+                    Reviewer: {currentUser?.name || 'Project Manager'} ({currentUser?.role || 'PM'})
+                  </span>
+                </div>
+
+                <textarea
+                  value={decisionReason}
+                  onChange={(e) => setDecisionReason(e.target.value)}
+                  placeholder="Enter mandatory field justification, inspection cross-reference, or rejection rationale..."
+                  className="w-full rounded-lg border border-surface-border bg-surface px-3 py-2 text-xs text-white placeholder-slate-500 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 min-h-[64px]"
+                  disabled={submittingDecision}
+                />
+
+                {decisionFeedback && (
+                  <div className={`rounded-md p-2 text-3xs flex items-center gap-1.5 ${
+                    decisionFeedback.type === 'success'
+                      ? 'bg-emerald-950/30 text-emerald-300 border border-emerald-500/20'
+                      : 'bg-rose-950/30 text-rose-300 border border-rose-500/20'
+                  }`}>
+                    {decisionFeedback.type === 'success' ? (
+                      <CheckCircle2 className="h-3.5 w-3.5 shrink-0 text-emerald-400" />
+                    ) : (
+                      <AlertTriangle className="h-3.5 w-3.5 shrink-0 text-rose-400" />
+                    )}
+                    <span>{decisionFeedback.message}</span>
+                  </div>
+                )}
+
+                <div className="flex items-center gap-2 pt-1">
+                  <Button
+                    variant="primary"
+                    size="sm"
+                    onClick={() => handleDecision('verified')}
+                    disabled={submittingDecision || !decisionReason.trim()}
+                    className="flex-1 justify-center gap-1.5 text-xs bg-emerald-600 hover:bg-emerald-500 text-white font-semibold"
+                  >
+                    {submittingDecision ? (
+                      <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                    ) : (
+                      <CheckCircle2 className="h-3.5 w-3.5" />
+                    )}
+                    <span>Verify Finding</span>
+                  </Button>
+
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleDecision('rejected')}
+                    disabled={submittingDecision || !decisionReason.trim()}
+                    className="flex-1 justify-center gap-1.5 text-xs border-rose-500/40 text-rose-400 hover:bg-rose-500/10 font-semibold"
+                  >
+                    {submittingDecision ? (
+                      <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                    ) : (
+                      <XCircle className="h-3.5 w-3.5" />
+                    )}
+                    <span>Reject Finding</span>
+                  </Button>
+                </div>
               </div>
             )}
 
-            {/* Prototype Session Review Actions */}
+            {/* Audit History Timeline */}
             <div className="border-t border-surface-border/60 pt-3 space-y-2">
               <div className="flex items-center justify-between">
-                <span className="text-3xs font-semibold uppercase text-slate-400">
-                  Session Review Actions (Mock)
+                <div className="flex items-center gap-1.5">
+                  <History className="h-3.5 w-3.5 text-sky-400" />
+                  <span className="text-3xs font-semibold uppercase tracking-wider text-slate-300">
+                    Append-Only Audit History
+                  </span>
+                </div>
+                <span className="text-3xs font-mono text-slate-400">
+                  {verifications.flatMap((v) => v.auditHistory || []).length} Event(s)
                 </span>
-                <span className="text-3xs text-amber-400 font-mono">Frontend State Only</span>
               </div>
 
-              <div className="flex flex-wrap items-center gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => onUpdateStatus?.(evidence.id, 'verified')}
-                  disabled={evidence.status === 'verified'}
-                  className={`h-7 text-3xs font-semibold gap-1 ${
-                    evidence.status === 'verified'
-                      ? 'opacity-40 border-slate-700'
-                      : 'border-emerald-500/40 text-emerald-400 hover:bg-emerald-500/10'
-                  }`}
-                >
-                  <CheckCircle2 className="h-3 w-3" />
-                  <span>Mark Verified</span>
-                </Button>
+              {loadingVerifications ? (
+                <div className="py-2 text-center text-3xs text-slate-400 flex items-center justify-center gap-1.5">
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                  <span>Loading audit trail...</span>
+                </div>
+              ) : verifications.length === 0 || verifications.flatMap((v) => v.auditHistory || []).length === 0 ? (
+                <div className="rounded-lg bg-surface/50 p-2.5 text-center text-3xs text-slate-400">
+                  No prior verification decisions recorded for this evidence.
+                </div>
+              ) : (
+                <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
+                  {verifications.flatMap((v) => v.auditHistory || []).map((evt, idx) => (
+                    <div
+                      key={evt.eventId || idx}
+                      className="rounded-lg border border-surface-border/60 bg-surface/80 p-2.5 space-y-1 text-3xs"
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-1.5">
+                          {evt.action === 'VERIFY' ? (
+                            <span className="inline-flex items-center gap-0.5 rounded px-1.5 py-0.2 bg-emerald-500/10 text-emerald-400 font-mono font-bold">
+                              <CheckCircle2 className="h-3 w-3" /> VERIFY
+                            </span>
+                          ) : evt.action === 'REJECT' ? (
+                            <span className="inline-flex items-center gap-0.5 rounded px-1.5 py-0.2 bg-rose-500/10 text-rose-400 font-mono font-bold">
+                              <XCircle className="h-3 w-3" /> REJECT
+                            </span>
+                          ) : evt.action === 'OVERRIDE' ? (
+                            <span className="inline-flex items-center gap-0.5 rounded px-1.5 py-0.2 bg-sky-500/10 text-sky-400 font-mono font-bold">
+                              <RotateCcw className="h-3 w-3" /> OVERRIDE
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center gap-0.5 rounded px-1.5 py-0.2 bg-slate-700/50 text-slate-300 font-mono">
+                              <Sparkles className="h-3 w-3" /> INITIALIZE
+                            </span>
+                          )}
+                          <span className="font-semibold text-white">
+                            {evt.reviewer?.name || 'System Engine'}
+                          </span>
+                          <span className="text-slate-400 font-mono">
+                            ({evt.reviewer?.role || 'system'})
+                          </span>
+                        </div>
+                        <span className="text-slate-400 font-mono flex items-center gap-1">
+                          <Clock className="h-3 w-3" />
+                          {new Date(evt.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        </span>
+                      </div>
 
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => onUpdateStatus?.(evidence.id, 'rejected')}
-                  disabled={evidence.status === 'rejected'}
-                  className={`h-7 text-3xs font-semibold gap-1 ${
-                    evidence.status === 'rejected'
-                      ? 'opacity-40 border-slate-700'
-                      : 'border-rose-500/40 text-rose-400 hover:bg-rose-500/10'
-                  }`}
-                >
-                  <XCircle className="h-3 w-3" />
-                  <span>Mark Rejected</span>
-                </Button>
-
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => onUpdateStatus?.(evidence.id, 'awaitingReview')}
-                  disabled={evidence.status === 'awaitingReview'}
-                  className="h-7 text-3xs text-slate-400 hover:text-white gap-1"
-                >
-                  <RotateCcw className="h-3 w-3" />
-                  <span>Reset Review</span>
-                </Button>
-              </div>
+                      {evt.reason && (
+                        <p className="text-slate-300 italic pl-1 border-l-2 border-slate-600/50">
+                          "{evt.reason}"
+                        </p>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         </div>

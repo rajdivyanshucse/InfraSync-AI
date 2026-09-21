@@ -1,0 +1,140 @@
+/**
+ * InfraSync AI — Seed Verification Records (Phase 23)
+ * Supports in-memory mock repository mode and testing.
+ */
+
+export const verificationsData = [
+  {
+    verificationId: 'VER-001',
+    projectId: 'proj-1',
+    evidenceId: 'EV-000121',
+    sourceAnalysisId: 'ANA-9366B5FA',
+    targetType: 'schedule_link',
+    targetId: 'ACT-03-02-001',
+    status: 'verified',
+    decision: 'verified',
+    reviewer: {
+      userId: 'USR-PM-01',
+      name: 'Sarah Jenkins',
+      role: 'project_manager',
+    },
+    reason: 'Confirmed against site inspection record and daily piling log.',
+    decidedAt: '2026-03-12T14:30:00.000Z',
+    candidateContext: {
+      activityId: 'ACT-03-02-001',
+      activityName: 'Pier Cap Construction P25-P48',
+      microActivityId: 'MA-03-02-001-02',
+      microActivityName: 'Rebar Tying & Formwork',
+      confidence: 1.0,
+      confidenceBand: 'high',
+      reasons: ['Explicit activity link pre-assigned in system: ACT-03-02-001'],
+      linkType: 'explicit',
+    },
+    auditHistory: [
+      {
+        eventId: 'AUD-001-01',
+        action: 'INITIALIZE_CANDIDATE',
+        previousStatus: null,
+        newStatus: 'candidate',
+        reviewer: {
+          userId: 'SYSTEM',
+          name: 'AI Schedule Linker Engine',
+          role: 'system',
+        },
+        reason: 'Automated candidate identification from field telemetry.',
+        timestamp: '2026-03-12T10:15:00.000Z',
+      },
+      {
+        eventId: 'AUD-001-02',
+        action: 'VERIFY',
+        previousStatus: 'candidate',
+        newStatus: 'verified',
+        reviewer: {
+          userId: 'USR-PM-01',
+          name: 'Sarah Jenkins',
+          role: 'project_manager',
+        },
+        reason: 'Confirmed against site inspection record and daily piling log.',
+        timestamp: '2026-03-12T14:30:00.000Z',
+      },
+    ],
+  },
+  {
+    verificationId: 'VER-002',
+    projectId: 'proj-1',
+    evidenceId: 'EV-000121',
+    sourceAnalysisId: 'ANA-9366B5FA',
+    targetType: 'risk_signal',
+    targetId: 'SIGNIFICANT_PROGRESS_VARIANCE',
+    status: 'candidate',
+    decision: null,
+    reviewer: null,
+    reason: null,
+    decidedAt: null,
+    candidateContext: {
+      signalType: 'SIGNIFICANT_PROGRESS_VARIANCE',
+      severity: 'high',
+      triggerCondition: 'actualProgress - plannedProgress <= -10',
+      reasons: [
+        'Actual progress is 58.0% against planned progress of 72.0%, resulting in a -14.0 percentage-point variance.',
+      ],
+    },
+    auditHistory: [
+      {
+        eventId: 'AUD-002-01',
+        action: 'INITIALIZE_CANDIDATE',
+        previousStatus: null,
+        newStatus: 'candidate',
+        reviewer: {
+          userId: 'SYSTEM',
+          name: 'AI Risk Analyzer Engine',
+          role: 'system',
+        },
+        reason: 'Deterministic trigger: actualProgress - plannedProgress <= -10',
+        timestamp: '2026-03-12T10:15:00.000Z',
+      },
+    ],
+  },
+  {
+    verificationId: 'VER-003',
+    projectId: 'proj-1',
+    evidenceId: 'EV-000122',
+    sourceAnalysisId: 'ANA-B128A44C',
+    targetType: 'schedule_link',
+    targetId: 'ACT-03-01-002',
+    status: 'candidate',
+    decision: null,
+    reviewer: null,
+    reason: null,
+    decidedAt: null,
+    candidateContext: {
+      activityId: 'ACT-03-01-002',
+      activityName: 'Piling Pier P25 to P48',
+      microActivityId: 'MA-03-01-002-01',
+      microActivityName: 'Bored Piling Rig Drilling',
+      confidence: 0.86,
+      confidenceBand: 'high',
+      reasons: [
+        'Explicit WBS code match: WBS-03-01',
+        'Spatial Zone match: ZONE-03',
+        'Discipline alignment: Geotechnical & Piling',
+      ],
+      linkType: 'inferred',
+    },
+    auditHistory: [
+      {
+        eventId: 'AUD-003-01',
+        action: 'INITIALIZE_CANDIDATE',
+        previousStatus: null,
+        newStatus: 'candidate',
+        reviewer: {
+          userId: 'SYSTEM',
+          name: 'AI Schedule Linker Engine',
+          role: 'system',
+        },
+        reason: 'Inferred candidate ranking with 0.86 confidence.',
+        timestamp: '2026-03-12T11:00:00.000Z',
+      },
+    ],
+  },
+];

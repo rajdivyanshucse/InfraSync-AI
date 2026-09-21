@@ -5,3 +5,4 @@ export { Evidence } from './Evidence.js';
 export { SiteView } from './SiteView.js';
 export { RiskEvent } from './RiskEvent.js';
 export { Alert } from './Alert.js';
+export { Verification } from './Verification.js';

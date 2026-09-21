@@ -8,6 +8,7 @@ import riskRoutes from './risk.routes.js';
 import alertRoutes from './alert.routes.js';
 import reportRoutes from './report.routes.js';
 import aiRoutes from './ai.routes.js';
+import verificationRoutes from './verification.routes.js';
 import { successResponse } from '../utils/apiResponse.js';
 import { config } from '../config/env.js';
 import { getDatabaseStatus } from '../config/database.js';
@@ -32,6 +33,7 @@ router.get('/health', (req, res) => {
 router.use('/ai', aiRoutes);       // /ai/health, /ai/analyze
 router.use('/', evidenceRoutes); // /projects/:projectId/evidence, /evidence/:evidenceId
 router.use('/', alertRoutes);    // /projects/:projectId/alerts, /alerts/:alertId
+router.use('/', verificationRoutes); // /projects/:projectId/verifications, /verifications/:verificationId
 router.use('/projects', scheduleRoutes);
 router.use('/projects', executionRoutes);
 router.use('/projects', siteViewRoutes);
@@ -40,3 +42,4 @@ router.use('/projects', reportRoutes);
 router.use('/projects', projectRoutes); // /projects, /projects/:projectId
 
 export default router;
+

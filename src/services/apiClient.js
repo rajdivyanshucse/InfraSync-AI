@@ -120,12 +120,28 @@ export const apiClient = {
   },
 
   /**
-   * AI Service Endpoints (Phase 20-21)
+   * AI Service Endpoints (Phase 20-22)
    */
   getAiHealth: () => apiClient.get('/ai/health'),
   analyzeEvidence: (payload) => apiClient.post('/ai/analyze', payload),
+
+  /**
+   * Human Verification & Audit Workflow (Phase 23)
+   */
+  getVerifications: (projectId, filters = {}) => {
+    const params = new URLSearchParams();
+    if (filters.status) params.append('status', filters.status);
+    if (filters.targetType) params.append('targetType', filters.targetType);
+    if (filters.evidenceId) params.append('evidenceId', filters.evidenceId);
+    const queryString = params.toString() ? `?${params.toString()}` : '';
+    return apiClient.get(`/projects/${projectId}/verifications${queryString}`);
+  },
+  getVerificationById: (verificationId) => apiClient.get(`/verifications/${verificationId}`),
+  verifyFinding: (payload) => apiClient.post('/verifications/verify', payload),
+  rejectFinding: (payload) => apiClient.post('/verifications/reject', payload),
 };
 
 export default apiClient;
+
 
 
