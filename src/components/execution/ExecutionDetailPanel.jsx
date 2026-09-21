@@ -5,11 +5,13 @@ import {
   Calendar, 
   HardHat, 
   ShieldCheck, 
-  MapPin, 
   FileCheck2, 
   UserCheck, 
-  Scale
+  Scale,
+  ExternalLink,
+  Camera
 } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { StatusBadge } from '../ui/StatusBadge';
 import { Progress } from '../ui/Progress';
 import { Button } from '../ui/Button';
@@ -63,6 +65,8 @@ export const ExecutionDetailPanel = ({
     }
   };
 
+  const hasQuantity = Boolean(microActivity.plannedQuantity && microActivity.unit);
+
   return (
     <div className="fixed inset-y-0 right-0 z-50 flex w-full max-w-lg flex-col border-l border-surface-border bg-surface-card/95 shadow-2xl backdrop-blur-md animate-in slide-in-from-right duration-300">
       {/* Drawer Header */}
@@ -78,7 +82,7 @@ export const ExecutionDetailPanel = ({
               size="sm"
             />
             <span className="rounded bg-surface-muted/60 px-1.5 py-0.2 font-mono text-3xs text-slate-400">
-              L5 Execution Unit
+              Level 5 Ground Unit
             </span>
           </div>
 
@@ -105,13 +109,13 @@ export const ExecutionDetailPanel = ({
       </div>
 
       {/* Drawer Body */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-5 text-xs">
-        {/* Measurable Execution Unit Card */}
+      <div className="flex-1 overflow-y-auto p-4 space-y-4 text-xs">
+        {/* Measurable Execution Quantity Card */}
         <div className="rounded-xl border border-surface-border bg-surface-subtle/50 p-3.5 space-y-3">
           <div className="flex items-center justify-between">
             <span className="text-3xs font-semibold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
               <Scale className="h-3.5 w-3.5 text-emerald-400" />
-              Measurable Ground Execution
+              Execution Quantity View
             </span>
             <span className="font-mono text-xs font-bold text-emerald-300">
               {microActivity.actualProgress}% Done
@@ -119,28 +123,34 @@ export const ExecutionDetailPanel = ({
           </div>
 
           {/* Quantities Breakdown Strip */}
-          <div className="grid grid-cols-3 gap-2 text-center font-mono">
-            <div className="rounded-lg bg-surface/80 p-2.5 border border-surface-border">
-              <span className="text-3xs uppercase text-slate-400 block">Planned</span>
-              <span className="text-sm font-bold text-slate-200 mt-0.5 block">
-                {microActivity.plannedQuantity} {microActivity.unit}
-              </span>
-            </div>
+          {hasQuantity ? (
+            <div className="grid grid-cols-3 gap-2 text-center font-mono">
+              <div className="rounded-lg bg-surface/80 p-2.5 border border-surface-border">
+                <span className="text-3xs uppercase text-slate-400 block">Planned Quantity</span>
+                <span className="text-xs font-bold text-slate-200 mt-0.5 block">
+                  {microActivity.plannedQuantity.toLocaleString()} {microActivity.unit}
+                </span>
+              </div>
 
-            <div className="rounded-lg bg-emerald-950/30 p-2.5 border border-emerald-500/30">
-              <span className="text-3xs uppercase text-emerald-300 block">Completed</span>
-              <span className="text-sm font-bold text-emerald-400 mt-0.5 block">
-                {microActivity.completedQuantity} {microActivity.unit}
-              </span>
-            </div>
+              <div className="rounded-lg bg-emerald-950/30 p-2.5 border border-emerald-500/30">
+                <span className="text-3xs uppercase text-emerald-300 block">Completed Quantity</span>
+                <span className="text-xs font-bold text-emerald-400 mt-0.5 block">
+                  {microActivity.completedQuantity.toLocaleString()} {microActivity.unit}
+                </span>
+              </div>
 
-            <div className="rounded-lg bg-surface/80 p-2.5 border border-surface-border">
-              <span className="text-3xs uppercase text-slate-400 block">Remaining</span>
-              <span className={`text-sm font-bold mt-0.5 block ${remaining > 0 ? 'text-amber-400' : 'text-slate-500'}`}>
-                {remaining} {microActivity.unit}
-              </span>
+              <div className="rounded-lg bg-surface/80 p-2.5 border border-surface-border">
+                <span className="text-3xs uppercase text-slate-400 block">Remaining Quantity</span>
+                <span className={`text-xs font-bold mt-0.5 block ${remaining > 0 ? 'text-amber-400' : 'text-slate-500'}`}>
+                  {remaining.toLocaleString()} {microActivity.unit}
+                </span>
+              </div>
             </div>
-          </div>
+          ) : (
+            <div className="rounded-lg bg-surface/60 p-2.5 text-center text-3xs text-slate-400 font-mono border border-surface-border">
+              Quantity not available
+            </div>
+          )}
 
           <Progress
             value={microActivity.actualProgress}
@@ -149,8 +159,10 @@ export const ExecutionDetailPanel = ({
           />
 
           <div className="flex items-center justify-between text-3xs font-mono text-slate-400 pt-1">
-            <span>Execution Variance: {microActivity.variance}%</span>
-            <span>Priority: <strong className="text-slate-200 uppercase">{microActivity.priority || 'Normal'}</strong></span>
+            <span>Planned: {microActivity.plannedProgress}% • Actual: {microActivity.actualProgress}%</span>
+            <span className={microActivity.variance < 0 ? 'text-rose-400 font-semibold' : 'text-emerald-400 font-semibold'}>
+              Variance: {microActivity.variance > 0 ? `+${microActivity.variance}%` : `${microActivity.variance}%`}
+            </span>
           </div>
         </div>
 
@@ -164,12 +176,12 @@ export const ExecutionDetailPanel = ({
           <div className="grid grid-cols-2 gap-2 text-xs">
             <div className="rounded-lg bg-surface/60 p-2 border border-surface-border/50">
               <div className="text-3xs text-slate-400 font-mono">Contractor</div>
-              <div className="font-semibold text-slate-200 mt-0.5">{microActivity.contractor}</div>
+              <div className="font-semibold text-slate-200 mt-0.5 truncate">{microActivity.contractor}</div>
             </div>
 
             <div className="rounded-lg bg-surface/60 p-2 border border-surface-border/50">
               <div className="text-3xs text-slate-400 font-mono">Discipline</div>
-              <div className="font-semibold text-slate-200 mt-0.5">{microActivity.discipline}</div>
+              <div className="font-semibold text-slate-200 mt-0.5 truncate">{microActivity.discipline}</div>
             </div>
           </div>
 
@@ -188,51 +200,53 @@ export const ExecutionDetailPanel = ({
           )}
         </div>
 
-        {/* Schedule Timing & Planned Window */}
-        <div className="rounded-xl border border-surface-border bg-surface-subtle/40 p-3.5 space-y-3">
+        {/* Execution Windows (Planned vs Actual) */}
+        <div className="rounded-xl border border-surface-border bg-surface-subtle/40 p-3.5 space-y-2">
           <h4 className="text-3xs font-semibold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
             <Calendar className="h-3.5 w-3.5 text-brand-400" />
-            Execution Windows (Planned vs Actual)
+            Execution Windows
           </h4>
 
-          <div className="grid grid-cols-2 gap-3 text-xs font-mono">
-            <div>
-              <span className="text-3xs text-slate-400">Planned Start</span>
-              <div className="font-semibold text-slate-200">{microActivity.plannedStart}</div>
+          <div className="grid grid-cols-2 gap-2 text-xs font-mono">
+            <div className="rounded bg-surface/50 p-1.5 border border-surface-border/40">
+              <span className="text-3xs text-slate-400 block">Planned Start</span>
+              <span className="font-semibold text-slate-200">{microActivity.plannedStart}</span>
             </div>
-
-            <div>
-              <span className="text-3xs text-slate-400">Planned Finish</span>
-              <div className="font-semibold text-slate-200">{microActivity.plannedFinish}</div>
+            <div className="rounded bg-surface/50 p-1.5 border border-surface-border/40">
+              <span className="text-3xs text-slate-400 block">Planned Finish</span>
+              <span className="font-semibold text-slate-200">{microActivity.plannedFinish}</span>
             </div>
-
-            <div>
-              <span className="text-3xs text-slate-400">Actual Start</span>
-              <div className="font-semibold text-emerald-400">
-                {microActivity.actualStart || 'Not Started'}
-              </div>
+            <div className="rounded bg-surface/50 p-1.5 border border-surface-border/40">
+              <span className="text-3xs text-slate-400 block">Actual Start</span>
+              <span className="font-semibold text-emerald-400">{microActivity.actualStart || 'Not Started'}</span>
             </div>
-
-            <div>
-              <span className="text-3xs text-slate-400">Actual Finish</span>
-              <div className="font-semibold text-emerald-400">
-                {microActivity.actualFinish || 'In Progress'}
-              </div>
+            <div className="rounded bg-surface/50 p-1.5 border border-surface-border/40">
+              <span className="text-3xs text-slate-400 block">Actual Finish</span>
+              <span className="font-semibold text-emerald-400">{microActivity.actualFinish || 'In Progress'}</span>
             </div>
           </div>
         </div>
 
-        {/* Parent Activity Context */}
+        {/* Parent Activity Context & Link */}
         {parentActivity && (
           <div className="rounded-xl border border-brand-500/20 bg-brand-950/20 p-3.5 space-y-2">
-            <h4 className="text-3xs font-semibold uppercase tracking-wider text-brand-300 flex items-center gap-1.5">
-              <Layers className="h-3.5 w-3.5 text-brand-400" />
-              Parent Schedule Activity Link
-            </h4>
+            <div className="flex items-center justify-between">
+              <h4 className="text-3xs font-semibold uppercase tracking-wider text-brand-300 flex items-center gap-1.5">
+                <Layers className="h-3.5 w-3.5 text-brand-400" />
+                Parent Schedule Activity Link
+              </h4>
+              <Link
+                to={`/schedule?activity=${parentActivity.id}`}
+                className="inline-flex items-center gap-1 text-3xs font-mono text-brand-300 hover:underline"
+              >
+                <span>View Scheduled Activity</span>
+                <ExternalLink className="h-2.5 w-2.5" />
+              </Link>
+            </div>
             <div className="flex items-center justify-between">
               <div>
                 <span className="font-mono text-2xs font-bold text-brand-400">
-                  {parentActivity.activityCode}
+                  {parentActivity.activityCode || parentActivity.id}
                 </span>
                 <p className="font-medium text-slate-200 mt-0.5">{parentActivity.activityName}</p>
               </div>
@@ -244,13 +258,13 @@ export const ExecutionDetailPanel = ({
           </div>
         )}
 
-        {/* Evidence Readiness & Future Field Anchor */}
-        <div className="rounded-xl border border-dashed border-emerald-500/40 bg-emerald-950/10 p-3.5 space-y-2.5">
+        {/* Evidence Status & Cross-Module Deep Links */}
+        <div className="rounded-xl border border-dashed border-emerald-500/40 bg-emerald-950/10 p-3.5 space-y-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <ShieldCheck className="h-4 w-4 text-emerald-400" />
               <h4 className="text-2xs font-bold uppercase tracking-wider text-emerald-300">
-                Evidence Link Readiness
+                Site Evidence & Telemetry Link
               </h4>
             </div>
             <span className="rounded bg-emerald-950/60 px-2 py-0.5 font-mono text-3xs font-bold text-emerald-400 border border-emerald-500/30">
@@ -258,22 +272,27 @@ export const ExecutionDetailPanel = ({
             </span>
           </div>
 
-          <p className="text-3xs text-slate-400 leading-relaxed">
-            This micro-activity ID is the atomic execution anchor where future mobile uploads, drone LiDAR measurements, and QA test certificates will be linked.
-          </p>
-
           <div className="flex items-center justify-between rounded-lg bg-surface/80 px-3 py-2 font-mono text-2xs border border-surface-border">
             <span className="text-slate-400">Evidence Link Identifier:</span>
             <span className="font-bold text-emerald-400">EV-ANCHOR-{microActivity.id}</span>
           </div>
 
-          <div className="flex flex-wrap gap-1.5 pt-1 text-3xs font-mono text-slate-400">
-            <span className="flex items-center gap-1 rounded bg-surface px-1.5 py-0.5 border border-surface-border">
-              <FileCheck2 className="h-2.5 w-2.5 text-emerald-400" /> {microActivity.evidenceCount || 0} Linked Artifacts
-            </span>
-            <span className="flex items-center gap-1 rounded bg-surface px-1.5 py-0.5 border border-surface-border">
-              <MapPin className="h-2.5 w-2.5 text-slate-400" /> Geo-Station Lock
-            </span>
+          <div className="flex flex-wrap gap-2 pt-1">
+            <Link
+              to="/site-evidence"
+              className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-lg bg-emerald-500/15 px-3 py-2 text-xs font-mono font-semibold text-emerald-300 hover:bg-emerald-500/25 border border-emerald-500/30 transition-colors"
+            >
+              <FileCheck2 className="h-3.5 w-3.5" />
+              <span>View Site Evidence</span>
+            </Link>
+
+            <Link
+              to="/site-view"
+              className="inline-flex items-center justify-center gap-1.5 rounded-lg bg-surface px-3 py-2 text-xs font-mono font-semibold text-slate-300 hover:bg-surface-elevated border border-surface-border transition-colors"
+            >
+              <Camera className="h-3.5 w-3.5 text-brand-400" />
+              <span>View Site Context</span>
+            </Link>
           </div>
         </div>
       </div>
@@ -284,7 +303,7 @@ export const ExecutionDetailPanel = ({
           Close Panel
         </Button>
         <span className="text-3xs font-mono text-slate-500">
-          InfraSync L5 Execution Node
+          InfraSync Planning-to-Execution Bridge
         </span>
       </div>
     </div>

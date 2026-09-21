@@ -5,23 +5,33 @@ import { useAuth } from '../context/useAuth';
 import { getExecutionData } from '../data/executionData';
 import { getScheduleData } from '../data/scheduleData';
 import { 
-  ExecutionHeader,
-  ExecutionKpiStrip,
+  calculateProgressIntelligenceKpis,
+  getPlannedVsActualTimeline,
+  getVarianceAnalysisList,
+  getProgressAttentionItems,
+  getPhasePerformanceSummary,
+  getDisciplineProgressPerformance,
+  getContractorProgressPerformance
+} from '../utils/progressIntelligenceCalculations';
+import { 
+  ProgressIntelligenceHeader,
+  ProgressIntelligenceKpiStrip,
+  PlannedVsActualChart,
+  VarianceAnalysis,
+  ProgressAttentionCenter,
+  PhaseProgressPerformance,
+  DisciplineProgressPerformance,
+  ContractorProgressPerformance,
+  ProgressIntelligenceFilters,
   ExecutionExplorer,
   MicroActivityTable,
   ExecutionDetailPanel,
-  ExecutionSummary,
   EvidenceReadiness
 } from '../components/execution';
 import { Alert } from '../components/ui/Alert';
-import { Button } from '../components/ui/Button';
 import { 
-  Search, 
-  RotateCcw, 
   HardHat, 
   ShieldCheck, 
-  Filter, 
-  X, 
   Layers
 } from 'lucide-react';
 
@@ -39,14 +49,18 @@ export const ProgressPage = () => {
     return getScheduleData(currentProject?.id || 'proj-1');
   }, [currentProject?.id]);
 
-  // Master view state: 'table' | 'summary' | 'evidence'
-  const [activeView, setActiveView] = useState('table');
+  // Master view state: 'overview' | 'variance' | 'breakdowns' | 'units' | 'readiness'
+  const [activeView, setActiveView] = useState('overview');
 
   // Filter states
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedPhase, setSelectedPhase] = useState('all');
   const [selectedDiscipline, setSelectedDiscipline] = useState('all');
   const [selectedContractor, setSelectedContractor] = useState('all');
   const [selectedStatus, setSelectedStatus] = useState('all');
+  const [selectedProgressState, setSelectedProgressState] = useState('all');
+  const [criticalPathOnly, setCriticalPathOnly] = useState(false);
+  const [evidenceLinkedOnly, setEvidenceLinkedOnly] = useState(false);
   const [selectedActivityId, setSelectedActivityId] = useState(null);
 
   // Selected item for detail drawer
@@ -77,7 +91,44 @@ export const ProgressPage = () => {
     setExpandedActivityIds((scheduleData?.activities || []).slice(0, 3).map((a) => a.id));
     setSelectedMicroActivity(null);
     setSelectedActivityId(null);
+    setSearchQuery('');
+    setSelectedPhase('all');
+    setSelectedDiscipline('all');
+    setSelectedContractor('all');
+    setSelectedStatus('all');
+    setSelectedProgressState('all');
+    setCriticalPathOnly(false);
+    setEvidenceLinkedOnly(false);
   }
+
+  // Progress Intelligence Analytics Calculations
+  const kpis = useMemo(() => {
+    return calculateProgressIntelligenceKpis(scheduleData, executionData);
+  }, [scheduleData, executionData]);
+
+  const timelinePoints = useMemo(() => {
+    return getPlannedVsActualTimeline(scheduleData, executionData);
+  }, [scheduleData, executionData]);
+
+  const varianceActivities = useMemo(() => {
+    return getVarianceAnalysisList(scheduleData, executionData);
+  }, [scheduleData, executionData]);
+
+  const attentionItems = useMemo(() => {
+    return getProgressAttentionItems(scheduleData, executionData);
+  }, [scheduleData, executionData]);
+
+  const phasePerformance = useMemo(() => {
+    return getPhasePerformanceSummary(scheduleData, executionData);
+  }, [scheduleData, executionData]);
+
+  const disciplinePerformance = useMemo(() => {
+    return getDisciplineProgressPerformance(scheduleData, executionData);
+  }, [scheduleData, executionData]);
+
+  const contractorPerformance = useMemo(() => {
+    return getContractorProgressPerformance(scheduleData, executionData);
+  }, [scheduleData, executionData]);
 
   // Extract unique disciplines & contractors for filter selects
   const disciplines = useMemo(() => {
@@ -115,17 +166,20 @@ export const ProgressPage = () => {
 
   const handleResetFilters = () => {
     setSearchQuery('');
+    setSelectedPhase('all');
     setSelectedDiscipline('all');
     setSelectedContractor('all');
     setSelectedStatus('all');
+    setSelectedProgressState('all');
+    setCriticalPathOnly(false);
+    setEvidenceLinkedOnly(false);
     setSelectedActivityId(null);
   };
 
-  // Compose active filters
+  // Compose active filters across activities & micro-activities
   const filteredMicroActivities = useMemo(() => {
     let list = executionData?.microActivities || [];
 
-    // Search query across ID, name, contractor, discipline, parent activity
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase().trim();
       list = list.filter(
@@ -138,22 +192,22 @@ export const ProgressPage = () => {
       );
     }
 
-    // Filter by Activity ID (from explorer or select)
     if (selectedActivityId) {
       list = list.filter((m) => m.activityId === selectedActivityId);
     }
 
-    // Filter by Discipline
+    if (selectedPhase !== 'all') {
+      list = list.filter((m) => m.phaseId === selectedPhase);
+    }
+
     if (selectedDiscipline !== 'all') {
       list = list.filter((m) => m.discipline === selectedDiscipline);
     }
 
-    // Filter by Contractor
     if (selectedContractor !== 'all') {
       list = list.filter((m) => m.contractor === selectedContractor);
     }
 
-    // Filter by Status
     if (selectedStatus === 'completed') {
       list = list.filter((m) => m.status === 'completed' || m.actualProgress === 100);
     } else if (selectedStatus === 'inProgress') {
@@ -168,21 +222,97 @@ export const ProgressPage = () => {
       list = list.filter((m) => m.status === 'notStarted' || m.actualProgress === 0);
     }
 
+    if (selectedProgressState === 'behind') {
+      list = list.filter((m) => (m.variance || 0) < -5);
+    } else if (selectedProgressState === 'near') {
+      list = list.filter((m) => (m.variance || 0) >= -5 && (m.variance || 0) <= 5);
+    } else if (selectedProgressState === 'ahead') {
+      list = list.filter((m) => (m.variance || 0) > 5);
+    }
+
+    if (evidenceLinkedOnly) {
+      list = list.filter(
+        (m) => m.evidenceStatus === 'verified' || m.evidenceStatus === 'linked' || m.evidenceStatus === 'awaitingReview'
+      );
+    }
+
     return list;
   }, [
     executionData?.microActivities,
     searchQuery,
     selectedActivityId,
+    selectedPhase,
     selectedDiscipline,
     selectedContractor,
     selectedStatus,
+    selectedProgressState,
+    evidenceLinkedOnly,
+  ]);
+
+  const filteredVarianceActivities = useMemo(() => {
+    let list = [...varianceActivities];
+
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase().trim();
+      list = list.filter(
+        (a) =>
+          a.code.toLowerCase().includes(q) ||
+          a.name.toLowerCase().includes(q) ||
+          a.contractor.toLowerCase().includes(q) ||
+          a.discipline.toLowerCase().includes(q) ||
+          a.wbsCode?.toLowerCase().includes(q)
+      );
+    }
+
+    if (selectedPhase !== 'all') {
+      list = list.filter((a) => a.phaseId === selectedPhase);
+    }
+
+    if (selectedDiscipline !== 'all') {
+      list = list.filter((a) => a.discipline === selectedDiscipline);
+    }
+
+    if (selectedContractor !== 'all') {
+      list = list.filter((a) => a.contractor === selectedContractor);
+    }
+
+    if (selectedStatus !== 'all') {
+      list = list.filter((a) => a.status === selectedStatus);
+    }
+
+    if (selectedProgressState === 'behind') {
+      list = list.filter((a) => a.variance < -5);
+    } else if (selectedProgressState === 'near') {
+      list = list.filter((a) => a.variance >= -5 && a.variance <= 5);
+    } else if (selectedProgressState === 'ahead') {
+      list = list.filter((a) => a.variance > 5);
+    }
+
+    if (criticalPathOnly) {
+      list = list.filter((a) => a.criticalPath === true);
+    }
+
+    return list;
+  }, [
+    varianceActivities,
+    searchQuery,
+    selectedPhase,
+    selectedDiscipline,
+    selectedContractor,
+    selectedStatus,
+    selectedProgressState,
+    criticalPathOnly,
   ]);
 
   const hasActiveFilters = Boolean(
     searchQuery ||
+    selectedPhase !== 'all' ||
     selectedDiscipline !== 'all' ||
     selectedContractor !== 'all' ||
     selectedStatus !== 'all' ||
+    selectedProgressState !== 'all' ||
+    criticalPathOnly ||
+    evidenceLinkedOnly ||
     selectedActivityId
   );
 
@@ -193,159 +323,157 @@ export const ProgressPage = () => {
     );
   }, [selectedMicroActivity, scheduleData?.activities]);
 
+  const handleSelectMicroActivityById = (microId) => {
+    const found = (executionData?.microActivities || []).find((m) => m.id === microId);
+    if (found) {
+      setSelectedMicroActivity(found);
+    }
+  };
+
   return (
     <div className="space-y-5 pb-12">
       {/* Role Advisories */}
       {currentUser && currentUser.role === 'contractor' && (
         <Alert
           variant="info"
-          title={`Contractor Execution Log: ${currentUser.name}`}
+          title={`Contractor Progress Intelligence: ${currentUser.name}`}
           icon={HardHat}
         >
-          You are viewing ground execution units assigned to your contract. Update quantities and verify measurement logs against planned targets.
+          You are viewing scheduled activities and ground execution units assigned to your contract package. Monitor planned vs actual completion and address active float recovery actions.
         </Alert>
       )}
 
       {currentUser && currentUser.role === 'site_engineer' && (
         <Alert
           variant="neutral"
-          title="Field Measurement & Evidence Stage"
+          title="Field Measurement & Progress Verification"
           icon={ShieldCheck}
         >
-          Every micro-activity unit is pre-configured with a unique anchor identifier ready for field photo, GPS, and QA test links.
+          Ground execution progress is calculated from certified physical quantities against Primavera P6 baseline schedule windows.
         </Alert>
       )}
 
-      {/* Section 7 — Execution Header */}
-      <ExecutionHeader
+      {/* Header */}
+      <ProgressIntelligenceHeader
         project={currentProject}
         executionMeta={executionData}
         currentUser={currentUser}
         activeView={activeView}
         onViewChange={setActiveView}
+        kpiMetrics={kpis}
       />
 
-      {/* Section 8 — Execution KPI Strip */}
-      <ExecutionKpiStrip
-        microActivities={executionData?.microActivities || []}
-        activeStatusFilter={selectedStatus}
-        onFilterStatus={(key) => {
-          setSelectedStatus((prev) => (prev === key ? 'all' : key));
+      {/* KPI Strip */}
+      <ProgressIntelligenceKpiStrip
+        kpis={kpis}
+        activeStateFilter={selectedProgressState}
+        onSelectStateFilter={(state) => {
+          if (state === 'attention') {
+            setActiveView('variance');
+          } else {
+            setSelectedProgressState(state);
+          }
         }}
       />
 
-      {/* Micro-Activities Filter Bar (Visible in Table View) */}
-      {activeView === 'table' && (
-        <div className="rounded-xl border border-surface-border bg-surface-card/70 p-4 backdrop-blur-sm space-y-3">
-          <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-            {/* Search Input */}
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search micro-activity code, name, parent activity (ACT-03...), contractor..."
-                className="w-full rounded-lg border border-surface-border bg-surface-subtle/80 py-2 pl-9 pr-8 text-xs text-slate-200 placeholder-slate-500 focus:border-emerald-500 focus:outline-none"
+      {/* Multi-Parameter Filters (Available across tabs) */}
+      <ProgressIntelligenceFilters
+        searchQuery={searchQuery}
+        onSearchChange={setSearchQuery}
+        selectedPhase={selectedPhase}
+        onPhaseChange={setSelectedPhase}
+        phases={scheduleData?.phases || []}
+        selectedDiscipline={selectedDiscipline}
+        onDisciplineChange={setSelectedDiscipline}
+        disciplines={disciplines}
+        selectedContractor={selectedContractor}
+        onContractorChange={setSelectedContractor}
+        contractors={contractors}
+        selectedStatus={selectedStatus}
+        onStatusChange={setSelectedStatus}
+        selectedProgressState={selectedProgressState}
+        onProgressStateChange={setSelectedProgressState}
+        criticalPathOnly={criticalPathOnly}
+        onCriticalPathToggle={() => setCriticalPathOnly((prev) => !prev)}
+        evidenceLinkedOnly={evidenceLinkedOnly}
+        onEvidenceLinkedToggle={() => setEvidenceLinkedOnly((prev) => !prev)}
+        onResetFilters={handleResetFilters}
+        hasActiveFilters={hasActiveFilters}
+        totalCount={activeView === 'units' ? (executionData?.microActivities || []).length : varianceActivities.length}
+        filteredCount={activeView === 'units' ? filteredMicroActivities.length : filteredVarianceActivities.length}
+      />
+
+      {/* VIEW 1: OVERVIEW (Planned vs Actual S-Curve + Variance Analysis + Attention Center) */}
+      {activeView === 'overview' && (
+        <div className="space-y-5">
+          {/* Planned vs Actual S-Curve Chart */}
+          <PlannedVsActualChart
+            timelinePoints={timelinePoints}
+            variance={kpis.variance}
+          />
+
+          {/* Side-by-side or Stacked Variance Analysis & Attention Center */}
+          <div className="grid grid-cols-1 gap-5 xl:grid-cols-12 items-start">
+            <div className="xl:col-span-7 space-y-5">
+              <VarianceAnalysis
+                activities={filteredVarianceActivities}
               />
-              {searchQuery && (
-                <button
-                  type="button"
-                  onClick={() => setSearchQuery('')}
-                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300"
-                >
-                  <X className="h-3.5 w-3.5" />
-                </button>
-              )}
             </div>
 
-            {/* Reset Button */}
-            {hasActiveFilters && (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={handleResetFilters}
-                className="text-xs text-slate-400 hover:text-rose-400"
-              >
-                <RotateCcw className="mr-1.5 h-3.5 w-3.5" />
-                Reset Filters
-              </Button>
-            )}
-          </div>
-
-          {/* Filter Dropdowns */}
-          <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 lg:grid-cols-4">
-            <div>
-              <label className="mb-1 block text-3xs font-semibold uppercase tracking-wider text-slate-400">
-                Discipline
-              </label>
-              <select
-                value={selectedDiscipline}
-                onChange={(e) => setSelectedDiscipline(e.target.value)}
-                className="w-full rounded-lg border border-surface-border bg-surface-subtle px-2.5 py-1.5 text-xs text-slate-200 focus:border-emerald-500 focus:outline-none"
-              >
-                <option value="all">All Disciplines ({disciplines.length})</option>
-                {disciplines.map((d) => (
-                  <option key={d} value={d}>
-                    {d}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div>
-              <label className="mb-1 block text-3xs font-semibold uppercase tracking-wider text-slate-400">
-                Contractor
-              </label>
-              <select
-                value={selectedContractor}
-                onChange={(e) => setSelectedContractor(e.target.value)}
-                className="w-full rounded-lg border border-surface-border bg-surface-subtle px-2.5 py-1.5 text-xs text-slate-200 focus:border-emerald-500 focus:outline-none"
-              >
-                <option value="all">All Contractors ({contractors.length})</option>
-                {contractors.map((c) => (
-                  <option key={c} value={c}>
-                    {c}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div>
-              <label className="mb-1 block text-3xs font-semibold uppercase tracking-wider text-slate-400">
-                Execution Status
-              </label>
-              <select
-                value={selectedStatus}
-                onChange={(e) => setSelectedStatus(e.target.value)}
-                className="w-full rounded-lg border border-surface-border bg-surface-subtle px-2.5 py-1.5 text-xs text-slate-200 focus:border-emerald-500 focus:outline-none"
-              >
-                <option value="all">All Statuses</option>
-                <option value="completed">Completed (100%)</option>
-                <option value="inProgress">In Progress</option>
-                <option value="delayedOrBlocked">Delayed / Blocked</option>
-                <option value="awaitingInspection">Awaiting Inspection</option>
-                <option value="notStarted">Not Started</option>
-              </select>
-            </div>
-
-            <div className="flex items-end">
-              <div className="flex items-center gap-1.5 text-2xs text-slate-400 py-2">
-                <Filter className="h-3.5 w-3.5 text-slate-500" />
-                <span>
-                  Showing <strong className="font-mono text-slate-200">{filteredMicroActivities.length}</strong> of{' '}
-                  <strong className="font-mono text-slate-200">{(executionData?.microActivities || []).length}</strong> units
-                </span>
-              </div>
+            <div className="xl:col-span-5 space-y-5">
+              <ProgressAttentionCenter
+                attentionItems={attentionItems}
+                onSelectMicroActivity={handleSelectMicroActivityById}
+              />
             </div>
           </div>
+
+          {/* Phase Level Performance Overview */}
+          <PhaseProgressPerformance
+            phases={phasePerformance}
+            selectedPhaseId={selectedPhase !== 'all' ? selectedPhase : null}
+            onSelectPhase={(phaseId) => setSelectedPhase(phaseId || 'all')}
+          />
         </div>
       )}
 
-      {/* View Content based on activeView */}
-      {activeView === 'table' && (
+      {/* VIEW 2: VARIANCE & ATTENTION */}
+      {activeView === 'variance' && (
+        <div className="space-y-5">
+          <ProgressAttentionCenter
+            attentionItems={attentionItems}
+            onSelectMicroActivity={handleSelectMicroActivityById}
+          />
+
+          <VarianceAnalysis
+            activities={filteredVarianceActivities}
+          />
+        </div>
+      )}
+
+      {/* VIEW 3: BREAKDOWNS & RESPONSIBILITY */}
+      {activeView === 'breakdowns' && (
+        <div className="space-y-5">
+          <PhaseProgressPerformance
+            phases={phasePerformance}
+            selectedPhaseId={selectedPhase !== 'all' ? selectedPhase : null}
+            onSelectPhase={(phaseId) => setSelectedPhase(phaseId || 'all')}
+          />
+
+          <DisciplineProgressPerformance
+            disciplines={disciplinePerformance}
+          />
+
+          <ContractorProgressPerformance
+            contractors={contractorPerformance}
+          />
+        </div>
+      )}
+
+      {/* VIEW 4: GROUND MICRO-ACTIVITIES (Phase 8 Explorer + Table) */}
+      {activeView === 'units' && (
         <div className="grid grid-cols-1 gap-5 lg:grid-cols-12 items-start">
-          {/* Section 9 — Execution Explorer (Left 4 cols) */}
+          {/* Execution Explorer (Left 4 cols) */}
           <div className="lg:col-span-4 h-[680px]">
             <ExecutionExplorer
               phases={scheduleData?.phases || []}
@@ -365,7 +493,7 @@ export const ProgressPage = () => {
             />
           </div>
 
-          {/* Section 10 — Micro-Activity Table (Right 8 cols) */}
+          {/* Micro-Activity Table (Right 8 cols) */}
           <div className="lg:col-span-8 space-y-3">
             <div className="flex items-center justify-between px-1">
               <div className="flex items-center gap-2">
@@ -390,23 +518,15 @@ export const ProgressPage = () => {
         </div>
       )}
 
-      {/* Section 12 — Execution Summary */}
-      {activeView === 'summary' && (
-        <ExecutionSummary
-          microActivities={executionData?.microActivities || []}
-          phases={scheduleData?.phases || []}
-        />
-      )}
-
-      {/* Section 13 — Evidence Readiness */}
-      {activeView === 'evidence' && (
+      {/* VIEW 5: EVIDENCE COVERAGE & READINESS */}
+      {activeView === 'readiness' && (
         <EvidenceReadiness
           microActivities={executionData?.microActivities || []}
           onSelectMicroActivity={(micro) => setSelectedMicroActivity(micro)}
         />
       )}
 
-      {/* Section 11 — Micro-Activity Detail Panel */}
+      {/* Micro-Activity Detail Slide-over Panel */}
       {selectedMicroActivity && (
         <ExecutionDetailPanel
           microActivity={selectedMicroActivity}

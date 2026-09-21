@@ -14,12 +14,14 @@ import {
   EvidenceTimeline,
   EvidenceCoverage,
   EvidenceDetailPanel,
+  EvidenceUploadModal,
 } from '../components/evidence';
 
 export const SiteEvidencePage = () => {
   const { currentProject } = useProject();
   const { currentUser } = useAuth();
   const [searchParams] = useSearchParams();
+  const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
 
   // Load project-scoped data
   const rawEvidenceData = useMemo(() => {
@@ -237,16 +239,17 @@ export const SiteEvidencePage = () => {
 
   return (
     <div className="space-y-6 pb-12">
-      {/* 1. Technical Header */}
+      {/* 1. Header with Metadata, Role Context & View Switcher */}
       <EvidenceHeader
         project={currentProject}
-        evidenceMeta={rawEvidenceData}
+        evidenceMeta={rawEvidenceData?.metadata}
         currentUser={currentUser}
         activeView={activeView}
         onViewChange={setActiveView}
+        onUploadClick={() => setIsUploadModalOpen(true)}
       />
 
-      {/* 2. Dynamic KPI Strip */}
+      {/* 2. KPI Metrics Strip */}
       <EvidenceKpiStrip
         evidenceList={evidenceList}
         microActivities={microActivities}
@@ -311,6 +314,20 @@ export const SiteEvidencePage = () => {
         allPhases={scheduleData?.phases || []}
         onClose={() => setSelectedEvidence(null)}
         onUpdateStatus={handleUpdateStatus}
+      />
+
+      {/* 6. Upload Evidence Modal */}
+      <EvidenceUploadModal
+        isOpen={isUploadModalOpen}
+        onClose={() => setIsUploadModalOpen(false)}
+        projectId={currentProject?.id || 'proj-1'}
+        microActivities={microActivities}
+        onUploadSuccess={(newRecord) => {
+          if (newRecord) {
+            setEvidenceList((prev) => [newRecord, ...prev]);
+            setSelectedEvidence(newRecord);
+          }
+        }}
       />
     </div>
   );

@@ -6,3 +6,4 @@ export { EvidenceDetailPanel } from './EvidenceDetailPanel';
 export { EvidencePreview } from './EvidencePreview';
 export { EvidenceTimeline } from './EvidenceTimeline';
 export { EvidenceCoverage } from './EvidenceCoverage';
+export { EvidenceUploadModal } from './EvidenceUploadModal';

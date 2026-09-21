@@ -94,6 +94,18 @@ export const EvidenceHeader = ({
               </span>
             </div>
           )}
+
+          {onUploadClick && (
+            <Button
+              variant="primary"
+              size="sm"
+              onClick={onUploadClick}
+              className="h-8 gap-1.5 text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white shadow-sm"
+            >
+              <Camera className="h-3.5 w-3.5" />
+              <span>Upload Evidence</span>
+            </Button>
+          )}
         </div>
       </div>
 

@@ -1,0 +1,30 @@
+{
+  "name": "infrasync-api",
+  "version": "1.0.0",
+  "description": "InfraSync AI Backend & REST API Foundation for Infrastructure Project Execution Intelligence",
+  "main": "src/server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "seed": "node src/database/seed.js",
+    "test": "node test/api.test.js"
+  },
+  "keywords": [
+    "infrasync",
+    "infrastructure",
+    "construction-intelligence",
+    "express",
+    "mongoose",
+    "rest-api"
+  ],
+  "author": "InfraSync AI Team",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "mongoose": "^8.13.0",
+    "multer": "^2.4.0"
+  }
+}
