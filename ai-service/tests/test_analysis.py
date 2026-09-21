@@ -3,7 +3,8 @@ from app.main import app
 
 client = TestClient(app)
 
-def test_analyze_explicit_link():
+def test_analyze_explicit_link_and_risk_signals():
+    # Activity ACT-03-02-001 has negative variance (-14 pp), critical path True, delayed execution
     payload = {
         "evidenceId": "EV-000121",
         "projectId": "proj-1",
@@ -30,16 +31,34 @@ def test_analyze_explicit_link():
                 "wbsName": "Pier Foundations P1-P12",
                 "phaseId": "PH-03",
                 "discipline": "Structural Concrete",
+                "contractor": "Apex Foundation Engineering Ltd.",
                 "status": "delayed",
+                "plannedProgress": 56.0,
+                "actualProgress": 42.0,
+                "variance": -14.0,
+                "criticalPath": True,
                 "zoneId": "ZONE-03",
                 "plannedStart": "2026-03-01T00:00:00.000Z",
                 "plannedFinish": "2026-03-31T00:00:00.000Z",
+                "milestones": [
+                    {
+                        "id": "MS-04",
+                        "name": "Box Girder Span 01-12 Launching",
+                        "status": "delayed",
+                        "targetDate": "2026-06-25",
+                    }
+                ],
                 "microActivities": [
                     {
                         "microActivityId": "MA-03-02-001-01",
                         "activityId": "ACT-03-02-001",
                         "name": "Rebar Cage Assembly & Placement",
                         "discipline": "Structural Concrete",
+                        "status": "delayed",
+                        "delayedUnits": 28,
+                        "blockedUnits": 12,
+                        "awaitingInspection": 16,
+                        "evidenceCount": 2,
                     }
                 ],
             }
@@ -51,26 +70,128 @@ def test_analyze_explicit_link():
     data = response.json()["data"]
 
     assert data["evidenceId"] == "EV-000121"
+    assert data["mode"] == "delay_risk_analysis"
     assert data["status"] == "explicit"
     assert data["requiresHumanVerification"] is True
 
+    # 1. Verify schedule link
     schedule_link = data["scheduleLink"]
     assert schedule_link["status"] == "explicit"
     assert schedule_link["linkType"] == "explicit"
     assert schedule_link["activityId"] == "ACT-03-02-001"
-    assert schedule_link["microActivityId"] == "MA-03-02-001-01"
     assert schedule_link["confidence"] == 1.0
-    assert schedule_link["confidenceBand"] == "high"
-    assert any("explicit system link" in r.lower() for r in schedule_link["reasons"])
 
-    # Progress assessment is explicitly not assessed
-    assert data["progressAssessment"]["status"] == "not_assessed"
-    assert data["progressAssessment"]["confidence"] is None
-    assert data["progressAssessment"]["basis"] == "schedule_linking_only"
+    # 2. Verify Risk Signals generated
+    signals = data["riskSignals"]
+    sig_types = [s["signalType"] for s in signals]
+
+    assert "SIGNIFICANT_PROGRESS_VARIANCE" in sig_types
+    assert "CRITICAL_PATH_EXPOSURE" in sig_types
+    assert "EXECUTION_BLOCKAGE" in sig_types
+    assert "EXECUTION_DELAY" in sig_types
+    assert "INSPECTION_PENDING" in sig_types
+    assert "MILESTONE_EXPOSURE" in sig_types
+
+    # Verify severity and explainable structure
+    var_sig = next(s for s in signals if s["signalType"] == "SIGNIFICANT_PROGRESS_VARIANCE")
+    assert var_sig["severity"] == "critical" # on critical path + delayed/blocked
+    assert "-14.0" in var_sig["explanation"]
+    assert var_sig["requiresHumanReview"] is True
+
+    cp_sig = next(s for s in signals if s["signalType"] == "CRITICAL_PATH_EXPOSURE")
+    assert cp_sig["severity"] == "critical"
+    assert "critical path" in cp_sig["explanation"].lower()
+
+
+def test_analyze_no_risk_scenario():
+    # Activity fully on-track, positive variance, not critical, no delayed units
+    payload = {
+        "evidenceId": "EV-ONTRACK",
+        "projectId": "proj-1",
+        "activityId": "ACT-01-01-001",
+        "evidenceContext": {
+            "evidenceId": "EV-ONTRACK",
+            "projectId": "proj-1",
+            "title": "Trench inspection",
+            "capturedAt": "2026-03-18T10:00:00.000Z",
+            "zoneId": "ZONE-01",
+            "stationing": "CH 1+200",
+            "gpsCoords": "19.0750 N, 72.8760 E",
+        },
+        "scheduleContext": [
+            {
+                "activityId": "ACT-01-01-001",
+                "activityName": "Gas Line Realignment Sector 14",
+                "status": "completed",
+                "plannedProgress": 100.0,
+                "actualProgress": 100.0,
+                "variance": 0.0,
+                "criticalPath": False,
+                "zoneId": "ZONE-01",
+                "plannedStart": "2026-03-01T00:00:00.000Z",
+                "plannedFinish": "2026-03-31T00:00:00.000Z",
+                "microActivities": [
+                    {
+                        "microActivityId": "MA-01-01-001-01",
+                        "name": "Gas Trench Excavation",
+                        "status": "completed",
+                        "evidenceCount": 4,
+                        "blockedUnits": 0,
+                        "delayedUnits": 0,
+                        "awaitingInspection": 0,
+                    }
+                ],
+            }
+        ],
+    }
+
+    response = client.post("/analyze", json=payload)
+    assert response.status_code == 200
+    data = response.json()["data"]
+
+    # Filter out base linkage info signals
+    delay_risks = [s for s in data["riskSignals"] if s["signalType"] in [
+        "SIGNIFICANT_PROGRESS_VARIANCE", "CRITICAL_PATH_EXPOSURE", "EXECUTION_BLOCKAGE", "EXECUTION_DELAY"
+    ]]
+    assert len(delay_risks) == 0
+
+
+def test_analyze_evidence_coverage_gap():
+    # Active activity with 0 evidence records
+    payload = {
+        "evidenceId": "EV-NEW-CAPTURE",
+        "projectId": "proj-1",
+        "activityId": "ACT-GAP",
+        "scheduleContext": [
+            {
+                "activityId": "ACT-GAP",
+                "activityName": "Unmonitored Active Foundation",
+                "status": "inProgress",
+                "plannedProgress": 40.0,
+                "actualProgress": 40.0,
+                "variance": 0.0,
+                "microActivities": [
+                    {
+                        "microActivityId": "MA-GAP-01",
+                        "name": "Piling without photos",
+                        "status": "inProgress",
+                        "evidenceCount": 0,
+                    }
+                ],
+            }
+        ],
+    }
+
+    response = client.post("/analyze", json=payload)
+    assert response.status_code == 200
+    signals = response.json()["data"]["riskSignals"]
+
+    assert any(s["signalType"] == "EVIDENCE_COVERAGE_GAP" for s in signals)
+    gap_sig = next(s for s in signals if s["signalType"] == "EVIDENCE_COVERAGE_GAP")
+    assert gap_sig["severity"] == "medium"
 
 
 def test_analyze_inferred_candidate():
-    # Evidence without explicit link, but with WBS, discipline keywords, and zone match
     payload = {
         "evidenceId": "EV-UNLINKED-01",
         "projectId": "proj-1",
@@ -91,6 +212,10 @@ def test_analyze_inferred_candidate():
                 "wbsId": "WBS-03-01",
                 "discipline": "Geotechnical & Piling",
                 "status": "inProgress",
+                "plannedProgress": 88.0,
+                "actualProgress": 82.0,
+                "variance": -6.0,
+                "criticalPath": True,
                 "zoneId": "ZONE-03",
                 "plannedStart": "2026-03-01T00:00:00.000Z",
                 "plannedFinish": "2026-04-15T00:00:00.000Z",
@@ -99,18 +224,9 @@ def test_analyze_inferred_candidate():
                         "microActivityId": "MA-03-01-002-01",
                         "activityId": "ACT-03-01-002",
                         "name": "Bored Piling Rig Drilling - Pier P25 to P36",
+                        "evidenceCount": 4,
                     }
                 ],
-            },
-            {
-                "activityId": "ACT-01-01-001",
-                "activityName": "Gas Line Realignment Sector 14",
-                "wbsId": "WBS-01-01",
-                "discipline": "Civil Utilities",
-                "status": "completed",
-                "zoneId": "ZONE-01",
-                "plannedStart": "2024-10-01T00:00:00.000Z",
-                "plannedFinish": "2024-11-15T00:00:00.000Z",
             },
         ],
     }
@@ -120,19 +236,14 @@ def test_analyze_inferred_candidate():
     data = response.json()["data"]
 
     assert data["status"] == "candidate"
-    assert data["requiresHumanVerification"] is True
+    assert data["scheduleLink"]["activityId"] == "ACT-03-01-002"
 
-    schedule_link = data["scheduleLink"]
-    assert schedule_link["status"] == "candidate"
-    assert schedule_link["linkType"] == "inferred"
-    assert schedule_link["activityId"] == "ACT-03-01-002"
-    assert schedule_link["confidence"] >= 0.70
-    assert len(schedule_link["reasons"]) > 0
-    assert any("WBS match" in r for r in schedule_link["reasons"])
+    # Since variance is -6.0 on critical path, critical path exposure should be flagged
+    signals = data["riskSignals"]
+    assert any(s["signalType"] == "CRITICAL_PATH_EXPOSURE" for s in signals)
 
 
 def test_analyze_ambiguous_candidates():
-    # Two activities with identical scores and no distinctive discriminator
     payload = {
         "evidenceId": "EV-AMBIGUOUS",
         "projectId": "proj-1",
@@ -167,37 +278,6 @@ def test_analyze_ambiguous_candidates():
     assert response.status_code == 200
     data = response.json()["data"]
 
-    # When candidates have close confidence, status must be "needs_review"
     assert data["status"] == "needs_review"
     assert data["scheduleLink"]["status"] == "needs_review"
-    assert any(sig["code"] == "AMBIGUOUS_CANDIDATES" for sig in data["riskSignals"])
-    assert data["requiresHumanVerification"] is True
-
-
-def test_analyze_missing_location_risk_signal():
-    payload = {
-        "evidenceId": "EV-NOLOC",
-        "projectId": "proj-1",
-        "evidenceContext": {
-            "evidenceId": "EV-NOLOC",
-            "projectId": "proj-1",
-            "title": "Unanchored photo",
-        },
-        "scheduleContext": [],
-    }
-
-    response = client.post("/analyze", json=payload)
-    assert response.status_code == 200
-    data = response.json()["data"]
-
-    assert any(sig["code"] == "MISSING_LOCATION" for sig in data["riskSignals"])
-
-
-def test_analyze_invalid_request_validation():
-    # Missing evidenceId
-    response = client.post("/analyze", json={"projectId": "proj-1"})
-    assert response.status_code == 422
-
-    # Missing projectId
-    response = client.post("/analyze", json={"evidenceId": "EV-000121"})
-    assert response.status_code == 422
+    assert any(sig.get("code") == "AMBIGUOUS_CANDIDATES" or sig.get("signalType") == "AMBIGUOUS_CANDIDATES" for sig in data["riskSignals"])

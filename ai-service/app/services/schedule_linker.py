@@ -70,9 +70,13 @@ class ScheduleLinker:
         else:
             risk_signals.append(
                 RiskSignal(
+                    signalType="MISSING_LOCATION",
                     code="MISSING_LOCATION",
-                    severity="warning",
-                    message="Evidence record lacks complete spatial telemetry (Zone, Stationing, GPS)",
+                    severity="low",
+                    title="Missing Spatial Telemetry",
+                    explanation="Evidence record lacks complete spatial telemetry (Zone, Stationing, GPS)",
+                    triggerCondition="!zoneId && !stationing && !gpsCoords",
+                    requiresHumanReview=True,
                 )
             )
 
@@ -139,9 +143,13 @@ class ScheduleLinker:
         # 4. If no explicit link, evaluate schedule activities as inferred candidates
         risk_signals.append(
             RiskSignal(
+                signalType="MISSING_EXPLICIT_LINK",
                 code="MISSING_EXPLICIT_LINK",
-                severity="info",
-                message="Evidence lacks an explicit validated micro-activity link; evaluating schedule candidates",
+                severity="low",
+                title="Missing Explicit Database Linkage",
+                explanation="Evidence lacks an explicit validated micro-activity link; evaluating schedule candidates",
+                triggerCondition="!explicitActivityId && !explicitMicroActivityId",
+                requiresHumanReview=True,
             )
         )
 
@@ -184,12 +192,16 @@ class ScheduleLinker:
         if is_ambiguous:
             risk_signals.append(
                 RiskSignal(
+                    signalType="AMBIGUOUS_CANDIDATES",
                     code="AMBIGUOUS_CANDIDATES",
-                    severity="warning",
-                    message=(
+                    severity="medium",
+                    title="Ambiguous Schedule Candidates",
+                    explanation=(
                         f"Close candidate match between {top_candidate.activityId} ({top_candidate.confidence:.2f}) "
                         f"and {candidates[1].activityId} ({candidates[1].confidence:.2f})"
                     ),
+                    triggerCondition="topCandidate.confidence - secondCandidate.confidence < 0.10",
+                    requiresHumanReview=True,
                 )
             )
             status = "needs_review"
@@ -364,17 +376,25 @@ class ScheduleLinker:
             elif cap_dt > finish_dt:
                 risk_signals.append(
                     RiskSignal(
+                        signalType="OUTSIDE_SCHEDULE_WINDOW",
                         code="OUTSIDE_SCHEDULE_WINDOW",
-                        severity="warning",
-                        message=f"Evidence capture date ({ev.capturedAt[:10]}) is after planned finish ({act.plannedFinish[:10]})",
+                        severity="low",
+                        title="Evidence Capture After Scheduled Finish",
+                        explanation=f"Evidence capture date ({ev.capturedAt[:10]}) is after planned finish ({act.plannedFinish[:10]})",
+                        triggerCondition="capturedAt > plannedFinish",
+                        requiresHumanReview=True,
                     )
                 )
             elif cap_dt < start_dt:
                 risk_signals.append(
                     RiskSignal(
+                        signalType="OUTSIDE_SCHEDULE_WINDOW",
                         code="OUTSIDE_SCHEDULE_WINDOW",
-                        severity="info",
-                        message=f"Evidence capture date ({ev.capturedAt[:10]}) precedes planned start ({act.plannedStart[:10]})",
+                        severity="low",
+                        title="Evidence Capture Before Scheduled Start",
+                        explanation=f"Evidence capture date ({ev.capturedAt[:10]}) precedes planned start ({act.plannedStart[:10]})",
+                        triggerCondition="capturedAt < plannedStart",
+                        requiresHumanReview=True,
                     )
                 )
         except Exception:

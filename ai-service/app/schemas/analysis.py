@@ -1,6 +1,13 @@
 from typing import Optional, List, Any, Dict
 from pydantic import BaseModel, Field
 
+class MilestoneContext(BaseModel):
+    id: str = Field(..., description="Milestone ID (e.g. MS-01)")
+    name: str = Field(..., description="Milestone name")
+    targetDate: Optional[str] = None
+    status: Optional[str] = "onTrack" # completed, onTrack, delayed, atRisk
+    wbsId: Optional[str] = None
+
 class MicroActivityContext(BaseModel):
     microActivityId: str = Field(..., description="Unique micro-activity identifier")
     activityId: Optional[str] = Field(None, description="Parent activity ID")
@@ -13,7 +20,14 @@ class MicroActivityContext(BaseModel):
     plannedQuantity: Optional[float] = None
     completedQuantity: Optional[float] = None
     actualProgress: Optional[float] = None
-    status: Optional[str] = None
+    plannedProgress: Optional[float] = None
+    variance: Optional[float] = None
+    status: Optional[str] = None # inProgress, delayed, blocked, awaitingInspection, completed
+    evidenceCount: Optional[int] = 0
+    blockedUnits: Optional[int] = 0
+    delayedUnits: Optional[int] = 0
+    awaitingInspection: Optional[int] = 0
+    latestEvidenceDate: Optional[str] = None
 
 class ScheduleActivityContext(BaseModel):
     activityId: str = Field(..., description="Unique activity identifier")
@@ -28,10 +42,13 @@ class ScheduleActivityContext(BaseModel):
     plannedFinish: Optional[str] = None
     plannedProgress: Optional[float] = None
     actualProgress: Optional[float] = None
+    variance: Optional[float] = None
+    totalFloat: Optional[float] = None
     status: Optional[str] = None
     criticalPath: Optional[bool] = False
     zoneId: Optional[str] = None
     stationingRange: Optional[str] = None
+    milestones: List[MilestoneContext] = Field(default_factory=list)
     microActivities: List[MicroActivityContext] = Field(default_factory=list)
 
 class EvidenceContext(BaseModel):
@@ -86,10 +103,34 @@ class Observation(BaseModel):
     message: str
     source: str = "metadata"
 
+class RiskImpactedScope(BaseModel):
+    activityId: Optional[str] = None
+    activityName: Optional[str] = None
+    microActivityId: Optional[str] = None
+    microActivityName: Optional[str] = None
+    wbsId: Optional[str] = None
+    phaseId: Optional[str] = None
+    zoneId: Optional[str] = None
+
+class RecommendedAction(BaseModel):
+    actionType: str = "field_inspection"
+    title: str
+    description: str
+    responsibleRole: str = "Resident Engineer"
+
 class RiskSignal(BaseModel):
-    code: str
-    severity: str = "info"
-    message: str
+    signalType: str = Field(..., description="Deterministic signal identifier")
+    severity: str = Field(..., description="critical | high | medium | low")
+    title: str = Field(..., description="Signal title")
+    explanation: str = Field(..., description="Factual description of condition")
+    triggerCondition: str = Field(..., description="Deterministic condition triggered")
+    evidenceContext: Optional[Dict[str, Any]] = None
+    scheduleContext: Optional[Dict[str, Any]] = None
+    executionContext: Optional[Dict[str, Any]] = None
+    impactedScope: Optional[RiskImpactedScope] = None
+    contributingFactors: List[str] = Field(default_factory=list)
+    recommendedAction: Optional[RecommendedAction] = None
+    requiresHumanReview: bool = True
 
 class AnalysisRequest(BaseModel):
     evidenceId: str = Field(..., min_length=1, description="Unique identifier of evidence item")
@@ -102,7 +143,7 @@ class AnalysisRequest(BaseModel):
 
 class AnalysisData(BaseModel):
     analysisId: str
-    mode: str
+    mode: str = "delay_risk_analysis"
     status: str
     evidenceId: str
     scheduleLink: ScheduleLinkAssessment
