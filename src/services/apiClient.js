@@ -28,6 +28,23 @@ async function request(endpoint, options = {}) {
     Accept: 'application/json',
   };
 
+  // Inject active prototype session identity if available
+  try {
+    if (typeof localStorage !== 'undefined') {
+      const stored = localStorage.getItem('infrasync_prototype_auth');
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (parsed?.role) {
+          defaultHeaders['x-user-role'] = parsed.role;
+          defaultHeaders['x-user-id'] = parsed.userId || `usr-${parsed.role}`;
+          defaultHeaders['Authorization'] = `Bearer demo-${parsed.role.replace('_', '-')}`;
+        }
+      }
+    }
+  } catch (e) {
+    console.warn('[ApiClient] Failed to read auth header from storage:', e.message);
+  }
+
   try {
     const response = await fetch(url, {
       ...options,
@@ -87,9 +104,30 @@ export const apiClient = {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), options.timeout || 30000);
 
+    const uploadHeaders = { Accept: 'application/json' };
+    try {
+      if (typeof localStorage !== 'undefined') {
+        const stored = localStorage.getItem('infrasync_prototype_auth');
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          if (parsed?.role) {
+            uploadHeaders['x-user-role'] = parsed.role;
+            uploadHeaders['x-user-id'] = parsed.userId || `usr-${parsed.role}`;
+            uploadHeaders['Authorization'] = `Bearer demo-${parsed.role.replace('_', '-')}`;
+          }
+        }
+      }
+    } catch (e) {
+      console.warn('[ApiClient] Failed to read auth header for upload:', e.message);
+    }
+
     try {
       const response = await fetch(url, {
         method: 'POST',
+        headers: {
+          ...uploadHeaders,
+          ...options.headers,
+        },
         body: formData, // browser automatically sets multipart boundary
         signal: controller.signal,
         ...options,
