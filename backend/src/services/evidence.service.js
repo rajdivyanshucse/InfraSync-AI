@@ -2,6 +2,7 @@ import { evidenceRepository } from '../repositories/evidence.repository.js';
 import { projectRepository } from '../repositories/project.repository.js';
 import { storageService } from '../storage/storage.service.js';
 import { getCategoryForMimeType } from '../storage/storage.types.js';
+import { systemAuditService } from './systemAudit.service.js';
 
 export class EvidenceService {
   async getEvidenceByProjectId(projectId) {
@@ -29,7 +30,7 @@ export class EvidenceService {
   /**
    * Uploads file to storage and creates Evidence record with rollback on failure
    */
-  async createEvidenceWithFile(projectId, file, formData = {}) {
+  async createEvidenceWithFile(projectId, file, formData = {}, userContext = null) {
     const project = await projectRepository.findById(projectId);
     if (!project) {
       const error = new Error(`Project not found: ${projectId}`);
@@ -60,11 +61,11 @@ export class EvidenceService {
       microActivityId: formData.microActivityId || undefined,
       activityId: formData.activityId || undefined,
       zoneId: formData.zoneId || undefined,
-      evidenceType: formData.evidenceType || inferredType,
-      captureSource: formData.captureSource || 'Direct Upload',
-      verificationStatus: formData.verificationStatus || 'pendingReview',
+      evidenceType: inferredType,
+      captureSource: formData.captureSource || 'MANUAL_UPLOAD',
+      verificationStatus: 'pendingReview',
       capturedAt: formData.capturedAt || new Date().toISOString(),
-      capturedBy: formData.capturedBy || 'Authorized Field User',
+      capturedBy: userContext?.name || formData.capturedBy || 'Site Operator',
       metadata: {
         stationing: formData.stationing || formData.metadata?.stationing || undefined,
         gpsCoords: formData.gpsCoords || formData.metadata?.gpsCoords || undefined,
@@ -75,7 +76,17 @@ export class EvidenceService {
 
     // 3. Persist metadata with orphan file cleanup rollback
     try {
-      return await evidenceRepository.create(evidencePayload);
+      const result = await evidenceRepository.create(evidencePayload);
+
+      await systemAuditService.logEvent({
+        action: 'FILE_UPLOAD',
+        actor: userContext || { userId: 'USR-UPLOAD', role: 'site_engineer', name: 'Site Operator' },
+        target: { type: 'evidence', id: evidenceId, projectId },
+        message: `Uploaded evidence file: ${file.originalname} (${storageMeta.sizeBytes} bytes)`,
+        metadata: { checksum: storageMeta.checksum, mimeType: storageMeta.mimeType },
+      });
+
+      return result;
     } catch (dbErr) {
       console.warn(`[EvidenceService] Database metadata save failed. Cleaning up orphan storage file: ${storageMeta.key}`);
       await storageService.deleteEvidenceFile(storageMeta.key);
@@ -86,8 +97,22 @@ export class EvidenceService {
   /**
    * Retrieves file stream for evidence download/preview
    */
-  async getEvidenceFile(evidenceId) {
+  async getEvidenceFile(evidenceId, userContext = null) {
     const evidence = await this.getEvidenceById(evidenceId);
+
+    // Scope check: If user context is provided, ensure permitted project scope
+    if (userContext && evidence.projectId) {
+      const role = (userContext.role || '').toLowerCase().trim();
+      if (!['project_authority', 'admin', 'administrator'].includes(role)) {
+        const permitted = userContext.permittedProjects || [];
+        if (!permitted.includes(evidence.projectId)) {
+          const error = new Error(`Access denied: User not authorized to download files for project '${evidence.projectId}'.`);
+          error.statusCode = 403;
+          error.code = 'PROJECT_ACCESS_DENIED';
+          throw error;
+        }
+      }
+    }
 
     if (!evidence.storage || !evidence.storage.key) {
       const error = new Error(`No physical file is associated with prototype evidence: ${evidenceId}`);
@@ -104,6 +129,14 @@ export class EvidenceService {
       throw error;
     }
 
+    await systemAuditService.logEvent({
+      action: 'FILE_DOWNLOAD',
+      actor: userContext || { userId: 'ANONYMOUS', role: 'viewer', name: 'Evidence Viewer' },
+      target: { type: 'evidence_file', id: evidenceId, projectId: evidence.projectId },
+      message: `Streamed file for evidence ${evidenceId}`,
+      metadata: { key: evidence.storage.key },
+    });
+
     return {
       stream,
       mimeType: evidence.storage.mimeType || 'application/octet-stream',
@@ -115,3 +148,4 @@ export class EvidenceService {
 }
 
 export const evidenceService = new EvidenceService();
+export default evidenceService;

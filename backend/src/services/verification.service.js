@@ -2,6 +2,7 @@ import crypto from 'crypto';
 import { verificationRepository } from '../repositories/verification.repository.js';
 import { projectRepository } from '../repositories/project.repository.js';
 import { evidenceRepository } from '../repositories/evidence.repository.js';
+import { systemAuditService } from './systemAudit.service.js';
 
 const ALLOWED_VERIFICATION_ROLES = [
   'project_authority',
@@ -113,13 +114,23 @@ export class VerificationService {
       throw error;
     }
 
-    // 5. Verify Project & Evidence Existence
+    // 5. Verify Project Existence First
     const project = await projectRepository.findById(projectId);
     if (!project) {
       const error = new Error(`Project not found: ${projectId}`);
       error.statusCode = 404;
       error.code = 'PROJECT_NOT_FOUND';
       throw error;
+    }
+
+    // Project-Scope Enforcement
+    if (reviewer.permittedProjects && Array.isArray(reviewer.permittedProjects) && !['project_authority', 'admin', 'administrator'].includes(roleNormalized)) {
+      if (!reviewer.permittedProjects.includes(projectId)) {
+        const error = new Error(`Access denied: User not authorized to perform actions in project '${projectId}'.`);
+        error.statusCode = 403;
+        error.code = 'PROJECT_ACCESS_DENIED';
+        throw error;
+      }
     }
 
     const evidence = await evidenceRepository.findById(evidenceId);
@@ -189,7 +200,22 @@ export class VerificationService {
         auditHistory: initialAuditHistory,
       };
 
-      return verificationRepository.create(newRecordPayload);
+      const created = await verificationRepository.create(newRecordPayload);
+      try {
+        await systemAuditService.recordEvent({
+          eventType: action === 'VERIFY' ? 'VERIFICATION' : 'REJECTION',
+          userId: reviewer.userId || 'USR-AUTH',
+          role: roleNormalized,
+          projectId,
+          resourceType: 'verification',
+          resourceId: created.verificationId,
+          action: `${action}_${targetType.toUpperCase()}`,
+          metadata: { targetId, reason },
+        });
+      } catch (auditErr) {
+        console.warn('[Audit] Failed to log system audit:', auditErr.message);
+      }
+      return created;
     }
 
     // 7. Update existing record with append-only audit event
@@ -229,7 +255,22 @@ export class VerificationService {
       updates.candidateContext = { ...record.candidateContext, ...candidateContext };
     }
 
-    return verificationRepository.update(record.verificationId, updates);
+    const updated = await verificationRepository.update(record.verificationId, updates);
+    try {
+      await systemAuditService.recordEvent({
+        eventType: action === 'VERIFY' ? 'VERIFICATION' : 'REJECTION',
+        userId: reviewer.userId || 'USR-AUTH',
+        role: roleNormalized,
+        projectId,
+        resourceType: 'verification',
+        resourceId: updated.verificationId,
+        action: `${action}_${targetType.toUpperCase()}`,
+        metadata: { targetId, reason },
+      });
+    } catch (auditErr) {
+      console.warn('[Audit] Failed to log system audit:', auditErr.message);
+    }
+    return updated;
   }
 }
 

@@ -28,7 +28,7 @@ export class EvidenceController {
       const file = req.file;
       const formData = req.body;
 
-      const createdEvidence = await evidenceService.createEvidenceWithFile(projectId, file, formData);
+      const createdEvidence = await evidenceService.createEvidenceWithFile(projectId, file, formData, req.user);
       return successResponse(res, createdEvidence, 201);
     } catch (err) {
       next(err);
@@ -38,7 +38,7 @@ export class EvidenceController {
   async getEvidenceFile(req, res, next) {
     try {
       const { evidenceId } = req.params;
-      const { stream, mimeType, filename, sizeBytes, checksum } = await evidenceService.getEvidenceFile(evidenceId);
+      const { stream, mimeType, filename, sizeBytes, checksum } = await evidenceService.getEvidenceFile(evidenceId, req.user);
 
       res.setHeader('Content-Type', mimeType);
       if (sizeBytes) {

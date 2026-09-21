@@ -6,24 +6,43 @@ import { connectDatabase } from './config/database.js';
 import { requestLogger } from './middleware/requestLogger.js';
 import { errorHandler } from './middleware/errorHandler.js';
 import { notFound } from './middleware/notFound.js';
+import { securityHeaders } from './middleware/securityHeaders.js';
+import { sanitizeInputs } from './middleware/validate.js';
+import { authenticate } from './middleware/auth.js';
+import { generalRateLimiter } from './middleware/rateLimiter.js';
 import apiRouter from './routes/index.js';
 
 const app = express();
 
-// Security Baseline Headers
-app.use((req, res, next) => {
-  res.setHeader('X-Content-Type-Options', 'nosniff');
-  res.setHeader('X-Frame-Options', 'SAMEORIGIN');
-  res.setHeader('X-XSS-Protection', '1; mode=block');
-  res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
-  next();
-});
+// 1. Security Headers
+app.use(securityHeaders);
 
-// Middleware
+// 2. CORS & Rate Limiting
 app.use(cors(corsOptions));
-app.use(express.json({ limit: '10mb' }));
+app.use(generalRateLimiter.middleware());
+
+// 3. Body Parsing & Sanitization
+app.use(
+  express.json({
+    limit: '10mb',
+    reviver: (key, value) => {
+      if (key === '__proto__' || key === 'constructor' || key === 'prototype') {
+        const err = new Error('Dangerous prototype property detected in request body');
+        err.status = 400;
+        err.code = 'INVALID_QUERY_OPERATOR';
+        throw err;
+      }
+      return value;
+    },
+  })
+);
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+app.use(sanitizeInputs);
+
+// 4. Request Logging & Authentication Context
 app.use(requestLogger);
+app.use(authenticate);
+
 
 // Base Route
 app.get('/', (req, res) => {

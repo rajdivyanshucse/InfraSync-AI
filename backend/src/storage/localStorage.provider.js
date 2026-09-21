@@ -25,7 +25,11 @@ export class LocalStorageProvider {
       throw new Error('Invalid storage key');
     }
 
-    // Strip out directory paths to enforce flat storage within root
+    // Reject explicit directory traversal characters and absolute paths
+    if (key.includes('..') || key.includes('/') || key.includes('\\') || path.isAbsolute(key)) {
+      throw new Error('Access denied: Path traversal detected');
+    }
+
     const safeKey = path.basename(key);
     const targetPath = path.resolve(this.storageRoot, safeKey);
 
