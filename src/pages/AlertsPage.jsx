@@ -21,6 +21,8 @@ import {
   AlertDetailPanel,
   InterventionSummary,
 } from '../components/alerts';
+import { Alert } from '../components/ui/Alert';
+import { HardHat } from 'lucide-react';
 
 export const AlertsPage = () => {
   const { currentProject } = useProject();
@@ -313,6 +315,17 @@ export const AlertsPage = () => {
 
   return (
     <div className="space-y-6 pb-12">
+      {/* Contractor / Discipline Scoping Advisory */}
+      {currentUser && currentUser.role === 'contractor' && (
+        <Alert
+          variant="info"
+          title={`Contractor Intervention View: ${currentUser.name}`}
+          icon={HardHat}
+        >
+          Viewing alerts scoped exclusively to your assigned contract package. Review action items and confirm mitigation status with project managers.
+        </Alert>
+      )}
+
       {/* 1. Master Header */}
       <AlertHeader
         project={currentProject}

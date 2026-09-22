@@ -44,22 +44,23 @@ export const AlertFilters = ({
     selectedZone !== 'all';
 
   return (
-    <div className="space-y-3 rounded-xl border border-surface-border bg-surface-card p-4">
+    <div className="space-y-3 rounded-xl border border-surface-border bg-surface-card p-4 shadow-sm">
       {/* Search and Reset Row */}
       <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-foreground-muted" />
           <input
             type="text"
             placeholder="Search alert ID, title, summary, activity, WBS, contractor, area..."
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
-            className="w-full rounded-lg border border-surface-border bg-surface-subtle py-2 pl-9 pr-8 text-xs text-white placeholder-slate-400 focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500"
+            className="w-full rounded-lg border border-surface-border bg-surface-subtle py-2 pl-9 pr-8 text-xs text-foreground placeholder-foreground-muted focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500"
           />
           {searchQuery && (
             <button
+              type="button"
               onClick={() => onSearchChange('')}
-              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white"
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-foreground-muted hover:text-foreground"
             >
               <X className="h-3.5 w-3.5" />
             </button>
@@ -71,7 +72,7 @@ export const AlertFilters = ({
             variant="ghost"
             size="sm"
             onClick={onResetFilters}
-            className="h-8 gap-1.5 text-xs text-slate-400 hover:text-white"
+            className="h-8 gap-1.5 text-xs text-foreground-muted hover:text-foreground"
           >
             <RotateCcw className="h-3.5 w-3.5" />
             <span>Reset Filters</span>
@@ -80,16 +81,16 @@ export const AlertFilters = ({
       </div>
 
       {/* Select Filters Grid */}
-      <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-4 lg:grid-cols-8 pt-1">
+      <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-4 lg:grid-cols-8 pt-1 border-t border-surface-border/50">
         {/* Severity */}
         <div>
-          <label className="mb-1 block text-3xs font-mono uppercase tracking-wider text-slate-400">
+          <label className="mb-1 block text-3xs font-mono uppercase tracking-wider text-foreground-muted">
             Severity
           </label>
           <select
             value={selectedSeverity}
             onChange={(e) => onSeverityChange(e.target.value)}
-            className="w-full rounded-lg border border-surface-border bg-surface-subtle py-1.5 px-2 text-xs text-slate-200 focus:border-sky-500 focus:outline-none"
+            className="w-full rounded-lg border border-surface-border bg-surface-subtle py-1.5 px-2 text-xs text-foreground focus:border-sky-500 focus:outline-none"
           >
             <option value="all">All Severities</option>
             <option value="critical">Critical</option>
@@ -101,13 +102,13 @@ export const AlertFilters = ({
 
         {/* Alert Type */}
         <div>
-          <label className="mb-1 block text-3xs font-mono uppercase tracking-wider text-slate-400">
+          <label className="mb-1 block text-3xs font-mono uppercase tracking-wider text-foreground-muted">
             Alert Type
           </label>
           <select
             value={selectedType}
             onChange={(e) => onTypeChange(e.target.value)}
-            className="w-full rounded-lg border border-surface-border bg-surface-subtle py-1.5 px-2 text-xs text-slate-200 focus:border-sky-500 focus:outline-none"
+            className="w-full rounded-lg border border-surface-border bg-surface-subtle py-1.5 px-2 text-xs text-foreground focus:border-sky-500 focus:outline-none"
           >
             <option value="all">All Types</option>
             {Object.values(ALERT_TYPES).map((t) => (
@@ -118,13 +119,13 @@ export const AlertFilters = ({
 
         {/* Workflow Status */}
         <div>
-          <label className="mb-1 block text-3xs font-mono uppercase tracking-wider text-slate-400">
+          <label className="mb-1 block text-3xs font-mono uppercase tracking-wider text-foreground-muted">
             Status
           </label>
           <select
             value={selectedStatus}
             onChange={(e) => onStatusChange(e.target.value)}
-            className="w-full rounded-lg border border-surface-border bg-surface-subtle py-1.5 px-2 text-xs text-slate-200 focus:border-sky-500 focus:outline-none"
+            className="w-full rounded-lg border border-surface-border bg-surface-subtle py-1.5 px-2 text-xs text-foreground focus:border-sky-500 focus:outline-none"
           >
             <option value="all">All Statuses</option>
             {Object.values(ALERT_WORKFLOW_STATES).map((s) => (
@@ -135,13 +136,13 @@ export const AlertFilters = ({
 
         {/* Escalation Level */}
         <div>
-          <label className="mb-1 block text-3xs font-mono uppercase tracking-wider text-slate-400">
+          <label className="mb-1 block text-3xs font-mono uppercase tracking-wider text-foreground-muted">
             Escalation
           </label>
           <select
             value={selectedEscalation}
             onChange={(e) => onEscalationChange(e.target.value)}
-            className="w-full rounded-lg border border-surface-border bg-surface-subtle py-1.5 px-2 text-xs text-slate-200 focus:border-sky-500 focus:outline-none"
+            className="w-full rounded-lg border border-surface-border bg-surface-subtle py-1.5 px-2 text-xs text-foreground focus:border-sky-500 focus:outline-none"
           >
             <option value="all">All Escalations</option>
             {Object.values(ESCALATION_LEVELS).map((e) => (
@@ -152,13 +153,13 @@ export const AlertFilters = ({
 
         {/* Contractor */}
         <div>
-          <label className="mb-1 block text-3xs font-mono uppercase tracking-wider text-slate-400">
+          <label className="mb-1 block text-3xs font-mono uppercase tracking-wider text-foreground-muted">
             Contractor
           </label>
           <select
             value={selectedContractor}
             onChange={(e) => onContractorChange(e.target.value)}
-            className="w-full rounded-lg border border-surface-border bg-surface-subtle py-1.5 px-2 text-xs text-slate-200 focus:border-sky-500 focus:outline-none"
+            className="w-full rounded-lg border border-surface-border bg-surface-subtle py-1.5 px-2 text-xs text-foreground focus:border-sky-500 focus:outline-none"
           >
             <option value="all">All Contractors</option>
             {contractorOptions.map((c) => (
@@ -169,13 +170,13 @@ export const AlertFilters = ({
 
         {/* Discipline */}
         <div>
-          <label className="mb-1 block text-3xs font-mono uppercase tracking-wider text-slate-400">
+          <label className="mb-1 block text-3xs font-mono uppercase tracking-wider text-foreground-muted">
             Discipline
           </label>
           <select
             value={selectedDiscipline}
             onChange={(e) => onDisciplineChange(e.target.value)}
-            className="w-full rounded-lg border border-surface-border bg-surface-subtle py-1.5 px-2 text-xs text-slate-200 focus:border-sky-500 focus:outline-none"
+            className="w-full rounded-lg border border-surface-border bg-surface-subtle py-1.5 px-2 text-xs text-foreground focus:border-sky-500 focus:outline-none"
           >
             <option value="all">All Disciplines</option>
             {disciplineOptions.map((d) => (
@@ -186,13 +187,13 @@ export const AlertFilters = ({
 
         {/* Phase */}
         <div>
-          <label className="mb-1 block text-3xs font-mono uppercase tracking-wider text-slate-400">
+          <label className="mb-1 block text-3xs font-mono uppercase tracking-wider text-foreground-muted">
             Phase
           </label>
           <select
             value={selectedPhase}
             onChange={(e) => onPhaseChange(e.target.value)}
-            className="w-full rounded-lg border border-surface-border bg-surface-subtle py-1.5 px-2 text-xs text-slate-200 focus:border-sky-500 focus:outline-none"
+            className="w-full rounded-lg border border-surface-border bg-surface-subtle py-1.5 px-2 text-xs text-foreground focus:border-sky-500 focus:outline-none"
           >
             <option value="all">All Phases</option>
             {phaseOptions.map((p) => (
@@ -203,13 +204,13 @@ export const AlertFilters = ({
 
         {/* Zone */}
         <div>
-          <label className="mb-1 block text-3xs font-mono uppercase tracking-wider text-slate-400">
+          <label className="mb-1 block text-3xs font-mono uppercase tracking-wider text-foreground-muted">
             Site Zone
           </label>
           <select
             value={selectedZone}
             onChange={(e) => onZoneChange(e.target.value)}
-            className="w-full rounded-lg border border-surface-border bg-surface-subtle py-1.5 px-2 text-xs text-slate-200 focus:border-sky-500 focus:outline-none"
+            className="w-full rounded-lg border border-surface-border bg-surface-subtle py-1.5 px-2 text-xs text-foreground focus:border-sky-500 focus:outline-none"
           >
             <option value="all">All Zones</option>
             {zoneOptions.map((z) => (
@@ -221,4 +222,3 @@ export const AlertFilters = ({
     </div>
   );
 };
-

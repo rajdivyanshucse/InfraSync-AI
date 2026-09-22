@@ -12,40 +12,42 @@ export const AlertHeader = ({
   onRecompute,
 }) => {
   return (
-    <div className="rounded-xl border border-surface-border bg-gradient-to-b from-surface-card to-surface/80 p-5 shadow-lg backdrop-blur-sm">
+    <div className="rounded-xl border border-surface-border bg-surface-card p-5 shadow-sm transition-colors">
       {/* Top Row */}
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div className="space-y-1.5">
           <div className="flex flex-wrap items-center gap-2.5">
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-rose-500/10 text-rose-400 ring-1 ring-rose-500/20">
+            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-rose-500/10 text-rose-600 dark:text-rose-400 ring-1 ring-rose-500/20">
               <BellRing className="h-5 w-5" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h1 className="text-xl font-bold tracking-tight text-white sm:text-2xl">
-                  Alerts & Intervention Center
+                <h1 className="text-xl font-bold tracking-tight text-foreground sm:text-2xl">
+                  Alerts & Intervention
                 </h1>
-                <span className="hidden rounded bg-rose-500/15 px-2 py-0.5 font-mono text-2xs font-semibold uppercase tracking-wider text-rose-300 ring-1 ring-rose-500/25 sm:inline-block">
+                <span className="hidden rounded bg-rose-500/10 dark:bg-rose-500/15 px-2 py-0.5 font-mono text-2xs font-semibold uppercase tracking-wider text-rose-700 dark:text-rose-300 ring-1 ring-rose-500/25 sm:inline-block">
                   Accountability Matrix
                 </span>
-                <span className="rounded bg-surface-muted/80 px-2 py-0.5 font-mono text-3xs font-medium text-slate-400 ring-1 ring-surface-border">
+                <span className="rounded bg-surface-subtle px-2 py-0.5 font-mono text-3xs font-medium text-foreground-muted ring-1 ring-surface-border">
                   Session Workflow
                 </span>
               </div>
             </div>
           </div>
-          <p className="text-xs text-slate-400 sm:text-sm">
-            Convert execution warnings into accountable human actions, mitigation tracking, and resolution signoffs.
+          <p className="text-xs text-foreground-muted sm:text-sm">
+            Operational response to verified project-control conditions.
           </p>
         </div>
 
         {/* User Role Context & Actions */}
         <div className="flex flex-wrap items-center gap-3">
           {currentUser && (
-            <div className="flex items-center gap-2 rounded-lg border border-surface-border bg-surface-subtle px-3 py-1.5">
-              <HardHat className="h-3.5 w-3.5 text-sky-400" />
-              <span className="font-mono text-xs text-slate-300">
-                {currentUser.name || currentUser.role}
+            <div className="flex items-center gap-2 rounded-lg border border-surface-border bg-surface-subtle px-3 py-1.5 text-xs text-foreground-muted">
+              <HardHat className="h-3.5 w-3.5 text-sky-500 dark:text-sky-400" />
+              <span className="text-foreground-muted">User:</span>
+              <span className="font-semibold text-foreground">{currentUser.name || currentUser.role}</span>
+              <span className="font-mono text-3xs text-brand-700 dark:text-brand-300 bg-brand-500/10 px-1.5 py-0.5 rounded border border-brand-500/20">
+                {currentUser.roleName || currentUser.role}
               </span>
             </div>
           )}
@@ -55,9 +57,9 @@ export const AlertHeader = ({
               variant="outline"
               size="sm"
               onClick={onRecompute}
-              className="h-8 gap-1.5 text-xs text-slate-300 hover:text-white"
+              className="h-8 gap-1.5 text-xs text-foreground-muted hover:text-foreground"
             >
-              <RefreshCw className="h-3.5 w-3.5 text-slate-400" />
+              <RefreshCw className="h-3.5 w-3.5 text-foreground-muted" />
               <span>Reset State</span>
             </Button>
           )}
@@ -65,36 +67,36 @@ export const AlertHeader = ({
       </div>
 
       {/* Bottom Metadata Ribbon */}
-      <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-surface-border/60 pt-3 text-3xs font-mono text-slate-400">
+      <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-surface-border pt-3 text-3xs font-mono text-foreground-muted">
         <div className="flex flex-wrap items-center gap-4">
           <span className="flex items-center gap-1.5">
-            <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
-            Project: <strong className="text-white">{project?.name || 'Corridor Execution'}</strong> ({project?.id || 'proj-1'})
+            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+            Project: <strong className="text-foreground">{project?.name || 'Corridor Execution'}</strong> ({project?.id || 'proj-1'})
           </span>
-          <span className="hidden text-slate-600 sm:inline">•</span>
+          <span className="hidden text-foreground-muted sm:inline">•</span>
           <span className="flex items-center gap-1.5">
-            Rule Origin: <strong className="text-slate-200">Phase 13 Risk Intelligence Engine</strong>
+            Rule Origin: <strong className="text-foreground">Risk Intelligence Engine</strong>
           </span>
-          <span className="hidden text-slate-600 sm:inline">•</span>
+          <span className="hidden text-foreground-muted sm:inline">•</span>
           <span className="flex items-center gap-1.5">
-            Spatial Context: <strong className="text-slate-200">Phase 14 Site Registry</strong>
+            Spatial Context: <strong className="text-foreground">Site View Registry</strong>
           </span>
         </div>
 
         {/* Workflow State Legend */}
         <div className="flex flex-wrap items-center gap-2.5">
-          <span className="text-slate-400">States:</span>
-          <span className="flex items-center gap-1 text-amber-400">
-            <span className="h-1.5 w-1.5 rounded-full bg-amber-400" /> New
+          <span className="text-foreground-muted">States:</span>
+          <span className="flex items-center gap-1 text-amber-600 dark:text-amber-400 font-semibold">
+            <span className="h-1.5 w-1.5 rounded-full bg-amber-500" /> New
           </span>
-          <span className="flex items-center gap-1 text-blue-400">
-            <span className="h-1.5 w-1.5 rounded-full bg-blue-400" /> Acknowledged
+          <span className="flex items-center gap-1 text-sky-600 dark:text-sky-400 font-semibold">
+            <span className="h-1.5 w-1.5 rounded-full bg-sky-500" /> Acknowledged
           </span>
-          <span className="flex items-center gap-1 text-sky-400">
-            <span className="h-1.5 w-1.5 rounded-full bg-sky-400" /> In Progress
+          <span className="flex items-center gap-1 text-brand-600 dark:text-brand-400 font-semibold">
+            <span className="h-1.5 w-1.5 rounded-full bg-brand-500" /> In Progress
           </span>
-          <span className="flex items-center gap-1 text-emerald-400">
-            <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" /> Resolved
+          <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-semibold">
+            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" /> Resolved
           </span>
         </div>
       </div>
