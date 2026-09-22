@@ -54,12 +54,12 @@ export const ActivityTable = ({
 
   const renderSortIcon = (field) => {
     if (sortField !== field) {
-      return <ArrowUpDown className="ml-1 h-3 w-3 text-slate-500 opacity-40 group-hover:opacity-100" />;
+      return <ArrowUpDown className="ml-1 h-3 w-3 text-foreground-muted opacity-40 group-hover:opacity-100" />;
     }
     return sortDirection === 'asc' ? (
-      <ArrowUp className="ml-1 h-3 w-3 text-brand-400" />
+      <ArrowUp className="ml-1 h-3 w-3 text-brand-600 dark:text-brand-400" />
     ) : (
-      <ArrowDown className="ml-1 h-3 w-3 text-brand-400" />
+      <ArrowDown className="ml-1 h-3 w-3 text-brand-600 dark:text-brand-400" />
     );
   };
 
@@ -98,10 +98,10 @@ export const ActivityTable = ({
 
   if (activities.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center rounded-xl border border-surface-border bg-surface-card p-12 text-center">
-        <Layers className="h-10 w-10 text-slate-600 mb-3" />
-        <h4 className="text-sm font-semibold text-slate-300">No activities match criteria</h4>
-        <p className="mt-1 text-xs text-slate-500 max-w-sm">
+      <div className="flex flex-col items-center justify-center rounded-xl border border-border bg-surface p-12 text-center shadow-sm">
+        <Layers className="h-10 w-10 text-foreground-muted mb-3" />
+        <h4 className="text-sm font-semibold text-foreground">No activities match criteria</h4>
+        <p className="mt-1 text-xs text-foreground-muted max-w-sm">
           Try clearing search filters or selecting another WBS Package in the explorer.
         </p>
       </div>
@@ -109,14 +109,14 @@ export const ActivityTable = ({
   }
 
   return (
-    <div className="flex flex-col rounded-xl border border-surface-border bg-surface-card overflow-hidden shadow-sm">
+    <div className="flex flex-col rounded-xl border border-border bg-surface overflow-hidden shadow-sm">
       <div className="overflow-x-auto">
         <table className="w-full text-left border-collapse text-xs">
           <thead>
-            <tr className="border-b border-surface-border bg-surface-subtle/80 font-mono text-3xs uppercase tracking-wider text-slate-400">
+            <tr className="border-b border-border bg-surface-subtle font-mono text-3xs uppercase tracking-wider text-foreground-muted">
               <th
                 onClick={() => handleSort('activityCode')}
-                className="group cursor-pointer px-4 py-3 font-semibold hover:text-white whitespace-nowrap"
+                className="group cursor-pointer px-4 py-3 font-semibold hover:text-foreground whitespace-nowrap"
               >
                 <div className="flex items-center">
                   <span>Activity ID</span>
@@ -126,7 +126,7 @@ export const ActivityTable = ({
 
               <th
                 onClick={() => handleSort('activityName')}
-                className="group cursor-pointer px-4 py-3 font-semibold hover:text-white min-w-[220px]"
+                className="group cursor-pointer px-4 py-3 font-semibold hover:text-foreground min-w-[220px]"
               >
                 <div className="flex items-center">
                   <span>Activity / Scope</span>
@@ -136,7 +136,7 @@ export const ActivityTable = ({
 
               <th
                 onClick={() => handleSort('discipline')}
-                className="group cursor-pointer px-3 py-3 font-semibold hover:text-white whitespace-nowrap"
+                className="group cursor-pointer px-3 py-3 font-semibold hover:text-foreground whitespace-nowrap"
               >
                 <div className="flex items-center">
                   <span>Discipline</span>
@@ -146,7 +146,7 @@ export const ActivityTable = ({
 
               <th
                 onClick={() => handleSort('contractor')}
-                className="group cursor-pointer px-3 py-3 font-semibold hover:text-white whitespace-nowrap"
+                className="group cursor-pointer px-3 py-3 font-semibold hover:text-foreground whitespace-nowrap"
               >
                 <div className="flex items-center">
                   <span>Contractor</span>
@@ -156,7 +156,7 @@ export const ActivityTable = ({
 
               <th
                 onClick={() => handleSort('plannedStart')}
-                className="group cursor-pointer px-3 py-3 font-semibold hover:text-white whitespace-nowrap"
+                className="group cursor-pointer px-3 py-3 font-semibold hover:text-foreground whitespace-nowrap"
               >
                 <div className="flex items-center">
                   <span>Planned Dates</span>
@@ -166,7 +166,7 @@ export const ActivityTable = ({
 
               <th
                 onClick={() => handleSort('actualProgress')}
-                className="group cursor-pointer px-4 py-3 font-semibold hover:text-white min-w-[150px]"
+                className="group cursor-pointer px-4 py-3 font-semibold hover:text-foreground min-w-[150px]"
               >
                 <div className="flex items-center">
                   <span>Progress (Act vs Plan)</span>
@@ -176,9 +176,9 @@ export const ActivityTable = ({
 
               <th
                 onClick={() => handleSort('variance')}
-                className="group cursor-pointer px-3 py-3 font-semibold hover:text-white whitespace-nowrap"
+                className="group cursor-pointer px-3 py-3 font-semibold hover:text-foreground whitespace-nowrap text-right"
               >
-                <div className="flex items-center">
+                <div className="flex items-center justify-end">
                   <span>Variance</span>
                   {renderSortIcon('variance')}
                 </div>
@@ -190,7 +190,7 @@ export const ActivityTable = ({
 
               <th
                 onClick={() => handleSort('criticalPath')}
-                className="group cursor-pointer px-3 py-3 font-semibold hover:text-white whitespace-nowrap text-center"
+                className="group cursor-pointer px-3 py-3 font-semibold hover:text-foreground whitespace-nowrap text-center"
               >
                 <div className="flex items-center justify-center">
                   <span>CP</span>
@@ -204,7 +204,7 @@ export const ActivityTable = ({
             </tr>
           </thead>
 
-          <tbody className="divide-y divide-surface-border/40">
+          <tbody className="divide-y divide-border-subtle">
             {sortedActivities.map((act) => {
               const isSelected = selectedActivityId === act.id;
               const varianceVal = act.variance ?? 0;
@@ -216,22 +216,22 @@ export const ActivityTable = ({
                   className={`group cursor-pointer transition-colors ${
                     isSelected
                       ? 'bg-brand-500/15 ring-1 ring-inset ring-brand-500/40'
-                      : 'hover:bg-surface-elevated/70'
+                      : 'hover:bg-surface-elevated'
                   }`}
                 >
                   {/* Activity Code */}
                   <td className="px-4 py-3 whitespace-nowrap">
-                    <span className="font-mono text-xs font-bold text-brand-300 group-hover:text-brand-200">
+                    <span className="font-mono text-xs font-bold text-brand-600 dark:text-brand-400 group-hover:text-brand-700 dark:group-hover:text-brand-300">
                       {act.activityCode}
                     </span>
                   </td>
 
                   {/* Activity Name */}
                   <td className="px-4 py-3">
-                    <div className="font-medium text-slate-100 group-hover:text-white">
+                    <div className="font-medium text-foreground group-hover:text-foreground">
                       {act.activityName}
                     </div>
-                    <div className="mt-0.5 flex items-center gap-1.5 font-mono text-3xs text-slate-400">
+                    <div className="mt-0.5 flex items-center gap-1.5 font-mono text-3xs text-foreground-muted">
                       <span>WBS {act.wbsCode}</span>
                       <span>•</span>
                       <span className="truncate max-w-[180px]">{act.phaseName}</span>
@@ -240,26 +240,26 @@ export const ActivityTable = ({
 
                   {/* Discipline */}
                   <td className="px-3 py-3 whitespace-nowrap">
-                    <span className="inline-block rounded bg-surface-muted/60 px-2 py-0.5 text-3xs font-medium text-slate-300">
+                    <span className="inline-block rounded bg-surface-subtle px-2 py-0.5 text-3xs font-medium text-foreground-subtle border border-border-subtle">
                       {act.discipline}
                     </span>
                   </td>
 
                   {/* Contractor */}
                   <td className="px-3 py-3 whitespace-nowrap">
-                    <div className="flex items-center gap-1 text-slate-300 font-medium">
-                      <Building2 className="h-3 w-3 text-slate-500 shrink-0" />
+                    <div className="flex items-center gap-1 text-foreground-subtle font-medium">
+                      <Building2 className="h-3 w-3 text-foreground-muted shrink-0" />
                       <span className="truncate max-w-[140px]">{act.contractor}</span>
                     </div>
                   </td>
 
                   {/* Planned Dates */}
-                  <td className="px-3 py-3 whitespace-nowrap font-mono text-3xs text-slate-300">
-                    <div className="flex items-center gap-1 text-slate-300">
-                      <Calendar className="h-3 w-3 text-slate-500 shrink-0" />
+                  <td className="px-3 py-3 whitespace-nowrap font-mono text-3xs text-foreground-subtle">
+                    <div className="flex items-center gap-1 text-foreground">
+                      <Calendar className="h-3 w-3 text-foreground-muted shrink-0" />
                       <span>{act.plannedStart}</span>
                     </div>
-                    <div className="text-slate-400 pl-4">
+                    <div className="text-foreground-muted pl-4">
                       to {act.plannedFinish}
                     </div>
                   </td>
@@ -267,10 +267,10 @@ export const ActivityTable = ({
                   {/* Progress Comparison */}
                   <td className="px-4 py-3">
                     <div className="flex items-center justify-between font-mono text-3xs mb-1">
-                      <span className="font-semibold text-slate-200">
+                      <span className="font-semibold text-foreground">
                         {act.actualProgress}% Act
                       </span>
-                      <span className="text-slate-400">
+                      <span className="text-foreground-muted">
                         {act.plannedProgress}% Plan
                       </span>
                     </div>
@@ -282,14 +282,14 @@ export const ActivityTable = ({
                   </td>
 
                   {/* Variance */}
-                  <td className="px-3 py-3 whitespace-nowrap font-mono text-xs">
+                  <td className="px-3 py-3 whitespace-nowrap font-mono text-xs text-right">
                     <span
                       className={`inline-block font-semibold ${
                         varianceVal < -10
-                          ? 'text-rose-400'
+                          ? 'text-rose-600 dark:text-rose-400 font-bold'
                           : varianceVal < 0
-                          ? 'text-amber-400'
-                          : 'text-emerald-400'
+                          ? 'text-amber-600 dark:text-amber-400'
+                          : 'text-emerald-600 dark:text-emerald-400'
                       }`}
                     >
                       {varianceVal > 0 ? `+${varianceVal}%` : `${varianceVal}%`}
@@ -308,12 +308,12 @@ export const ActivityTable = ({
                   {/* Critical Path Flag */}
                   <td className="px-3 py-3 text-center whitespace-nowrap">
                     {act.criticalPath ? (
-                      <span className="inline-flex items-center gap-1 rounded bg-rose-950/60 px-2 py-0.5 font-mono text-3xs font-bold text-rose-300 ring-1 ring-rose-500/40">
-                        <Flame className="h-3 w-3 text-rose-400" />
+                      <span className="inline-flex items-center gap-1 rounded bg-rose-500/10 px-2 py-0.5 font-mono text-3xs font-bold text-rose-600 dark:text-rose-400 ring-1 ring-rose-500/30">
+                        <Flame className="h-3 w-3 text-rose-500" />
                         CP
                       </span>
                     ) : (
-                      <span className="font-mono text-3xs text-slate-600">—</span>
+                      <span className="font-mono text-3xs text-foreground-muted/40">—</span>
                     )}
                   </td>
 
@@ -321,7 +321,7 @@ export const ActivityTable = ({
                   <td className="px-3 py-3 text-right whitespace-nowrap">
                     <button
                       type="button"
-                      className="rounded p-1 text-slate-500 hover:bg-surface-elevated hover:text-brand-300 group-hover:text-slate-300"
+                      className="rounded p-1 text-foreground-muted hover:bg-surface-elevated hover:text-brand-600 dark:hover:text-brand-400 group-hover:text-foreground"
                       title="View Activity Details"
                     >
                       <ExternalLink className="h-3.5 w-3.5" />

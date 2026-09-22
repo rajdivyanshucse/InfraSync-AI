@@ -14,7 +14,7 @@ export const PlannedVsActualChart = ({
 
   if (!timelinePoints || timelinePoints.length === 0) {
     return (
-      <div className="rounded-xl border border-surface-border bg-surface-card/80 p-8 text-center text-slate-400">
+      <div className="rounded-xl border border-border bg-surface-subtle p-8 text-center text-foreground-muted">
         No schedule timeline checkpoints available for this project.
       </div>
     );
@@ -54,17 +54,17 @@ export const PlannedVsActualChart = ({
     .join(' ')} Z`;
 
   return (
-    <div className="rounded-xl border border-surface-border bg-surface-card/90 p-5 shadow-lg backdrop-blur-sm space-y-4">
+    <div className="rounded-xl border border-border bg-surface p-4 sm:p-5 shadow-sm space-y-4">
       {/* Header */}
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <div className="flex items-center gap-2">
-            <TrendingUp className="h-4 w-4 text-brand-400" />
-            <h3 className="text-sm font-bold text-white tracking-wide">
+            <TrendingUp className="h-4 w-4 text-brand-600 dark:text-brand-400" />
+            <h3 className="text-sm font-bold text-foreground tracking-tight">
               Planned Baseline vs Actual Progress Timeline (S-Curve)
             </h3>
           </div>
-          <p className="mt-0.5 text-3xs text-slate-400">
+          <p className="mt-0.5 text-2xs text-foreground-muted">
             Cumulative progress progression along contractual milestones and reporting checkpoints.
           </p>
         </div>
@@ -72,22 +72,22 @@ export const PlannedVsActualChart = ({
         {/* Legend */}
         <div className="flex items-center gap-4 text-2xs font-mono">
           <div className="flex items-center gap-1.5">
-            <span className="h-2.5 w-2.5 rounded-full bg-blue-500 shadow-sm shadow-blue-500/50" />
-            <span className="text-slate-300">Planned Target</span>
+            <span className="h-2.5 w-2.5 rounded-full bg-brand-500 shadow-sm" />
+            <span className="text-foreground-muted">Planned Target</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <span className="h-2.5 w-2.5 rounded-full bg-emerald-400 shadow-sm shadow-emerald-400/50" />
-            <span className="text-emerald-300">Actual Execution</span>
+            <span className="h-2.5 w-2.5 rounded-full bg-emerald-500 shadow-sm" />
+            <span className="text-emerald-700 dark:text-emerald-300 font-semibold">Actual Execution</span>
           </div>
           <div className="flex items-center gap-1.5">
             <span className="h-2.5 w-2.5 rounded-sm bg-amber-500/20 border border-amber-500/40" />
-            <span className="text-slate-400">Variance Gap</span>
+            <span className="text-foreground-muted">Variance Gap</span>
           </div>
         </div>
       </div>
 
       {/* Interactive SVG Chart Container */}
-      <div className="relative w-full overflow-hidden rounded-lg bg-surface-subtle/50 p-2 border border-surface-border/60">
+      <div className="relative w-full overflow-hidden rounded-lg bg-surface-subtle p-2 border border-border">
         <svg
           viewBox={`0 0 ${width} ${height}`}
           className="w-full h-auto select-none"
@@ -95,16 +95,16 @@ export const PlannedVsActualChart = ({
           <defs>
             {/* Gradient for variance area */}
             <linearGradient id="varianceGradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#f59e0b" stopOpacity="0.18" />
-              <stop offset="100%" stopColor="#f59e0b" stopOpacity="0.02" />
+              <stop offset="0%" stopColor="#f59e0b" stopOpacity="0.22" />
+              <stop offset="100%" stopColor="#f59e0b" stopOpacity="0.03" />
             </linearGradient>
 
             {/* Glow filters */}
             <filter id="glowPlanned" x="-20%" y="-20%" width="140%" height="140%">
-              <feDropShadow dx="0" dy="0" stdDeviation="2" floodColor="#3b82f6" floodOpacity="0.5" />
+              <feDropShadow dx="0" dy="0" stdDeviation="2" floodColor="#0284c7" floodOpacity="0.4" />
             </filter>
             <filter id="glowActual" x="-20%" y="-20%" width="140%" height="140%">
-              <feDropShadow dx="0" dy="0" stdDeviation="2.5" floodColor="#10b981" floodOpacity="0.6" />
+              <feDropShadow dx="0" dy="0" stdDeviation="2.5" floodColor="#16a34a" floodOpacity="0.5" />
             </filter>
           </defs>
 
@@ -118,14 +118,15 @@ export const PlannedVsActualChart = ({
                   y1={y}
                   x2={width - paddingRight}
                   y2={y}
-                  stroke="rgba(148, 163, 184, 0.12)"
+                  stroke="currentColor"
+                  className="text-border"
                   strokeDasharray="3 3"
                 />
                 <text
                   x={paddingLeft - 8}
                   y={y + 3}
                   textAnchor="end"
-                  className="text-[10px] font-mono fill-slate-500"
+                  className="text-[10px] font-mono fill-current text-foreground-muted"
                 >
                   {pct}%
                 </text>
@@ -140,7 +141,7 @@ export const PlannedVsActualChart = ({
           <path
             d={plannedPathD}
             fill="none"
-            stroke="#3b82f6"
+            stroke="#0284c7"
             strokeWidth="2.5"
             strokeDasharray="5 3"
             filter="url(#glowPlanned)"
@@ -150,7 +151,7 @@ export const PlannedVsActualChart = ({
           <path
             d={actualPathD}
             fill="none"
-            stroke="#10b981"
+            stroke="#16a34a"
             strokeWidth="3"
             strokeLinecap="round"
             filter="url(#glowActual)"
@@ -171,7 +172,8 @@ export const PlannedVsActualChart = ({
                   y1={paddingTop}
                   x2={cx}
                   y2={paddingTop + chartHeight}
-                  stroke={isHovered ? 'rgba(56, 189, 248, 0.4)' : 'rgba(148, 163, 184, 0.08)'}
+                  stroke="currentColor"
+                  className={isHovered ? 'text-brand-500' : 'text-border'}
                   strokeWidth={isHovered ? '1.5' : '1'}
                 />
 
@@ -180,8 +182,8 @@ export const PlannedVsActualChart = ({
                   cx={cx}
                   cy={cyPlan}
                   r={isHovered ? 5 : 3.5}
-                  fill="#1e293b"
-                  stroke="#3b82f6"
+                  fill="#ffffff"
+                  stroke="#0284c7"
                   strokeWidth="2"
                 />
 
@@ -190,8 +192,8 @@ export const PlannedVsActualChart = ({
                   cx={cx}
                   cy={cyAct}
                   r={isHovered ? 6 : 4.5}
-                  fill="#064e3b"
-                  stroke="#10b981"
+                  fill="#16a34a"
+                  stroke="#ffffff"
                   strokeWidth="2"
                   className="cursor-pointer transition-all"
                 />
@@ -199,15 +201,15 @@ export const PlannedVsActualChart = ({
                 {/* Current reporting point badge if applicable */}
                 {pt.isReportingPoint && (
                   <g>
-                    <circle cx={cx} cy={cyAct} r="10" fill="none" stroke="#10b981" strokeWidth="1.5" strokeOpacity="0.4" className="animate-ping" />
+                    <circle cx={cx} cy={cyAct} r="10" fill="none" stroke="#16a34a" strokeWidth="1.5" strokeOpacity="0.4" className="animate-ping" />
                     <rect
                       x={cx - 30}
                       y={cyAct - 24}
                       width="60"
                       height="16"
                       rx="3"
-                      fill="#047857"
-                      fillOpacity="0.9"
+                      fill="#15803d"
+                      fillOpacity="0.95"
                     />
                     <text
                       x={cx}
@@ -225,7 +227,7 @@ export const PlannedVsActualChart = ({
                   x={cx}
                   y={paddingTop + chartHeight + 16}
                   textAnchor="middle"
-                  className={`text-[9.5px] font-mono ${isHovered ? 'fill-emerald-300 font-bold' : 'fill-slate-400'}`}
+                  className={`text-[9.5px] font-mono fill-current ${isHovered ? 'text-brand-600 dark:text-brand-400 font-bold' : 'text-foreground-muted'}`}
                 >
                   {pt.date || `P${idx + 1}`}
                 </text>
@@ -234,7 +236,7 @@ export const PlannedVsActualChart = ({
                   x={cx}
                   y={paddingTop + chartHeight + 28}
                   textAnchor="middle"
-                  className="text-[8.5px] fill-slate-500 max-w-[60px] truncate"
+                  className="text-[8.5px] fill-current text-foreground-subtle max-w-[60px] truncate"
                 >
                   {pt.code || pt.label?.slice(0, 10)}
                 </text>
@@ -257,38 +259,38 @@ export const PlannedVsActualChart = ({
 
         {/* Floating Tooltip HUD on Hover */}
         {hoveredPoint && (
-          <div className="absolute top-3 right-3 z-10 w-72 rounded-lg border border-surface-border bg-surface-card/95 p-3 shadow-xl backdrop-blur-md animate-in fade-in duration-150">
-            <div className="flex items-center justify-between border-b border-surface-border pb-1.5">
-              <span className="font-mono text-3xs font-bold text-brand-300">
+          <div className="absolute top-3 right-3 z-10 w-72 rounded-lg border border-border bg-surface p-3 shadow-xl backdrop-blur-md animate-in fade-in duration-150">
+            <div className="flex items-center justify-between border-b border-border pb-1.5">
+              <span className="font-mono text-2xs font-bold text-brand-600 dark:text-brand-400">
                 {hoveredPoint.code || hoveredPoint.id}
               </span>
-              <span className="text-3xs text-slate-400 flex items-center gap-1">
+              <span className="text-2xs text-foreground-muted flex items-center gap-1">
                 <Calendar className="h-3 w-3" />
                 {hoveredPoint.date}
               </span>
             </div>
 
-            <p className="text-xs font-semibold text-white mt-1.5 line-clamp-2">
+            <p className="text-xs font-semibold text-foreground mt-1.5 line-clamp-2">
               {hoveredPoint.label}
             </p>
 
-            <div className="grid grid-cols-3 gap-2 mt-2.5 pt-2 border-t border-surface-border/60 text-center font-mono">
-              <div className="rounded bg-surface/80 p-1.5 border border-surface-border">
-                <span className="text-3xs text-slate-400 block">Planned</span>
-                <span className="text-xs font-bold text-blue-400">
+            <div className="grid grid-cols-3 gap-2 mt-2.5 pt-2 border-t border-border text-center font-mono">
+              <div className="rounded bg-surface-subtle p-1.5 border border-border">
+                <span className="text-3xs text-foreground-muted block">Planned</span>
+                <span className="text-xs font-bold text-brand-600 dark:text-brand-400">
                   {hoveredPoint.plannedProgress}%
                 </span>
               </div>
-              <div className="rounded bg-surface/80 p-1.5 border border-surface-border">
-                <span className="text-3xs text-slate-400 block">Actual</span>
-                <span className="text-xs font-bold text-emerald-400">
+              <div className="rounded bg-surface-subtle p-1.5 border border-border">
+                <span className="text-3xs text-foreground-muted block">Actual</span>
+                <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400">
                   {hoveredPoint.actualProgress}%
                 </span>
               </div>
-              <div className="rounded bg-surface/80 p-1.5 border border-surface-border">
-                <span className="text-3xs text-slate-400 block">Variance</span>
+              <div className="rounded bg-surface-subtle p-1.5 border border-border">
+                <span className="text-3xs text-foreground-muted block">Variance</span>
                 <span className={`text-xs font-bold ${
-                  hoveredPoint.variance < 0 ? 'text-rose-400' : 'text-emerald-400'
+                  hoveredPoint.variance < 0 ? 'text-rose-600 dark:text-rose-400' : 'text-emerald-600 dark:text-emerald-400'
                 }`}>
                   {hoveredPoint.variance > 0 ? `+${hoveredPoint.variance}%` : `${hoveredPoint.variance}%`}
                 </span>
@@ -296,8 +298,8 @@ export const PlannedVsActualChart = ({
             </div>
 
             {hoveredPoint.criticalPath && (
-              <div className="mt-2 flex items-center gap-1.5 text-3xs font-mono text-purple-400 bg-purple-950/40 px-2 py-0.5 rounded border border-purple-500/20">
-                <AlertCircle className="h-3 w-3" />
+              <div className="mt-2 flex items-center gap-1.5 text-3xs font-mono text-indigo-700 dark:text-indigo-300 bg-indigo-500/10 px-2 py-0.5 rounded border border-indigo-500/20">
+                <AlertCircle className="h-3 w-3 text-indigo-600 dark:text-indigo-400" />
                 Critical Path Milestone
               </div>
             )}
@@ -306,21 +308,22 @@ export const PlannedVsActualChart = ({
       </div>
 
       {/* Chart Footer Commentary */}
-      <div className="flex flex-col gap-2 rounded-lg bg-surface-subtle/40 p-3 text-xs text-slate-400 sm:flex-row sm:items-center sm:justify-between border border-surface-border/50">
+      <div className="flex flex-col gap-2 rounded-lg bg-surface-subtle p-3 text-xs text-foreground-muted sm:flex-row sm:items-center sm:justify-between border border-border">
         <div className="flex items-center gap-2">
-          <HelpCircle className="h-3.5 w-3.5 text-slate-500 shrink-0" />
+          <HelpCircle className="h-3.5 w-3.5 text-foreground-muted shrink-0" />
           <span>
             Current project execution is{' '}
-            <strong className={variance < -5 ? 'text-rose-400 font-mono' : variance > 5 ? 'text-emerald-400 font-mono' : 'text-slate-200 font-mono'}>
+            <strong className={variance < -5 ? 'text-rose-600 dark:text-rose-400 font-mono' : variance > 5 ? 'text-emerald-600 dark:text-emerald-400 font-mono' : 'text-foreground font-mono'}>
               {Math.abs(variance)} percentage points {variance < 0 ? 'behind' : 'ahead of'}
             </strong>{' '}
             the approved Primavera P6 schedule baseline.
           </span>
         </div>
-        <div className="font-mono text-3xs text-slate-500">
+        <div className="font-mono text-3xs text-foreground-muted">
           Baseline S-Curve Integration
         </div>
       </div>
     </div>
   );
 };
+

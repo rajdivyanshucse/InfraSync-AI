@@ -3,12 +3,12 @@ import {
   CalendarRange, 
   GitBranch, 
   Clock, 
-  CheckCircle2, 
   FileSpreadsheet, 
   Layers, 
   Milestone as MilestoneIcon,
   BarChart3,
-  CalendarDays
+  CalendarDays,
+  CheckCircle2
 } from 'lucide-react';
 import { StatusBadge } from '../ui/StatusBadge';
 import { Button } from '../ui/Button';
@@ -23,26 +23,26 @@ export const ScheduleHeader = ({
   allExpanded = false,
 }) => {
   return (
-    <div className="rounded-xl border border-surface-border bg-gradient-to-b from-surface-card to-surface/80 p-5 shadow-lg backdrop-blur-sm">
+    <div className="rounded-xl border border-border bg-surface p-4 sm:p-5 shadow-panel-sm">
       {/* Top row: Title + Meta */}
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-        <div className="space-y-1.5">
+        <div className="space-y-1">
           <div className="flex flex-wrap items-center gap-2.5">
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-brand-500/10 text-brand-400 ring-1 ring-brand-500/20">
+            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-brand-500/10 text-brand-600 dark:text-brand-400 border border-brand-500/20">
               <CalendarRange className="h-5 w-5" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h1 className="text-xl font-bold tracking-tight text-white sm:text-2xl">
+                <h1 className="text-xl font-bold tracking-tight text-foreground sm:text-2xl">
                   Schedule Intelligence
                 </h1>
-                <span className="hidden rounded bg-brand-500/15 px-2 py-0.5 font-mono text-2xs font-semibold uppercase tracking-wider text-brand-300 ring-1 ring-brand-500/25 sm:inline-block">
+                <span className="hidden rounded bg-brand-500/10 px-2 py-0.5 font-mono text-2xs font-semibold uppercase tracking-wider text-brand-600 dark:text-brand-400 border border-brand-500/20 sm:inline-block">
                   WBS L4 Active
                 </span>
               </div>
             </div>
           </div>
-          <p className="text-xs text-slate-400 sm:text-sm">
+          <p className="text-xs text-foreground-muted sm:text-sm">
             Connect planned activities, milestones and execution baselines across the project schedule.
           </p>
         </div>
@@ -50,12 +50,12 @@ export const ScheduleHeader = ({
         {/* Action buttons */}
         <div className="flex flex-wrap items-center gap-2">
           <Button
-            variant="outline"
+            variant="secondary"
             size="sm"
             onClick={allExpanded ? onCollapseAll : onExpandAll}
-            className="text-xs text-slate-300 hover:text-white"
+            className="text-xs"
           >
-            <Layers className="mr-1.5 h-3.5 w-3.5 text-slate-400" />
+            <Layers className="mr-1.5 h-3.5 w-3.5 text-foreground-muted" />
             {allExpanded ? 'Collapse WBS' : 'Expand All WBS'}
           </Button>
           <Button
@@ -64,61 +64,61 @@ export const ScheduleHeader = ({
             className="text-xs"
             onClick={() => alert('Exporting Primavera P6 / MS Project Compatible Schedule Dataset (XER/XML)...')}
           >
-            <FileSpreadsheet className="mr-1.5 h-3.5 w-3.5 text-emerald-400" />
+            <FileSpreadsheet className="mr-1.5 h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
             Export Schedule
           </Button>
         </div>
       </div>
 
       {/* Metadata Strip */}
-      <div className="mt-4 grid grid-cols-2 gap-3 border-t border-surface-border/70 pt-4 sm:grid-cols-4 lg:grid-cols-5">
+      <div className="mt-4 grid grid-cols-2 gap-3 border-t border-border-subtle pt-4 sm:grid-cols-4 lg:grid-cols-5">
         <div className="flex flex-col">
-          <span className="text-2xs font-medium uppercase tracking-wider text-slate-400">
+          <span className="text-2xs font-medium uppercase tracking-wider text-foreground-muted">
             Active Project
           </span>
-          <span className="mt-0.5 truncate font-mono text-xs font-semibold text-slate-200">
+          <span className="mt-0.5 truncate font-mono text-xs font-semibold text-foreground">
             {project?.code || 'PRJ-01'} • {project?.name || 'Selected Project'}
           </span>
         </div>
 
         <div className="flex flex-col">
-          <span className="text-2xs font-medium uppercase tracking-wider text-slate-400">
+          <span className="text-2xs font-medium uppercase tracking-wider text-foreground-muted">
             Baseline Version
           </span>
           <div className="mt-0.5 flex items-center gap-1.5">
-            <GitBranch className="h-3 w-3 text-brand-400" />
-            <span className="font-mono text-xs font-semibold text-brand-300">
+            <GitBranch className="h-3 w-3 text-brand-600 dark:text-brand-400" />
+            <span className="font-mono text-xs font-semibold text-brand-600 dark:text-brand-300">
               {scheduleMeta?.scheduleVersion || 'Baseline Rev 03.4'}
             </span>
           </div>
         </div>
 
         <div className="flex flex-col">
-          <span className="text-2xs font-medium uppercase tracking-wider text-slate-400">
+          <span className="text-2xs font-medium uppercase tracking-wider text-foreground-muted">
             Baseline Approved
           </span>
           <div className="mt-0.5 flex items-center gap-1.5">
-            <CalendarDays className="h-3 w-3 text-slate-400" />
-            <span className="font-mono text-xs text-slate-200">
+            <CalendarDays className="h-3 w-3 text-foreground-muted" />
+            <span className="font-mono text-xs font-semibold text-foreground-subtle">
               {scheduleMeta?.baselineApprovedDate || '15 Sep 2024'}
             </span>
           </div>
         </div>
 
         <div className="flex flex-col">
-          <span className="text-2xs font-medium uppercase tracking-wider text-slate-400">
+          <span className="text-2xs font-medium uppercase tracking-wider text-foreground-muted">
             Last Sync / Cycle
           </span>
-          <div className="mt-0.5 flex items-center gap-1.5 text-slate-300">
-            <Clock className="h-3 w-3 text-emerald-400" />
-            <span className="font-mono text-xs text-slate-300 truncate">
+          <div className="mt-0.5 flex items-center gap-1.5">
+            <Clock className="h-3 w-3 text-emerald-600 dark:text-emerald-400" />
+            <span className="font-mono text-xs text-foreground-subtle truncate">
               {scheduleMeta?.lastUpdated || 'Just now'}
             </span>
           </div>
         </div>
 
         <div className="col-span-2 flex flex-col sm:col-span-4 lg:col-span-1">
-          <span className="text-2xs font-medium uppercase tracking-wider text-slate-400">
+          <span className="text-2xs font-medium uppercase tracking-wider text-foreground-muted">
             Schedule Status
           </span>
           <div className="mt-1 flex items-center">
@@ -132,15 +132,15 @@ export const ScheduleHeader = ({
       </div>
 
       {/* View Switcher Tabs */}
-      <div className="mt-4 flex items-center justify-between border-t border-surface-border/50 pt-3">
+      <div className="mt-4 flex items-center justify-between border-t border-border-subtle pt-3">
         <div className="flex items-center gap-1 overflow-x-auto pb-1 sm:pb-0">
           <button
             type="button"
             onClick={() => onViewChange('wbs')}
             className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium transition-all ${
               activeView === 'wbs'
-                ? 'bg-brand-500/20 text-brand-300 ring-1 ring-brand-500/30 shadow-sm'
-                : 'text-slate-400 hover:bg-surface-elevated hover:text-slate-200'
+                ? 'bg-brand-500/15 text-brand-700 dark:text-brand-300 font-bold border border-brand-500/30 shadow-xs'
+                : 'text-foreground-muted hover:bg-surface-subtle hover:text-foreground'
             }`}
           >
             <Layers className="h-3.5 w-3.5" />
@@ -152,8 +152,8 @@ export const ScheduleHeader = ({
             onClick={() => onViewChange('timeline')}
             className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium transition-all ${
               activeView === 'timeline'
-                ? 'bg-brand-500/20 text-brand-300 ring-1 ring-brand-500/30 shadow-sm'
-                : 'text-slate-400 hover:bg-surface-elevated hover:text-slate-200'
+                ? 'bg-brand-500/15 text-brand-700 dark:text-brand-300 font-bold border border-brand-500/30 shadow-xs'
+                : 'text-foreground-muted hover:bg-surface-subtle hover:text-foreground'
             }`}
           >
             <BarChart3 className="h-3.5 w-3.5 rotate-90" />
@@ -165,8 +165,8 @@ export const ScheduleHeader = ({
             onClick={() => onViewChange('milestones')}
             className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium transition-all ${
               activeView === 'milestones'
-                ? 'bg-brand-500/20 text-brand-300 ring-1 ring-brand-500/30 shadow-sm'
-                : 'text-slate-400 hover:bg-surface-elevated hover:text-slate-200'
+                ? 'bg-brand-500/15 text-brand-700 dark:text-brand-300 font-bold border border-brand-500/30 shadow-xs'
+                : 'text-foreground-muted hover:bg-surface-subtle hover:text-foreground'
             }`}
           >
             <MilestoneIcon className="h-3.5 w-3.5" />
@@ -178,16 +178,16 @@ export const ScheduleHeader = ({
             onClick={() => onViewChange('health')}
             className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium transition-all ${
               activeView === 'health'
-                ? 'bg-brand-500/20 text-brand-300 ring-1 ring-brand-500/30 shadow-sm'
-                : 'text-slate-400 hover:bg-surface-elevated hover:text-slate-200'
+                ? 'bg-brand-500/15 text-brand-700 dark:text-brand-300 font-bold border border-brand-500/30 shadow-xs'
+                : 'text-foreground-muted hover:bg-surface-subtle hover:text-foreground'
             }`}
           >
-            <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400" />
+            <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
             <span>Schedule Health</span>
           </button>
         </div>
 
-        <div className="hidden text-2xs font-mono text-slate-500 md:block">
+        <div className="hidden text-2xs font-mono text-foreground-muted md:block">
           CPM Engine: Critical Path Method v4.2
         </div>
       </div>

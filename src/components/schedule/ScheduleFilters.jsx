@@ -42,24 +42,24 @@ export const ScheduleFilters = ({
   );
 
   return (
-    <div className="rounded-xl border border-surface-border bg-surface-card/70 p-4 backdrop-blur-sm">
+    <div className="rounded-xl border border-border bg-surface p-4 shadow-sm">
       {/* Top Search + Critical Path Toggle + Reset */}
       <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
         {/* Search Bar */}
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-foreground-muted" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
             placeholder="Search by Activity ID (ACT-03...), name, WBS, discipline, contractor..."
-            className="w-full rounded-lg border border-surface-border bg-surface-subtle/80 py-2 pl-9 pr-8 text-xs text-slate-200 placeholder-slate-500 transition-colors focus:border-brand-500 focus:bg-surface focus:outline-none focus:ring-1 focus:ring-brand-500"
+            className="w-full rounded-lg border border-border bg-surface-subtle py-2 pl-9 pr-8 text-xs text-foreground placeholder:text-foreground-muted transition-colors focus:border-brand-500 focus:bg-surface focus:outline-none focus:ring-1 focus:ring-brand-500"
           />
           {searchQuery && (
             <button
               type="button"
               onClick={() => onSearchChange('')}
-              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300"
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-foreground-muted hover:text-foreground"
             >
               <X className="h-3.5 w-3.5" />
             </button>
@@ -74,11 +74,11 @@ export const ScheduleFilters = ({
             onClick={onCriticalPathToggle}
             className={`flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-medium transition-all ${
               criticalPathOnly
-                ? 'border-rose-500/50 bg-rose-950/40 text-rose-300 ring-1 ring-rose-500/40'
-                : 'border-surface-border bg-surface-subtle text-slate-400 hover:border-slate-600 hover:text-slate-200'
+                ? 'border-rose-500/50 bg-rose-500/10 text-rose-600 dark:text-rose-400 ring-1 ring-rose-500/30'
+                : 'border-border bg-surface-subtle text-foreground-subtle hover:border-border-strong hover:text-foreground'
             }`}
           >
-            <Flame className={`h-3.5 w-3.5 ${criticalPathOnly ? 'text-rose-400' : 'text-slate-500'}`} />
+            <Flame className={`h-3.5 w-3.5 ${criticalPathOnly ? 'text-rose-600 dark:text-rose-400' : 'text-foreground-muted'}`} />
             <span>Critical Path Only</span>
           </button>
 
@@ -88,7 +88,7 @@ export const ScheduleFilters = ({
               variant="ghost"
               size="sm"
               onClick={onResetFilters}
-              className="text-xs text-slate-400 hover:text-rose-400"
+              className="text-xs text-foreground-muted hover:text-rose-600 dark:hover:text-rose-400"
             >
               <RotateCcw className="mr-1.5 h-3.5 w-3.5" />
               Reset
@@ -101,13 +101,13 @@ export const ScheduleFilters = ({
       <div className="mt-3 grid grid-cols-2 gap-2.5 sm:grid-cols-3 lg:grid-cols-5">
         {/* Phase Filter */}
         <div>
-          <label className="mb-1 block text-3xs font-semibold uppercase tracking-wider text-slate-400">
+          <label className="mb-1 block text-3xs font-semibold uppercase tracking-wider text-foreground-muted">
             Phase
           </label>
           <select
             value={selectedPhase}
             onChange={(e) => onPhaseChange(e.target.value)}
-            className="w-full rounded-lg border border-surface-border bg-surface-subtle px-2.5 py-1.5 text-xs text-slate-200 focus:border-brand-500 focus:outline-none"
+            className="w-full rounded-lg border border-border bg-surface-subtle px-2.5 py-1.5 text-xs text-foreground focus:border-brand-500 focus:bg-surface focus:outline-none"
           >
             <option value="all">All Phases ({phases.length})</option>
             {phases.map((p) => (
@@ -120,13 +120,13 @@ export const ScheduleFilters = ({
 
         {/* WBS Package Filter */}
         <div>
-          <label className="mb-1 block text-3xs font-semibold uppercase tracking-wider text-slate-400">
+          <label className="mb-1 block text-3xs font-semibold uppercase tracking-wider text-foreground-muted">
             WBS Package
           </label>
           <select
             value={selectedWbs}
             onChange={(e) => onWbsChange(e.target.value)}
-            className="w-full rounded-lg border border-surface-border bg-surface-subtle px-2.5 py-1.5 text-xs text-slate-200 focus:border-brand-500 focus:outline-none"
+            className="w-full rounded-lg border border-border bg-surface-subtle px-2.5 py-1.5 text-xs text-foreground focus:border-brand-500 focus:bg-surface focus:outline-none"
           >
             <option value="all">All WBS Packages ({wbsPackages.length})</option>
             {wbsPackages
@@ -141,13 +141,13 @@ export const ScheduleFilters = ({
 
         {/* Discipline Filter */}
         <div>
-          <label className="mb-1 block text-3xs font-semibold uppercase tracking-wider text-slate-400">
+          <label className="mb-1 block text-3xs font-semibold uppercase tracking-wider text-foreground-muted">
             Discipline
           </label>
           <select
             value={selectedDiscipline}
             onChange={(e) => onDisciplineChange(e.target.value)}
-            className="w-full rounded-lg border border-surface-border bg-surface-subtle px-2.5 py-1.5 text-xs text-slate-200 focus:border-brand-500 focus:outline-none"
+            className="w-full rounded-lg border border-border bg-surface-subtle px-2.5 py-1.5 text-xs text-foreground focus:border-brand-500 focus:bg-surface focus:outline-none"
           >
             <option value="all">All Disciplines ({disciplines.length})</option>
             {disciplines.map((d) => (
@@ -160,13 +160,13 @@ export const ScheduleFilters = ({
 
         {/* Contractor Filter */}
         <div>
-          <label className="mb-1 block text-3xs font-semibold uppercase tracking-wider text-slate-400">
+          <label className="mb-1 block text-3xs font-semibold uppercase tracking-wider text-foreground-muted">
             Contractor
           </label>
           <select
             value={selectedContractor}
             onChange={(e) => onContractorChange(e.target.value)}
-            className="w-full rounded-lg border border-surface-border bg-surface-subtle px-2.5 py-1.5 text-xs text-slate-200 focus:border-brand-500 focus:outline-none"
+            className="w-full rounded-lg border border-border bg-surface-subtle px-2.5 py-1.5 text-xs text-foreground focus:border-brand-500 focus:bg-surface focus:outline-none"
           >
             <option value="all">All Contractors ({contractors.length})</option>
             {contractors.map((c) => (
@@ -179,13 +179,13 @@ export const ScheduleFilters = ({
 
         {/* Status Filter */}
         <div className="col-span-2 sm:col-span-1">
-          <label className="mb-1 block text-3xs font-semibold uppercase tracking-wider text-slate-400">
+          <label className="mb-1 block text-3xs font-semibold uppercase tracking-wider text-foreground-muted">
             Activity Status
           </label>
           <select
             value={selectedStatus}
             onChange={(e) => onStatusChange(e.target.value)}
-            className="w-full rounded-lg border border-surface-border bg-surface-subtle px-2.5 py-1.5 text-xs text-slate-200 focus:border-brand-500 focus:outline-none"
+            className="w-full rounded-lg border border-border bg-surface-subtle px-2.5 py-1.5 text-xs text-foreground focus:border-brand-500 focus:bg-surface focus:outline-none"
           >
             <option value="all">All Statuses</option>
             <option value="completed">Completed (100%)</option>
@@ -197,23 +197,23 @@ export const ScheduleFilters = ({
       </div>
 
       {/* Filter Result Counter Bar */}
-      <div className="mt-3 flex items-center justify-between border-t border-surface-border/40 pt-2.5 text-2xs text-slate-400">
+      <div className="mt-3 flex items-center justify-between border-t border-border-subtle pt-2.5 text-2xs text-foreground-muted">
         <div className="flex items-center gap-2">
-          <Filter className="h-3 w-3 text-slate-500" />
+          <Filter className="h-3 w-3 text-foreground-muted" />
           <span>
-            Showing <strong className="font-mono text-slate-200">{filteredCount}</strong> of{' '}
-            <strong className="font-mono text-slate-200">{totalCount}</strong> activities
+            Showing <strong className="font-mono text-foreground">{filteredCount}</strong> of{' '}
+            <strong className="font-mono text-foreground">{totalCount}</strong> activities
           </span>
           {hasActiveFilters && (
-            <span className="rounded bg-brand-500/10 px-1.5 py-0.2 text-3xs font-medium text-brand-300">
+            <span className="rounded bg-brand-500/10 px-1.5 py-0.5 text-3xs font-medium text-brand-600 dark:text-brand-400">
               Filters Active
             </span>
           )}
         </div>
 
         {criticalPathOnly && (
-          <span className="flex items-center gap-1 text-rose-400 font-mono text-3xs">
-            <Flame className="h-3 w-3" /> Critical Path Filter Active
+          <span className="flex items-center gap-1 text-rose-600 dark:text-rose-400 font-mono text-3xs">
+            <Flame className="h-3 w-3" /> Critical Path Active
           </span>
         )}
       </div>

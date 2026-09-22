@@ -24,9 +24,8 @@ export const ScheduleKpiStrip = ({ activities = [], onFilterStatus, activeStatus
       value: total,
       subtext: 'Across all WBS packages',
       icon: Layers,
-      color: 'text-slate-300',
-      bg: 'bg-slate-800/40',
-      border: 'border-slate-700/50',
+      color: 'text-foreground',
+      iconColor: 'text-brand-600 dark:text-brand-400',
       badge: `${total} items`,
       filterKey: 'all',
     },
@@ -36,9 +35,8 @@ export const ScheduleKpiStrip = ({ activities = [], onFilterStatus, activeStatus
       value: completed,
       subtext: `${total > 0 ? Math.round((completed / total) * 100) : 0}% of project scope`,
       icon: CheckCircle2,
-      color: 'text-emerald-400',
-      bg: 'bg-emerald-950/30',
-      border: 'border-emerald-500/30',
+      color: 'text-emerald-600 dark:text-emerald-400',
+      iconColor: 'text-emerald-600 dark:text-emerald-400',
       badge: '100% Executed',
       filterKey: 'completed',
     },
@@ -48,9 +46,8 @@ export const ScheduleKpiStrip = ({ activities = [], onFilterStatus, activeStatus
       value: inProgress,
       subtext: 'Active on site today',
       icon: Clock,
-      color: 'text-sky-400',
-      bg: 'bg-sky-950/30',
-      border: 'border-sky-500/30',
+      color: 'text-sky-600 dark:text-sky-400',
+      iconColor: 'text-sky-600 dark:text-sky-400',
       badge: 'Execution Stage',
       filterKey: 'inProgress',
     },
@@ -60,9 +57,8 @@ export const ScheduleKpiStrip = ({ activities = [], onFilterStatus, activeStatus
       value: notStarted,
       subtext: 'Upcoming work packages',
       icon: CircleDashed,
-      color: 'text-slate-400',
-      bg: 'bg-slate-800/20',
-      border: 'border-slate-700/40',
+      color: 'text-foreground-muted',
+      iconColor: 'text-foreground-muted',
       badge: 'Pending Start',
       filterKey: 'notStarted',
     },
@@ -72,9 +68,8 @@ export const ScheduleKpiStrip = ({ activities = [], onFilterStatus, activeStatus
       value: atRisk,
       subtext: 'Variance > -10% slippage',
       icon: AlertTriangle,
-      color: 'text-amber-400',
-      bg: 'bg-amber-950/30',
-      border: 'border-amber-500/30',
+      color: 'text-amber-600 dark:text-amber-400',
+      iconColor: 'text-amber-600 dark:text-amber-400',
       badge: 'Requires Focus',
       filterKey: 'atRisk',
     },
@@ -84,9 +79,8 @@ export const ScheduleKpiStrip = ({ activities = [], onFilterStatus, activeStatus
       value: criticalPath,
       subtext: 'Zero float dependencies',
       icon: Flame,
-      color: 'text-rose-400',
-      bg: 'bg-rose-950/30',
-      border: 'border-rose-500/30',
+      color: 'text-rose-600 dark:text-rose-400',
+      iconColor: 'text-rose-600 dark:text-rose-400',
       badge: 'CPM Critical',
       filterKey: 'criticalPath',
     },
@@ -103,17 +97,17 @@ export const ScheduleKpiStrip = ({ activities = [], onFilterStatus, activeStatus
             key={kpi.id}
             type="button"
             onClick={() => onFilterStatus && onFilterStatus(kpi.filterKey)}
-            className={`group flex flex-col justify-between rounded-xl border p-3.5 text-left transition-all duration-200 hover:scale-[1.02] ${
+            className={`group flex flex-col justify-between rounded-xl border p-3.5 text-left transition-all duration-150 ${
               isActive
-                ? `${kpi.bg} ${kpi.border} ring-2 ring-brand-500/40 shadow-md`
-                : 'border-surface-border bg-surface-card/90 hover:border-slate-600 hover:bg-surface-elevated/70'
+                ? 'bg-surface border-brand-500 ring-2 ring-brand-500/40 shadow-panel-sm'
+                : 'border-border bg-surface hover:border-brand-500/40 hover:bg-surface-subtle shadow-xs'
             }`}
           >
             <div className="flex items-center justify-between">
-              <span className="text-2xs font-medium uppercase tracking-wider text-slate-400">
+              <span className="text-2xs font-medium uppercase tracking-wider text-foreground-muted truncate">
                 {kpi.label}
               </span>
-              <div className={`rounded-lg p-1.5 ${kpi.bg} ${kpi.color}`}>
+              <div className={`rounded-lg p-1.5 bg-surface-subtle ${kpi.iconColor}`}>
                 <Icon className="h-4 w-4" />
               </div>
             </div>
@@ -122,12 +116,12 @@ export const ScheduleKpiStrip = ({ activities = [], onFilterStatus, activeStatus
               <span className={`font-mono text-2xl font-bold tracking-tight ${kpi.color}`}>
                 {kpi.value}
               </span>
-              <span className="rounded bg-surface-muted/60 px-1.5 py-0.5 text-3xs font-medium text-slate-400">
+              <span className="rounded bg-surface-subtle border border-border-subtle px-1.5 py-0.5 text-3xs font-medium text-foreground-muted font-mono">
                 {kpi.badge}
               </span>
             </div>
 
-            <div className="mt-1 text-3xs font-medium text-slate-500 group-hover:text-slate-400">
+            <div className="mt-1 text-3xs font-medium text-foreground-muted group-hover:text-foreground-subtle truncate">
               {kpi.subtext}
             </div>
           </button>

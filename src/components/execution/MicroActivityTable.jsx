@@ -49,12 +49,12 @@ export const MicroActivityTable = ({
 
   const renderSortIcon = (field) => {
     if (sortField !== field) {
-      return <ArrowUpDown className="ml-1 h-3 w-3 text-slate-500 opacity-40 group-hover:opacity-100" />;
+      return <ArrowUpDown className="ml-1 h-3 w-3 text-foreground-muted opacity-40 group-hover:opacity-100" />;
     }
     return sortDirection === 'asc' ? (
-      <ArrowUp className="ml-1 h-3 w-3 text-emerald-400" />
+      <ArrowUp className="ml-1 h-3 w-3 text-emerald-600 dark:text-emerald-400" />
     ) : (
-      <ArrowDown className="ml-1 h-3 w-3 text-emerald-400" />
+      <ArrowDown className="ml-1 h-3 w-3 text-emerald-600 dark:text-emerald-400" />
     );
   };
 
@@ -66,7 +66,6 @@ export const MicroActivityTable = ({
       case 'onTrack':
         return 'onTrack';
       case 'delayed':
-        return 'delayed';
       case 'blocked':
         return 'delayed';
       case 'awaitingInspection':
@@ -98,22 +97,22 @@ export const MicroActivityTable = ({
   const getEvidenceVariant = (evidenceStatus) => {
     switch (evidenceStatus) {
       case 'verified':
-        return { text: 'Verified', color: 'text-emerald-400', bg: 'bg-emerald-950/40 border-emerald-500/30' };
+        return { text: 'Verified', color: 'text-emerald-700 dark:text-emerald-400', bg: 'bg-emerald-500/10 border-emerald-500/30' };
       case 'awaitingReview':
-        return { text: 'In Review', color: 'text-purple-400', bg: 'bg-purple-950/40 border-purple-500/30' };
+        return { text: 'In Review', color: 'text-purple-700 dark:text-purple-400', bg: 'bg-purple-500/10 border-purple-500/30' };
       case 'linked':
-        return { text: 'Linked', color: 'text-sky-400', bg: 'bg-sky-950/40 border-sky-500/30' };
+        return { text: 'Linked', color: 'text-sky-700 dark:text-sky-400', bg: 'bg-sky-500/10 border-sky-500/30' };
       default:
-        return { text: 'Pending', color: 'text-slate-400', bg: 'bg-slate-800/40 border-slate-700/40' };
+        return { text: 'Pending', color: 'text-foreground-muted', bg: 'bg-surface-subtle border-border' };
     }
   };
 
   if (microActivities.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center rounded-xl border border-surface-border bg-surface-card p-12 text-center">
-        <Layers className="h-10 w-10 text-slate-600 mb-3" />
-        <h4 className="text-sm font-semibold text-slate-300">No micro-activities found</h4>
-        <p className="mt-1 text-xs text-slate-500 max-w-sm">
+      <div className="flex flex-col items-center justify-center rounded-xl border border-border bg-surface p-12 text-center">
+        <Layers className="h-10 w-10 text-foreground-subtle mb-3" />
+        <h4 className="text-sm font-semibold text-foreground">No micro-activities found</h4>
+        <p className="mt-1 text-xs text-foreground-muted max-w-sm">
           Select another node from the hierarchy explorer or reset filter criteria.
         </p>
       </div>
@@ -121,14 +120,14 @@ export const MicroActivityTable = ({
   }
 
   return (
-    <div className="flex flex-col rounded-xl border border-surface-border bg-surface-card overflow-hidden shadow-sm">
+    <div className="flex flex-col rounded-xl border border-border bg-surface overflow-hidden shadow-sm">
       <div className="overflow-x-auto">
         <table className="w-full text-left border-collapse text-xs">
           <thead>
-            <tr className="border-b border-surface-border bg-surface-subtle/80 font-mono text-3xs uppercase tracking-wider text-slate-400">
+            <tr className="border-b border-border bg-surface-subtle font-mono text-3xs uppercase tracking-wider text-foreground-muted">
               <th
                 onClick={() => handleSort('microActivityCode')}
-                className="group cursor-pointer px-4 py-3 font-semibold hover:text-white whitespace-nowrap"
+                className="group cursor-pointer px-4 py-3 font-semibold hover:text-foreground whitespace-nowrap"
               >
                 <div className="flex items-center">
                   <span>Micro ID</span>
@@ -138,7 +137,7 @@ export const MicroActivityTable = ({
 
               <th
                 onClick={() => handleSort('microActivityName')}
-                className="group cursor-pointer px-4 py-3 font-semibold hover:text-white min-w-[200px]"
+                className="group cursor-pointer px-4 py-3 font-semibold hover:text-foreground min-w-[200px]"
               >
                 <div className="flex items-center">
                   <span>Micro-Activity / Scope</span>
@@ -148,7 +147,7 @@ export const MicroActivityTable = ({
 
               <th
                 onClick={() => handleSort('contractor')}
-                className="group cursor-pointer px-3 py-3 font-semibold hover:text-white whitespace-nowrap"
+                className="group cursor-pointer px-3 py-3 font-semibold hover:text-foreground whitespace-nowrap"
               >
                 <div className="flex items-center">
                   <span>Contractor</span>
@@ -158,7 +157,7 @@ export const MicroActivityTable = ({
 
               <th
                 onClick={() => handleSort('completedQuantity')}
-                className="group cursor-pointer px-3 py-3 font-semibold hover:text-white whitespace-nowrap text-right"
+                className="group cursor-pointer px-3 py-3 font-semibold hover:text-foreground whitespace-nowrap text-right"
               >
                 <div className="flex items-center justify-end">
                   <span>Quantity (Done / Plan)</span>
@@ -172,7 +171,7 @@ export const MicroActivityTable = ({
 
               <th
                 onClick={() => handleSort('actualProgress')}
-                className="group cursor-pointer px-4 py-3 font-semibold hover:text-white min-w-[140px]"
+                className="group cursor-pointer px-4 py-3 font-semibold hover:text-foreground min-w-[140px]"
               >
                 <div className="flex items-center">
                   <span>Execution %</span>
@@ -194,7 +193,7 @@ export const MicroActivityTable = ({
             </tr>
           </thead>
 
-          <tbody className="divide-y divide-surface-border/40">
+          <tbody className="divide-y divide-border">
             {sortedList.map((item) => {
               const isSelected = selectedMicroActivityId === item.id;
               const remaining = calculateRemainingQuantity(item.plannedQuantity, item.completedQuantity);
@@ -207,23 +206,23 @@ export const MicroActivityTable = ({
                   className={`group cursor-pointer transition-colors ${
                     isSelected
                       ? 'bg-emerald-500/15 ring-1 ring-inset ring-emerald-500/40'
-                      : 'hover:bg-surface-elevated/70'
+                      : 'hover:bg-surface-subtle'
                   }`}
                 >
                   {/* Micro Code */}
                   <td className="px-4 py-3 whitespace-nowrap">
-                    <span className="font-mono text-xs font-bold text-emerald-300 group-hover:text-emerald-200">
+                    <span className="font-mono text-xs font-bold text-emerald-700 dark:text-emerald-300 group-hover:text-emerald-600 dark:group-hover:text-emerald-200">
                       {item.microActivityCode}
                     </span>
                   </td>
 
                   {/* Micro Activity Name */}
                   <td className="px-4 py-3">
-                    <div className="font-medium text-slate-100 group-hover:text-white">
+                    <div className="font-medium text-foreground leading-snug">
                       {item.microActivityName}
                     </div>
-                    <div className="mt-0.5 flex items-center gap-1.5 font-mono text-3xs text-slate-400">
-                      <span className="text-brand-300 font-semibold">{item.activityId}</span>
+                    <div className="mt-0.5 flex items-center gap-1.5 font-mono text-3xs text-foreground-muted">
+                      <span className="text-brand-600 dark:text-brand-400 font-semibold">{item.activityId}</span>
                       <span>•</span>
                       <span>{item.discipline}</span>
                     </div>
@@ -231,26 +230,26 @@ export const MicroActivityTable = ({
 
                   {/* Contractor */}
                   <td className="px-3 py-3 whitespace-nowrap">
-                    <div className="flex items-center gap-1 text-slate-300 font-medium">
-                      <Building2 className="h-3 w-3 text-slate-500 shrink-0" />
+                    <div className="flex items-center gap-1 text-foreground font-medium">
+                      <Building2 className="h-3 w-3 text-foreground-muted shrink-0" />
                       <span className="truncate max-w-[130px]">{item.contractor}</span>
                     </div>
                   </td>
 
                   {/* Quantity: Completed / Planned */}
                   <td className="px-3 py-3 text-right whitespace-nowrap font-mono text-xs">
-                    <span className="font-bold text-slate-200">
+                    <span className="font-bold text-foreground">
                       {item.completedQuantity}
                     </span>
-                    <span className="text-slate-500"> / </span>
-                    <span className="text-slate-400 font-medium">
+                    <span className="text-foreground-subtle"> / </span>
+                    <span className="text-foreground-muted font-medium">
                       {item.plannedQuantity} {item.unit}
                     </span>
                   </td>
 
                   {/* Remaining */}
                   <td className="px-3 py-3 text-right whitespace-nowrap font-mono text-xs">
-                    <span className={remaining === 0 ? 'text-slate-500' : 'font-semibold text-amber-400'}>
+                    <span className={remaining === 0 ? 'text-foreground-subtle' : 'font-semibold text-amber-600 dark:text-amber-400'}>
                       {remaining} {item.unit}
                     </span>
                   </td>
@@ -258,10 +257,10 @@ export const MicroActivityTable = ({
                   {/* Execution Progress */}
                   <td className="px-4 py-3">
                     <div className="flex items-center justify-between font-mono text-3xs mb-1">
-                      <span className="font-bold text-emerald-400">
+                      <span className="font-bold text-emerald-600 dark:text-emerald-400">
                         {item.actualProgress}%
                       </span>
-                      <span className="text-slate-400">
+                      <span className="text-foreground-muted">
                         Plan: {item.plannedProgress}%
                       </span>
                     </div>
@@ -293,7 +292,7 @@ export const MicroActivityTable = ({
                   <td className="px-3 py-3 text-right whitespace-nowrap">
                     <button
                       type="button"
-                      className="rounded p-1 text-slate-500 hover:bg-surface-elevated hover:text-emerald-300 group-hover:text-slate-300"
+                      className="rounded p-1 text-foreground-muted hover:bg-surface-elevated hover:text-emerald-600 dark:hover:text-emerald-300"
                       title="Inspect Execution Unit"
                     >
                       <ExternalLink className="h-3.5 w-3.5" />

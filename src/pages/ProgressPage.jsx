@@ -497,14 +497,14 @@ export const ProgressPage = () => {
           <div className="lg:col-span-8 space-y-3">
             <div className="flex items-center justify-between px-1">
               <div className="flex items-center gap-2">
-                <Layers className="h-4 w-4 text-emerald-400" />
-                <h3 className="text-sm font-bold text-white">
+                <Layers className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+                <h3 className="text-sm font-bold text-foreground">
                   {selectedActivityId
                     ? `Activity Units: ${selectedActivityId}`
                     : 'Measurable Ground Execution Units'}
                 </h3>
               </div>
-              <span className="font-mono text-3xs text-slate-400">
+              <span className="font-mono text-2xs text-foreground-muted">
                 {filteredMicroActivities.length} units listed
               </span>
             </div>

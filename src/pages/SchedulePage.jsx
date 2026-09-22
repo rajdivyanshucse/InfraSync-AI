@@ -289,8 +289,8 @@ export const SchedulePage = () => {
           <div className="lg:col-span-8 space-y-3">
             <div className="flex items-center justify-between px-1">
               <div className="flex items-center gap-2">
-                <Layers className="h-4 w-4 text-brand-400" />
-                <h3 className="text-sm font-bold text-white">
+                <Layers className="h-4 w-4 text-brand-600 dark:text-brand-400" />
+                <h3 className="text-sm font-bold text-foreground">
                   {selectedWbsId
                     ? `WBS Package: ${
                         scheduleData?.wbsPackages?.find((w) => w.id === selectedWbsId)?.name ||
@@ -299,7 +299,7 @@ export const SchedulePage = () => {
                     : 'Schedule Activities List'}
                 </h3>
               </div>
-              <span className="font-mono text-3xs text-slate-400">
+              <span className="font-mono text-3xs text-foreground-muted">
                 {filteredActivities.length} activities matching criteria
               </span>
             </div>
