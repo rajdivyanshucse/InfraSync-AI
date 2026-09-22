@@ -1,4 +1,5 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useProject } from '../context/useProject';
 import { useAuth } from '../context/useAuth';
 import { getResponsibilityData } from '../data/responsibilityData';
@@ -10,14 +11,18 @@ import {
   DisciplineKpiStrip,
   DisciplineFilters,
   DisciplineTable,
-  DisciplineDetailPanel
+  DisciplineDetailPanel,
+  DisciplineMatrixView,
+  DisciplinePerformance
 } from '../components/disciplines';
 import { Alert } from '../components/ui/Alert';
-import { Layers, HardHat } from 'lucide-react';
+import { Layers } from 'lucide-react';
 
 export const DisciplinesPage = () => {
   const { currentProject } = useProject();
   const { currentUser } = useAuth();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
 
   // Load responsibility, execution, and schedule datasets
   const responsibilityData = useMemo(() => {
@@ -32,12 +37,17 @@ export const DisciplinesPage = () => {
     return getScheduleData(currentProject?.id || 'proj-1');
   }, [currentProject?.id]);
 
+  // View Mode: 'table' | 'packages' | 'analytics'
+  const [viewMode, setViewMode] = useState('table');
+
   // Selected discipline state
   const [selectedDiscipline, setSelectedDiscipline] = useState(null);
 
-  // Filter states
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedContractor, setSelectedContractor] = useState('all');
+  // Filter states initialized from URL params if available
+  const [searchQuery, setSearchQuery] = useState(searchParams.get('search') || '');
+  const [selectedContractor, setSelectedContractor] = useState(searchParams.get('contractor') || 'all');
+  const [selectedStatus, setSelectedStatus] = useState(searchParams.get('status') || 'all');
+  const [varianceOnly, setVarianceOnly] = useState(searchParams.get('variance') === 'true');
 
   // Reset selected discipline on project switch
   const [prevProjectId, setPrevProjectId] = useState(currentProject?.id);
@@ -46,6 +56,8 @@ export const DisciplinesPage = () => {
     setSelectedDiscipline(null);
     setSearchQuery('');
     setSelectedContractor('all');
+    setSelectedStatus('all');
+    setVarianceOnly(false);
   }
 
   // Enrich disciplines with live execution metrics
@@ -53,6 +65,17 @@ export const DisciplinesPage = () => {
     const raw = responsibilityData?.disciplines || [];
     return raw.map((d) => calculateDisciplineMetrics(d, executionData, scheduleData));
   }, [responsibilityData?.disciplines, executionData, scheduleData]);
+
+  // Deep linking: auto-select discipline if disciplineId query param is present
+  useEffect(() => {
+    const did = searchParams.get('disciplineId');
+    if (did && enrichedDisciplines.length > 0) {
+      const found = enrichedDisciplines.find((d) => d.id === did || d.code === did);
+      if (found) {
+        setSelectedDiscipline(found);
+      }
+    }
+  }, [searchParams, enrichedDisciplines]);
 
   // Extract unique contractors for filter select
   const contractors = useMemo(() => {
@@ -84,16 +107,39 @@ export const DisciplinesPage = () => {
       list = list.filter((d) => (d.contractors || []).includes(selectedContractor));
     }
 
+    // Status / Coordination filter
+    if (selectedStatus !== 'all') {
+      if (selectedStatus === 'coordinated') {
+        list = list.filter((d) => (d.variance ?? 0) >= 0);
+      } else if (selectedStatus === 'variance') {
+        list = list.filter((d) => (d.variance ?? 0) < 0 && (d.variance ?? 0) >= -10);
+      } else if (selectedStatus === 'slippage') {
+        list = list.filter((d) => (d.variance ?? 0) < -10);
+      }
+    }
+
+    // Variance only toggle
+    if (varianceOnly) {
+      list = list.filter((d) => (d.variance ?? 0) < 0);
+    }
+
     return list;
-  }, [enrichedDisciplines, searchQuery, selectedContractor]);
+  }, [enrichedDisciplines, searchQuery, selectedContractor, selectedStatus, varianceOnly]);
 
   const handleResetFilters = () => {
     setSearchQuery('');
     setSelectedContractor('all');
+    setSelectedStatus('all');
+    setVarianceOnly(false);
+    setSearchParams({});
+  };
+
+  const handleContractorClick = (contractorName) => {
+    navigate(`/contractors?search=${encodeURIComponent(contractorName)}`);
   };
 
   return (
-    <div className="space-y-5 pb-12">
+    <div className="space-y-4 pb-12">
       {/* Role-Aware Advisory */}
       {currentUser && currentUser.role === 'discipline_manager' && (
         <Alert
@@ -105,54 +151,112 @@ export const DisciplinesPage = () => {
         </Alert>
       )}
 
-      {/* Section 13 — Header */}
+      {/* Section Header */}
       <DisciplineHeader
         project={currentProject}
         responsibilityMeta={responsibilityData}
         currentUser={currentUser}
+        viewMode={viewMode}
+        onViewModeChange={setViewMode}
+        scheduleRef={executionData?.scheduleRef || 'Baseline Rev 03.4 (P6 v22)'}
       />
 
-      {/* Section 14 — KPI Strip */}
+      {/* KPI Strip */}
       <DisciplineKpiStrip
         disciplines={responsibilityData?.disciplines || []}
         executionData={executionData}
         scheduleData={scheduleData}
+        activeFilter={varianceOnly ? 'varianceOnly' : null}
+        onFilterClick={(key) => {
+          if (key === 'varianceOnly') {
+            setVarianceOnly((prev) => !prev);
+          }
+        }}
       />
 
-      {/* Section 15 — Filters */}
+      {/* Filters Toolbar */}
       <DisciplineFilters
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
         selectedContractor={selectedContractor}
         onContractorChange={setSelectedContractor}
+        selectedStatus={selectedStatus}
+        onStatusChange={setSelectedStatus}
+        varianceOnly={varianceOnly}
+        onVarianceOnlyToggle={() => setVarianceOnly((prev) => !prev)}
         onResetFilters={handleResetFilters}
         contractors={contractors}
         totalCount={enrichedDisciplines.length}
         filteredCount={filteredDisciplines.length}
       />
 
-      {/* Section 15 — Table */}
+      {/* Execution Registry Content */}
       <div className="space-y-2">
         <div className="flex items-center justify-between px-1">
           <div className="flex items-center gap-2">
-            <Layers className="h-4 w-4 text-amber-400" />
-            <h3 className="text-sm font-bold text-white">
-              Engineering Disciplines & Trades Matrix
+            <Layers className="h-4 w-4 text-amber-500" />
+            <h3 className="text-sm font-bold text-slate-900 dark:text-white">
+              {viewMode === 'table' && 'Engineering Disciplines & Trades Matrix'}
+              {viewMode === 'packages' && 'Discipline Work Packages Breakdown'}
+              {viewMode === 'analytics' && 'Trade Performance & Variance Analytics'}
             </h3>
           </div>
-          <span className="font-mono text-3xs text-slate-400">
+          <span className="font-mono text-3xs text-slate-500 dark:text-slate-400">
             {filteredDisciplines.length} engineering trades listed
           </span>
         </div>
 
-        <DisciplineTable
-          disciplines={filteredDisciplines}
-          selectedDisciplineId={selectedDiscipline?.id}
-          onSelectDiscipline={(d) => setSelectedDiscipline(d)}
-        />
+        {/* View Mode: Table */}
+        {viewMode === 'table' && (
+          <DisciplineTable
+            disciplines={filteredDisciplines}
+            selectedDisciplineId={selectedDiscipline?.id}
+            onSelectDiscipline={(d) => setSelectedDiscipline(d)}
+            onContractorClick={handleContractorClick}
+          />
+        )}
+
+        {/* View Mode: Packages */}
+        {viewMode === 'packages' && (
+          <DisciplineMatrixView
+            disciplines={filteredDisciplines}
+            onSelectDiscipline={(d) => setSelectedDiscipline(d)}
+            onContractorClick={handleContractorClick}
+            allActivities={scheduleData?.activities || []}
+            allMicroActivities={executionData?.microActivities || []}
+          />
+        )}
+
+        {/* View Mode: Analytics */}
+        {viewMode === 'analytics' && (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {filteredDisciplines.map((d) => (
+              <div
+                key={d.id}
+                onClick={() => setSelectedDiscipline(d)}
+                className="cursor-pointer rounded-xl border border-surface-border bg-surface-card p-4 shadow-sm hover:border-amber-500/40 transition-all space-y-3"
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="font-mono text-xs font-bold text-amber-700 dark:text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded">
+                      {d.code}
+                    </span>
+                    <span className="font-bold text-slate-900 dark:text-white text-sm">
+                      {d.name}
+                    </span>
+                  </div>
+                  <span className="text-3xs font-mono text-slate-500 dark:text-slate-400">
+                    {d.microCount || 0} Micro Units
+                  </span>
+                </div>
+                <DisciplinePerformance discipline={d} />
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
-      {/* Section 16 — Detail Panel */}
+      {/* Slide-over Detail Panel */}
       {selectedDiscipline && (
         <DisciplineDetailPanel
           discipline={selectedDiscipline}
@@ -164,3 +268,4 @@ export const DisciplinesPage = () => {
     </div>
   );
 };
+

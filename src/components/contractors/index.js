@@ -5,3 +5,4 @@ export { ContractorTable } from './ContractorTable';
 export { ContractorDetailPanel } from './ContractorDetailPanel';
 export { ContractorPackageList } from './ContractorPackageList';
 export { ContractorPerformance } from './ContractorPerformance';
+export { ContractorPackageMatrix } from './ContractorPackageMatrix';

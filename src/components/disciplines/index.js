@@ -5,3 +5,4 @@ export { DisciplineTable } from './DisciplineTable';
 export { DisciplineDetailPanel } from './DisciplineDetailPanel';
 export { DisciplineWorkPackages } from './DisciplineWorkPackages';
 export { DisciplinePerformance } from './DisciplinePerformance';
+export { DisciplineMatrixView } from './DisciplineMatrixView';
