@@ -29,11 +29,11 @@ export const ExecutionReport = ({
   return (
     <div className="space-y-6">
       {/* 1. Header Box */}
-      <div className="rounded-xl border border-surface-border bg-surface-card/90 shadow-lg backdrop-blur-sm p-4 sm:p-5 space-y-4">
+      <div className="rounded-xl border border-surface-border bg-surface-card p-4 sm:p-5 space-y-4 shadow-sm">
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between border-b border-surface-border pb-3">
           <div className="flex items-center gap-2">
-            <Activity className="h-4 w-4 text-emerald-400" />
-            <h3 className="text-sm font-bold text-white tracking-wide">
+            <Activity className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+            <h3 className="text-sm font-bold text-slate-900 dark:text-white tracking-wide">
               Physical Execution & Quantity Measurement Summary
             </h3>
           </div>
@@ -42,7 +42,7 @@ export const ExecutionReport = ({
             to="/progress"
             variant="ghost"
             size="xs"
-            className="text-3xs text-sky-400 hover:text-sky-300 gap-1"
+            className="text-3xs text-sky-600 dark:text-sky-400 hover:text-sky-700 dark:hover:text-sky-300 gap-1"
           >
             <span>Progress Intelligence</span>
             <ExternalLink className="h-2.5 w-2.5" />
@@ -51,21 +51,21 @@ export const ExecutionReport = ({
 
         {/* Quantities & Progress Metrics */}
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 text-xs font-mono">
-          <div className="rounded-lg bg-surface/80 p-3 border border-surface-border">
-            <span className="text-3xs text-slate-400 block">Total Planned Qty</span>
-            <strong className="text-white mt-1 block">{totalPlannedQty.toLocaleString()} units</strong>
+          <div className="rounded-lg bg-surface-subtle p-3 border border-surface-border">
+            <span className="text-3xs text-slate-500 dark:text-slate-400 block">Total Planned Qty</span>
+            <strong className="text-slate-900 dark:text-white mt-1 block">{totalPlannedQty.toLocaleString()} units</strong>
           </div>
-          <div className="rounded-lg bg-surface/80 p-3 border border-surface-border">
-            <span className="text-3xs text-slate-400 block">Completed Execution</span>
-            <strong className="text-emerald-400 mt-1 block">{totalCompletedQty.toLocaleString()} units</strong>
+          <div className="rounded-lg bg-surface-subtle p-3 border border-surface-border">
+            <span className="text-3xs text-slate-500 dark:text-slate-400 block">Completed Execution</span>
+            <strong className="text-emerald-600 dark:text-emerald-400 mt-1 block">{totalCompletedQty.toLocaleString()} units</strong>
           </div>
-          <div className="rounded-lg bg-surface/80 p-3 border border-surface-border">
-            <span className="text-3xs text-slate-400 block">Remaining Qty</span>
-            <strong className="text-slate-300 mt-1 block">{totalRemainingQty.toLocaleString()} units</strong>
+          <div className="rounded-lg bg-surface-subtle p-3 border border-surface-border">
+            <span className="text-3xs text-slate-500 dark:text-slate-400 block">Remaining Qty</span>
+            <strong className="text-slate-700 dark:text-slate-300 mt-1 block">{totalRemainingQty.toLocaleString()} units</strong>
           </div>
-          <div className="rounded-lg bg-surface/80 p-3 border border-surface-border">
-            <span className="text-3xs text-slate-400 block">Ground Execution Delta</span>
-            <strong className={averageVariance >= 0 ? 'text-emerald-400 mt-1 block' : 'text-amber-400 mt-1 block'}>
+          <div className="rounded-lg bg-surface-subtle p-3 border border-surface-border">
+            <span className="text-3xs text-slate-500 dark:text-slate-400 block">Ground Execution Delta</span>
+            <strong className={averageVariance >= 0 ? 'text-emerald-600 dark:text-emerald-400 mt-1 block' : 'text-amber-600 dark:text-amber-400 mt-1 block'}>
               {averageVariance > 0 ? `+${averageVariance.toFixed(1)}%` : `${averageVariance.toFixed(1)}%`}
             </strong>
           </div>
@@ -75,55 +75,58 @@ export const ExecutionReport = ({
       {/* 2. Unit State Distribution Strip */}
       <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
         <div className="rounded-lg border border-surface-border bg-surface-card p-3 font-mono">
-          <span className="text-3xs text-slate-400 block">Total Micro Units</span>
-          <strong className="text-lg text-white font-bold">{totalUnits}</strong>
+          <span className="text-3xs text-slate-500 dark:text-slate-400 block">Total Micro Units</span>
+          <strong className="text-lg text-slate-900 dark:text-white font-bold">{totalUnits}</strong>
         </div>
         <div className="rounded-lg border border-surface-border bg-surface-card p-3 font-mono">
-          <span className="text-3xs text-slate-400 block">Fully Completed</span>
-          <strong className="text-lg text-emerald-400 font-bold">{completedUnits}</strong>
+          <span className="text-3xs text-slate-500 dark:text-slate-400 block">Fully Completed</span>
+          <strong className="text-lg text-emerald-600 dark:text-emerald-400 font-bold">{completedUnits}</strong>
         </div>
         <div className="rounded-lg border border-surface-border bg-surface-card p-3 font-mono">
-          <span className="text-3xs text-slate-400 block">In Progress</span>
-          <strong className="text-lg text-sky-400 font-bold">{inProgressUnits}</strong>
+          <span className="text-3xs text-slate-500 dark:text-slate-400 block">In Progress</span>
+          <strong className="text-lg text-sky-600 dark:text-sky-400 font-bold">{inProgressUnits}</strong>
         </div>
         <div className="rounded-lg border border-surface-border bg-surface-card p-3 font-mono">
-          <span className="text-3xs text-slate-400 block">Delayed Execution</span>
-          <strong className="text-lg text-amber-400 font-bold">{delayedUnits}</strong>
+          <span className="text-3xs text-slate-500 dark:text-slate-400 block">Delayed Execution</span>
+          <strong className="text-lg text-amber-600 dark:text-amber-400 font-bold">{delayedUnits}</strong>
         </div>
         <div className="rounded-lg border border-surface-border bg-surface-card p-3 font-mono">
-          <span className="text-3xs text-slate-400 block">Blocked Workfronts</span>
-          <strong className="text-lg text-rose-400 font-bold">{blockedUnits}</strong>
+          <span className="text-3xs text-slate-500 dark:text-slate-400 block">Blocked Workfronts</span>
+          <strong className="text-lg text-rose-600 dark:text-rose-400 font-bold">{blockedUnits}</strong>
         </div>
       </div>
 
       {/* 3. Trade Discipline & Contractor Breakdown */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
         {/* Discipline Breakdown */}
-        <div className="rounded-xl border border-surface-border bg-surface-card/90 shadow-lg backdrop-blur-sm p-4 sm:p-5 space-y-4">
+        <div className="rounded-xl border border-surface-border bg-surface-card p-4 sm:p-5 space-y-4 shadow-sm">
           <div className="flex items-center justify-between border-b border-surface-border pb-3">
             <div className="flex items-center gap-2">
-              <Layers className="h-4 w-4 text-sky-400" />
-              <h3 className="text-sm font-bold text-white tracking-wide">
+              <Layers className="h-4 w-4 text-sky-600 dark:text-sky-400" />
+              <h3 className="text-sm font-bold text-slate-900 dark:text-white tracking-wide">
                 Discipline Performance Summary
               </h3>
             </div>
+            <Link to="/disciplines" className="text-3xs font-mono text-sky-600 dark:text-sky-400 hover:underline">
+              Trade Matrix →
+            </Link>
           </div>
 
           <div className="space-y-3">
             {disciplineStats.map((d) => (
-              <div key={d.id} className="rounded-lg border border-surface-border bg-surface/80 p-3 space-y-2">
-                <div className="flex items-center justify-between text-xs font-semibold text-white">
+              <div key={d.id} className="rounded-lg border border-surface-border bg-surface-subtle p-3 space-y-2">
+                <div className="flex items-center justify-between text-xs font-semibold text-slate-900 dark:text-white">
                   <span>{d.name}</span>
-                  <span className="font-mono text-3xs text-slate-300">
-                    Plan: {d.plannedProgress.toFixed(1)}% | Actual: <strong className="text-emerald-400">{d.actualProgress.toFixed(1)}%</strong>
+                  <span className="font-mono text-3xs text-slate-600 dark:text-slate-300">
+                    Plan: {d.plannedProgress.toFixed(1)}% | Actual: <strong className="text-emerald-600 dark:text-emerald-400">{d.actualProgress.toFixed(1)}%</strong>
                   </span>
                 </div>
                 <div className="h-1.5 w-full rounded-full bg-surface-border overflow-hidden">
                   <div className="h-full bg-sky-500" style={{ width: `${Math.min(100, d.actualProgress)}%` }} />
                 </div>
-                <div className="flex justify-between text-3xs font-mono text-slate-400 pt-1">
+                <div className="flex justify-between text-3xs font-mono text-slate-500 dark:text-slate-400 pt-1 border-t border-surface-border/50">
                   <span>Units: {d.unitCount}</span>
-                  <span>Variance: <strong className={d.variance >= 0 ? 'text-emerald-400' : 'text-amber-400'}>{d.variance > 0 ? `+${d.variance.toFixed(1)}%` : `${d.variance.toFixed(1)}%`}</strong></span>
+                  <span>Variance: <strong className={d.variance >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-amber-600 dark:text-amber-400'}>{d.variance > 0 ? `+${d.variance.toFixed(1)}%` : `${d.variance.toFixed(1)}%`}</strong></span>
                 </div>
               </div>
             ))}
@@ -131,32 +134,35 @@ export const ExecutionReport = ({
         </div>
 
         {/* Contractor Breakdown */}
-        <div className="rounded-xl border border-surface-border bg-surface-card/90 shadow-lg backdrop-blur-sm p-4 sm:p-5 space-y-4">
+        <div className="rounded-xl border border-surface-border bg-surface-card p-4 sm:p-5 space-y-4 shadow-sm">
           <div className="flex items-center justify-between border-b border-surface-border pb-3">
             <div className="flex items-center gap-2">
-              <HardHat className="h-4 w-4 text-amber-400" />
-              <h3 className="text-sm font-bold text-white tracking-wide">
+              <HardHat className="h-4 w-4 text-amber-500" />
+              <h3 className="text-sm font-bold text-slate-900 dark:text-white tracking-wide">
                 Contractor Package Execution
               </h3>
             </div>
+            <Link to="/contractors" className="text-3xs font-mono text-amber-600 dark:text-amber-400 hover:underline">
+              Registry →
+            </Link>
           </div>
 
           <div className="space-y-3">
             {contractorStats.map((c) => (
-              <div key={c.id} className="rounded-lg border border-surface-border bg-surface/80 p-3 space-y-2">
-                <div className="flex items-center justify-between text-xs font-semibold text-white">
+              <div key={c.id} className="rounded-lg border border-surface-border bg-surface-subtle p-3 space-y-2">
+                <div className="flex items-center justify-between text-xs font-semibold text-slate-900 dark:text-white">
                   <span className="truncate max-w-[200px]">{c.name}</span>
-                  <span className="font-mono text-3xs text-slate-300">
-                    Actual: <strong className="text-emerald-400">{c.actualProgress.toFixed(1)}%</strong>
+                  <span className="font-mono text-3xs text-slate-600 dark:text-slate-300">
+                    Actual: <strong className="text-emerald-600 dark:text-emerald-400">{c.actualProgress.toFixed(1)}%</strong>
                   </span>
                 </div>
                 <div className="h-1.5 w-full rounded-full bg-surface-border overflow-hidden">
                   <div className="h-full bg-amber-500" style={{ width: `${Math.min(100, c.actualProgress)}%` }} />
                 </div>
-                <div className="flex justify-between text-3xs font-mono text-slate-400 pt-1">
+                <div className="flex justify-between text-3xs font-mono text-slate-500 dark:text-slate-400 pt-1 border-t border-surface-border/50">
                   <span>Units: {c.unitCount}</span>
-                  <span>Blocked: <strong className={c.blockedCount > 0 ? 'text-rose-400' : 'text-slate-400'}>{c.blockedCount}</strong></span>
-                  <span>Variance: <strong className={c.variance >= 0 ? 'text-emerald-400' : 'text-amber-400'}>{c.variance > 0 ? `+${c.variance.toFixed(1)}%` : `${c.variance.toFixed(1)}%`}</strong></span>
+                  <span>Blocked: <strong className={c.blockedCount > 0 ? 'text-rose-600 dark:text-rose-400' : 'text-slate-500 dark:text-slate-400'}>{c.blockedCount}</strong></span>
+                  <span>Variance: <strong className={c.variance >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-amber-600 dark:text-amber-400'}>{c.variance > 0 ? `+${c.variance.toFixed(1)}%` : `${c.variance.toFixed(1)}%`}</strong></span>
                 </div>
               </div>
             ))}
@@ -165,15 +171,15 @@ export const ExecutionReport = ({
       </div>
 
       {/* 4. Ground Execution Micro-Activity Register */}
-      <div className="rounded-xl border border-surface-border bg-surface-card/90 shadow-lg backdrop-blur-sm p-4 sm:p-5 space-y-4">
+      <div className="rounded-xl border border-surface-border bg-surface-card p-4 sm:p-5 space-y-4 shadow-sm">
         <div className="flex items-center justify-between border-b border-surface-border pb-3">
           <div className="flex items-center gap-2">
-            <Activity className="h-4 w-4 text-sky-400" />
-            <h3 className="text-sm font-bold text-white tracking-wide">
+            <Activity className="h-4 w-4 text-sky-600 dark:text-sky-400" />
+            <h3 className="text-sm font-bold text-slate-900 dark:text-white tracking-wide">
               Micro-Activity Execution Unit Registry
             </h3>
           </div>
-          <span className="font-mono text-3xs text-slate-400">
+          <span className="font-mono text-3xs text-slate-500 dark:text-slate-400">
             {executionUnits.length} Workfront Execution Units
           </span>
         </div>
@@ -182,32 +188,32 @@ export const ExecutionReport = ({
           {executionUnits.slice(0, 6).map((u) => (
             <div
               key={u.microActivityId}
-              className="flex flex-col sm:flex-row sm:items-center sm:justify-between rounded-lg border border-surface-border bg-surface/80 p-3 text-xs gap-2"
+              className="flex flex-col sm:flex-row sm:items-center sm:justify-between rounded-lg border border-surface-border bg-surface-subtle p-3 text-xs gap-2"
             >
               <div className="min-w-0">
                 <div className="flex items-center gap-2 font-mono text-3xs">
-                  <span className="font-bold text-sky-400">{u.microActivityId}</span>
-                  <span className="text-slate-400">• {u.wbsCode || u.wbsId}</span>
-                  <span className="text-slate-400">• {u.contractorName}</span>
+                  <span className="font-bold text-sky-600 dark:text-sky-400">{u.microActivityId}</span>
+                  <span className="text-slate-500 dark:text-slate-400">• {u.wbsCode || u.wbsId}</span>
+                  <span className="text-slate-500 dark:text-slate-400">• {u.contractorName}</span>
                 </div>
-                <div className="font-medium text-white mt-0.5">{u.microActivityName}</div>
+                <div className="font-medium text-slate-900 dark:text-white mt-0.5">{u.microActivityName}</div>
               </div>
 
               <div className="flex items-center gap-4 font-mono text-3xs shrink-0">
                 <div>
-                  <span className="text-slate-400 block">Quantity</span>
-                  <span className="text-white">{u.actualQuantity} / {u.plannedQuantity} {u.quantityUnit}</span>
+                  <span className="text-slate-500 dark:text-slate-400 block">Quantity</span>
+                  <span className="text-slate-800 dark:text-slate-200">{u.actualQuantity} / {u.plannedQuantity} {u.quantityUnit}</span>
                 </div>
                 <div>
-                  <span className="text-slate-400 block">Actual %</span>
-                  <span className="text-emerald-400 font-bold">{u.actualProgress}%</span>
+                  <span className="text-slate-500 dark:text-slate-400 block">Actual %</span>
+                  <span className="text-emerald-600 dark:text-emerald-400 font-bold">{u.actualProgress}%</span>
                 </div>
                 <Button
                   as={Link}
                   to={`/progress?microActivity=${u.microActivityId}`}
                   variant="ghost"
                   size="xs"
-                  className="h-6 px-2 text-3xs text-sky-400"
+                  className="h-6 px-2 text-3xs text-sky-600 dark:text-sky-400"
                 >
                   Inspect
                 </Button>
@@ -219,3 +225,4 @@ export const ExecutionReport = ({
     </div>
   );
 };
+

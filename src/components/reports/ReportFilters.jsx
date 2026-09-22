@@ -2,7 +2,8 @@ import React from 'react';
 import { 
   Search, 
   X, 
-  RotateCcw 
+  RotateCcw,
+  Filter
 } from 'lucide-react';
 import { Button } from '../ui/Button';
 import { REPORT_TYPES, REPORT_PERIODS } from '../../data/reportData';
@@ -28,13 +29,27 @@ export const ReportFilters = ({
   contractorOptions = [],
   zoneOptions = [],
 }) => {
-  const hasActiveFilters =
-    searchQuery.trim() !== '' ||
-    selectedPeriod !== 'current-cycle' ||
-    selectedPhase !== 'all' ||
-    selectedDiscipline !== 'all' ||
-    selectedContractor !== 'all' ||
-    selectedZone !== 'all';
+  const activeFilters = [];
+  if (searchQuery.trim()) activeFilters.push({ label: `Search: "${searchQuery}"`, onRemove: () => onSearchChange('') });
+  if (selectedPeriod !== 'current-cycle') {
+    const pLabel = REPORT_PERIODS.find((p) => p.id === selectedPeriod)?.label || selectedPeriod;
+    activeFilters.push({ label: `Period: ${pLabel}`, onRemove: () => onPeriodChange('current-cycle') });
+  }
+  if (selectedPhase !== 'all') activeFilters.push({ label: `Phase: ${selectedPhase}`, onRemove: () => onPhaseChange('all') });
+  if (selectedDiscipline !== 'all') {
+    const dName = disciplineOptions.find((d) => d.id === selectedDiscipline)?.name || selectedDiscipline;
+    activeFilters.push({ label: `Discipline: ${dName}`, onRemove: () => onDisciplineChange('all') });
+  }
+  if (selectedContractor !== 'all') {
+    const cName = contractorOptions.find((c) => c.id === selectedContractor)?.name || selectedContractor;
+    activeFilters.push({ label: `Contractor: ${cName}`, onRemove: () => onContractorChange('all') });
+  }
+  if (selectedZone !== 'all') {
+    const zName = zoneOptions.find((z) => z.id === selectedZone)?.name || selectedZone;
+    activeFilters.push({ label: `Zone: ${zName}`, onRemove: () => onZoneChange('all') });
+  }
+
+  const hasActiveFilters = activeFilters.length > 0;
 
   return (
     <div className="space-y-3 rounded-xl border border-surface-border bg-surface-card p-4 shadow-sm">
@@ -47,12 +62,12 @@ export const ReportFilters = ({
             placeholder="Search report items, activities, WBS packages, contractors, or zones..."
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
-            className="w-full rounded-lg border border-surface-border bg-surface-subtle py-2 pl-9 pr-8 text-xs text-white placeholder-slate-400 focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500"
+            className="w-full rounded-lg border border-surface-border bg-surface-subtle py-2 pl-9 pr-8 text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500"
           />
           {searchQuery && (
             <button
               onClick={() => onSearchChange('')}
-              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white"
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-white"
             >
               <X className="h-3.5 w-3.5" />
             </button>
@@ -64,7 +79,7 @@ export const ReportFilters = ({
             variant="ghost"
             size="sm"
             onClick={onResetFilters}
-            className="h-8 gap-1.5 text-xs text-slate-400 hover:text-white"
+            className="h-8 gap-1.5 text-xs text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
           >
             <RotateCcw className="h-3.5 w-3.5" />
             <span>Reset Filters</span>
@@ -76,104 +91,141 @@ export const ReportFilters = ({
       <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 lg:grid-cols-6 pt-1">
         {/* Report Period */}
         <div>
-          <label className="mb-1 block text-3xs font-mono uppercase tracking-wider text-slate-400">
+          <label className="mb-1 block text-3xs font-mono uppercase tracking-wider text-slate-500 dark:text-slate-400">
             Reporting Period
           </label>
           <select
             value={selectedPeriod}
             onChange={(e) => onPeriodChange(e.target.value)}
-            className="w-full rounded-lg border border-surface-border bg-surface-subtle py-1.5 px-2 text-xs text-slate-200 focus:border-sky-500 focus:outline-none"
+            className="w-full rounded-lg border border-surface-border bg-surface-subtle py-1.5 px-2 text-xs text-slate-800 dark:text-slate-200 focus:border-sky-500 focus:outline-none"
           >
             {REPORT_PERIODS.map((p) => (
-              <option key={p.id} value={p.id}>{p.label}</option>
+              <option key={p.id} value={p.id} className="bg-surface-card text-slate-900 dark:text-white">
+                {p.label}
+              </option>
             ))}
           </select>
         </div>
 
         {/* Report Scope */}
         <div>
-          <label className="mb-1 block text-3xs font-mono uppercase tracking-wider text-slate-400">
+          <label className="mb-1 block text-3xs font-mono uppercase tracking-wider text-slate-500 dark:text-slate-400">
             Report Scope
           </label>
           <select
             value={selectedReportType}
             onChange={(e) => onReportTypeChange(e.target.value)}
-            className="w-full rounded-lg border border-surface-border bg-surface-subtle py-1.5 px-2 text-xs text-slate-200 focus:border-sky-500 focus:outline-none"
+            className="w-full rounded-lg border border-surface-border bg-surface-subtle py-1.5 px-2 text-xs text-slate-800 dark:text-slate-200 focus:border-sky-500 focus:outline-none"
           >
             {Object.values(REPORT_TYPES).map((t) => (
-              <option key={t.id} value={t.id}>{t.title}</option>
+              <option key={t.id} value={t.id} className="bg-surface-card text-slate-900 dark:text-white">
+                {t.title}
+              </option>
             ))}
           </select>
         </div>
 
         {/* Phase */}
         <div>
-          <label className="mb-1 block text-3xs font-mono uppercase tracking-wider text-slate-400">
+          <label className="mb-1 block text-3xs font-mono uppercase tracking-wider text-slate-500 dark:text-slate-400">
             Project Phase
           </label>
           <select
             value={selectedPhase}
             onChange={(e) => onPhaseChange(e.target.value)}
-            className="w-full rounded-lg border border-surface-border bg-surface-subtle py-1.5 px-2 text-xs text-slate-200 focus:border-sky-500 focus:outline-none"
+            className="w-full rounded-lg border border-surface-border bg-surface-subtle py-1.5 px-2 text-xs text-slate-800 dark:text-slate-200 focus:border-sky-500 focus:outline-none"
           >
-            <option value="all">All Phases</option>
+            <option value="all" className="bg-surface-card text-slate-900 dark:text-white">All Phases</option>
             {phaseOptions.map((p) => (
-              <option key={p.id || p} value={p.id || p}>{p.name ? `${p.id} - ${p.name}` : p}</option>
+              <option key={p.id || p} value={p.id || p} className="bg-surface-card text-slate-900 dark:text-white">
+                {p.name ? `${p.id} - ${p.name}` : p}
+              </option>
             ))}
           </select>
         </div>
 
         {/* Discipline */}
         <div>
-          <label className="mb-1 block text-3xs font-mono uppercase tracking-wider text-slate-400">
+          <label className="mb-1 block text-3xs font-mono uppercase tracking-wider text-slate-500 dark:text-slate-400">
             Discipline
           </label>
           <select
             value={selectedDiscipline}
             onChange={(e) => onDisciplineChange(e.target.value)}
-            className="w-full rounded-lg border border-surface-border bg-surface-subtle py-1.5 px-2 text-xs text-slate-200 focus:border-sky-500 focus:outline-none"
+            className="w-full rounded-lg border border-surface-border bg-surface-subtle py-1.5 px-2 text-xs text-slate-800 dark:text-slate-200 focus:border-sky-500 focus:outline-none"
           >
-            <option value="all">All Disciplines</option>
+            <option value="all" className="bg-surface-card text-slate-900 dark:text-white">All Disciplines</option>
             {disciplineOptions.map((d) => (
-              <option key={d.id} value={d.id}>{d.name}</option>
+              <option key={d.id} value={d.id} className="bg-surface-card text-slate-900 dark:text-white">
+                {d.name}
+              </option>
             ))}
           </select>
         </div>
 
         {/* Contractor */}
         <div>
-          <label className="mb-1 block text-3xs font-mono uppercase tracking-wider text-slate-400">
+          <label className="mb-1 block text-3xs font-mono uppercase tracking-wider text-slate-500 dark:text-slate-400">
             Contractor
           </label>
           <select
             value={selectedContractor}
             onChange={(e) => onContractorChange(e.target.value)}
-            className="w-full rounded-lg border border-surface-border bg-surface-subtle py-1.5 px-2 text-xs text-slate-200 focus:border-sky-500 focus:outline-none"
+            className="w-full rounded-lg border border-surface-border bg-surface-subtle py-1.5 px-2 text-xs text-slate-800 dark:text-slate-200 focus:border-sky-500 focus:outline-none"
           >
-            <option value="all">All Contractors</option>
+            <option value="all" className="bg-surface-card text-slate-900 dark:text-white">All Contractors</option>
             {contractorOptions.map((c) => (
-              <option key={c.id} value={c.id}>{c.name}</option>
+              <option key={c.id} value={c.id} className="bg-surface-card text-slate-900 dark:text-white">
+                {c.name}
+              </option>
             ))}
           </select>
         </div>
 
         {/* Zone */}
         <div>
-          <label className="mb-1 block text-3xs font-mono uppercase tracking-wider text-slate-400">
+          <label className="mb-1 block text-3xs font-mono uppercase tracking-wider text-slate-500 dark:text-slate-400">
             Site Zone
           </label>
           <select
             value={selectedZone}
             onChange={(e) => onZoneChange(e.target.value)}
-            className="w-full rounded-lg border border-surface-border bg-surface-subtle py-1.5 px-2 text-xs text-slate-200 focus:border-sky-500 focus:outline-none"
+            className="w-full rounded-lg border border-surface-border bg-surface-subtle py-1.5 px-2 text-xs text-slate-800 dark:text-slate-200 focus:border-sky-500 focus:outline-none"
           >
-            <option value="all">All Zones</option>
+            <option value="all" className="bg-surface-card text-slate-900 dark:text-white">All Zones</option>
             {zoneOptions.map((z) => (
-              <option key={z.id} value={z.id}>{z.code || z.id} - {z.name}</option>
+              <option key={z.id} value={z.id} className="bg-surface-card text-slate-900 dark:text-white">
+                {z.code || z.id} - {z.name}
+              </option>
             ))}
           </select>
         </div>
       </div>
+
+      {/* Active Filter Chips Ribbon */}
+      {hasActiveFilters && (
+        <div className="flex flex-wrap items-center gap-1.5 pt-2 border-t border-surface-border">
+          <span className="text-3xs font-mono text-slate-500 dark:text-slate-400 flex items-center gap-1">
+            <Filter className="h-3 w-3" />
+            Active ({activeFilters.length}):
+          </span>
+          {activeFilters.map((af, i) => (
+            <span
+              key={i}
+              className="inline-flex items-center gap-1 rounded bg-surface-subtle px-2 py-0.5 text-3xs font-mono text-slate-700 dark:text-slate-300 border border-surface-border"
+            >
+              <span>{af.label}</span>
+              <button
+                onClick={af.onRemove}
+                className="text-slate-400 hover:text-slate-600 dark:hover:text-white"
+              >
+                <X className="h-2.5 w-2.5" />
+              </button>
+            </span>
+          ))}
+        </div>
+      )}
     </div>
   );
 };
+

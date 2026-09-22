@@ -2,14 +2,16 @@ import React from 'react';
 import { 
   Eye, 
   Printer, 
-  FileText, 
-  FileSpreadsheet 
+  FileSpreadsheet, 
+  FileCode
 } from 'lucide-react';
 import { Button } from '../ui/Button';
 
 export const ReportExportActions = ({
   onOpenPreview,
   onPrint,
+  onExportCsv,
+  onExportJson,
 }) => {
   const handlePrint = () => {
     if (onPrint) {
@@ -26,9 +28,9 @@ export const ReportExportActions = ({
         variant="secondary"
         size="sm"
         onClick={onOpenPreview}
-        className="gap-1.5 text-xs text-sky-300 hover:text-white"
+        className="gap-1.5 text-xs text-sky-600 dark:text-sky-400 hover:text-sky-700 dark:hover:text-white border border-surface-border"
       >
-        <Eye className="h-3.5 w-3.5 text-sky-400" />
+        <Eye className="h-3.5 w-3.5 text-sky-500" />
         <span>Preview Dossier</span>
       </Button>
 
@@ -37,43 +39,40 @@ export const ReportExportActions = ({
         variant="outline"
         size="sm"
         onClick={handlePrint}
-        className="gap-1.5 text-xs text-slate-300 hover:text-white"
+        className="gap-1.5 text-xs text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white"
       >
-        <Printer className="h-3.5 w-3.5 text-slate-400" />
+        <Printer className="h-3.5 w-3.5 text-slate-500 dark:text-slate-400" />
         <span>Print Report</span>
       </Button>
 
-      {/* 3. Export PDF (Prototype planned state) */}
-      <div className="relative group">
+      {/* 3. Export CSV */}
+      {onExportCsv && (
         <Button
           variant="outline"
           size="sm"
-          disabled
-          className="gap-1.5 text-xs text-slate-500 border-surface-border cursor-not-allowed opacity-60"
+          onClick={onExportCsv}
+          className="gap-1.5 text-xs text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white"
+          title="Download active report data as CSV spreadsheet"
         >
-          <FileText className="h-3.5 w-3.5 text-slate-500" />
-          <span>Export PDF</span>
-        </Button>
-        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 hidden group-hover:block z-20 whitespace-nowrap rounded bg-slate-900 border border-surface-border px-2 py-1 text-3xs font-mono text-slate-300 shadow-lg">
-          Planned for backend report service (Phase 17+)
-        </div>
-      </div>
-
-      {/* 4. Export CSV (Prototype planned state) */}
-      <div className="relative group">
-        <Button
-          variant="outline"
-          size="sm"
-          disabled
-          className="gap-1.5 text-xs text-slate-500 border-surface-border cursor-not-allowed opacity-60"
-        >
-          <FileSpreadsheet className="h-3.5 w-3.5 text-slate-500" />
+          <FileSpreadsheet className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
           <span>Export CSV</span>
         </Button>
-        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 hidden group-hover:block z-20 whitespace-nowrap rounded bg-slate-900 border border-surface-border px-2 py-1 text-3xs font-mono text-slate-300 shadow-lg">
-          Tabular data export planned for backend integration
-        </div>
-      </div>
+      )}
+
+      {/* 4. Export JSON Snapshot */}
+      {onExportJson && (
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={onExportJson}
+          className="gap-1.5 text-xs text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hidden sm:inline-flex"
+          title="Download structured JSON report snapshot"
+        >
+          <FileCode className="h-3.5 w-3.5 text-slate-500" />
+          <span>JSON</span>
+        </Button>
+      )}
     </div>
   );
 };
+

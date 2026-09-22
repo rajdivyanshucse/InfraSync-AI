@@ -60,6 +60,7 @@ export const ReportsPage = () => {
 
   // Preview Modal state
   const [showPreviewModal, setShowPreviewModal] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
 
   // Load project-scoped datasets
   const scheduleData = useMemo(() => {
@@ -219,6 +220,156 @@ export const ReportsPage = () => {
     setSearchParams({});
   };
 
+  // Client-side CSV Exporter
+  const handleExportCsv = () => {
+    setIsExporting(true);
+    try {
+      let csvContent = '';
+      const projectId = currentProject?.id || 'proj-1';
+      const projectName = currentProject?.name || 'InfraSync Project';
+
+      if (selectedReportType === 'schedule') {
+        const headers = ['Milestone Code', 'Milestone Name', 'Target Date', 'Forecast Date', 'Variance Days', 'Status', 'Progress %'];
+        const rows = (scheduleSummary.milestones || []).map(m => [
+          `"${m.code}"`,
+          `"${m.name}"`,
+          `"${m.targetDate}"`,
+          `"${m.forecastDate}"`,
+          m.varianceDays,
+          `"${m.status}"`,
+          m.progress
+        ]);
+        csvContent = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+      } else if (selectedReportType === 'execution') {
+        const headers = ['Unit ID', 'Activity Name', 'WBS', 'Contractor', 'Discipline', 'Zone', 'Quantity Unit', 'Planned Qty', 'Actual Qty', 'Status'];
+        const rows = (executionSummary.executionUnits || []).map(u => [
+          `"${u.microActivityId}"`,
+          `"${u.name}"`,
+          `"${u.wbsId}"`,
+          `"${u.contractor?.name || ''}"`,
+          `"${u.discipline?.name || ''}"`,
+          `"${u.zone?.code || ''}"`,
+          `"${u.quantity?.unit || ''}"`,
+          u.quantity?.planned || 0,
+          u.quantity?.actual || 0,
+          `"${u.status}"`
+        ]);
+        csvContent = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+      } else if (selectedReportType === 'evidence') {
+        const headers = ['Evidence ID', 'Activity Code', 'Zone Code', 'Modality', 'Capture Source', 'Timestamp', 'Status'];
+        const rows = (evidenceSummary.recentRecords || []).map(e => [
+          `"${e.id}"`,
+          `"${e.microActivityId}"`,
+          `"${e.zoneId}"`,
+          `"${e.modality}"`,
+          `"${e.source}"`,
+          `"${e.timestamp}"`,
+          `"${e.status}"`
+        ]);
+        csvContent = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+      } else if (selectedReportType === 'risk') {
+        const headers = ['Risk ID', 'Title', 'Severity', 'WBS Scope', 'Observed Condition', 'Impact'];
+        const rows = (riskEvents || []).map(r => [
+          `"${r.id}"`,
+          `"${r.title}"`,
+          `"${r.severity}"`,
+          `"${r.impactedScope?.wbsId || ''}"`,
+          `"${(r.explanation || r.observedCondition || '').replace(/"/g, '""')}"`,
+          `"${(r.potentialImpact || '').replace(/"/g, '""')}"`
+        ]);
+        csvContent = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+      } else if (selectedReportType === 'alerts') {
+        const headers = ['Alert ID', 'Title', 'Severity', 'Status', 'Responsible Role', 'Contractor', 'Trigger Time'];
+        const rows = (alerts || []).map(a => [
+          `"${a.id}"`,
+          `"${a.title}"`,
+          `"${a.severity}"`,
+          `"${a.status}"`,
+          `"${a.responsibleRole}"`,
+          `"${a.contractor?.name || ''}"`,
+          `"${a.createdAt}"`
+        ]);
+        csvContent = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+      } else if (selectedReportType === 'spatial') {
+        const headers = ['Sector Code', 'Sector Name', 'Phase ID', 'Planned Progress %', 'Actual Progress %', 'Variance %', 'Evidence Coverage %'];
+        const rows = (spatialSummary.zoneSummaries || []).map(z => [
+          `"${z.zoneCode}"`,
+          `"${z.zoneName}"`,
+          `"${z.phaseId}"`,
+          z.progress?.plannedProgress || 0,
+          z.progress?.actualProgress || 0,
+          z.progress?.variance || 0,
+          z.evidenceCoverage?.coveragePercent || 0
+        ]);
+        csvContent = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+      } else {
+        // Executive Summary fallback
+        const headers = ['Section', 'Metric', 'Value'];
+        const rows = [
+          ['Project Info', 'Project ID', `"${projectId}"`],
+          ['Project Info', 'Project Name', `"${projectName}"`],
+          ['Executive KPI', 'P6 Planned Progress %', reportKpiSummary.overallPlanned],
+          ['Executive KPI', 'Ground Actual Progress %', reportKpiSummary.overallActual],
+          ['Executive KPI', 'Net Progress Variance %', reportKpiSummary.overallVariance],
+          ['Executive KPI', 'Evidence Coverage %', reportKpiSummary.evidenceCoveragePercent],
+          ['Executive KPI', 'Active Risk Warnings', reportKpiSummary.activeWarningsCount],
+          ['Executive KPI', 'Open Interventions', reportKpiSummary.openInterventionsCount],
+          ['Schedule', 'Baseline Revision', `"${scheduleSummary.version}"`],
+          ['Schedule', 'Calendar Float Variance (Days)', scheduleSummary.calendarDaysVariance],
+          ['Execution', 'Total Physical Units', executionSummary.totalUnits],
+          ['Execution', 'Blocked Units', executionSummary.blockedUnits],
+          ['Evidence', 'Total Evidence Records', evidenceSummary.totalRecords],
+          ['Spatial', 'Total Physical Sectors', spatialSummary.totalZones]
+        ];
+        csvContent = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+      }
+
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.setAttribute('href', url);
+      link.setAttribute('download', `InfraSync_${projectId}_${selectedReportType}_report.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
+  // Client-side JSON Data Snapshot Exporter
+  const handleExportJson = () => {
+    setIsExporting(true);
+    try {
+      const payload = {
+        metadata: reportMetadata,
+        project: currentProject,
+        generatedAt: new Date().toISOString(),
+        summary: reportKpiSummary,
+        schedule: scheduleSummary,
+        execution: executionSummary,
+        evidence: evidenceSummary,
+        risk: riskSummary,
+        alerts: alertSummary,
+        spatial: spatialSummary,
+        attentionItems,
+      };
+
+      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.setAttribute('href', url);
+      link.setAttribute('download', `InfraSync_${currentProject?.id || 'proj-1'}_${selectedReportType}_snapshot.json`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
   return (
     <div className="space-y-6 pb-12">
       {/* 1. Master Header */}
@@ -246,6 +397,9 @@ export const ReportsPage = () => {
         <ReportExportActions
           onOpenPreview={() => setShowPreviewModal(true)}
           onPrint={() => window.print()}
+          onExportCsv={handleExportCsv}
+          onExportJson={handleExportJson}
+          isExporting={isExporting}
         />
       </div>
 

@@ -25,23 +25,23 @@ export const ReportAttentionItems = ({
   };
 
   return (
-    <div className="rounded-xl border border-surface-border bg-surface-card/90 shadow-lg backdrop-blur-sm p-4 sm:p-5 space-y-4">
+    <div className="rounded-xl border border-surface-border bg-surface-card p-4 sm:p-5 shadow-sm space-y-4">
       {/* Header */}
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between border-b border-surface-border pb-3">
         <div className="flex items-center gap-2">
-          <AlertOctagon className="h-4 w-4 text-rose-400" />
-          <h3 className="text-sm font-bold text-white tracking-wide">
+          <AlertOctagon className="h-4 w-4 text-rose-500 dark:text-rose-400" />
+          <h3 className="text-sm font-bold text-slate-900 dark:text-white tracking-wide">
             {title}
           </h3>
         </div>
-        <span className="font-mono text-xs text-slate-400">
+        <span className="font-mono text-xs text-slate-500 dark:text-slate-400">
           {attentionItems.length} Factual Attention Triggers
         </span>
       </div>
 
       {/* Item List */}
       {attentionItems.length === 0 ? (
-        <div className="rounded-lg bg-surface/50 border border-surface-border p-6 text-center text-xs text-slate-400">
+        <div className="rounded-lg bg-surface-subtle border border-surface-border p-6 text-center text-xs text-slate-500 dark:text-slate-400">
           No critical attention items identified for the selected filter scope.
         </div>
       ) : (
@@ -55,8 +55,8 @@ export const ReportAttentionItems = ({
                 key={item.id}
                 className={`rounded-xl border p-4 transition-all duration-200 space-y-2.5 ${
                   isCritical
-                    ? 'border-rose-500/40 bg-rose-500/5 hover:border-rose-500/60'
-                    : 'border-surface-border bg-surface/80 hover:border-amber-500/40'
+                    ? 'border-rose-300 dark:border-rose-500/40 bg-rose-50/50 dark:bg-rose-500/5 hover:border-rose-400 dark:hover:border-rose-500/60'
+                    : 'border-surface-border bg-surface-subtle hover:border-amber-400 dark:hover:border-amber-500/40'
                 }`}
               >
                 {/* Header Row */}
@@ -64,15 +64,15 @@ export const ReportAttentionItems = ({
                   <div className="flex items-center gap-2">
                     <div
                       className={`flex h-6 w-6 items-center justify-center rounded-md ${
-                        isCritical ? 'bg-rose-500/20 text-rose-400' : 'bg-amber-500/20 text-amber-400'
+                        isCritical ? 'bg-rose-100 text-rose-600 dark:bg-rose-500/20 dark:text-rose-400' : 'bg-amber-100 text-amber-600 dark:bg-amber-500/20 dark:text-amber-400'
                       }`}
                     >
                       <Icon className="h-3.5 w-3.5" />
                     </div>
-                    <span className="font-mono text-3xs font-bold text-sky-400">
+                    <span className="font-mono text-3xs font-bold text-sky-600 dark:text-sky-400">
                       [{item.source}]
                     </span>
-                    <strong className="text-xs font-bold text-white">
+                    <strong className="text-xs font-bold text-slate-900 dark:text-white">
                       {item.scope}
                     </strong>
                   </div>
@@ -81,8 +81,8 @@ export const ReportAttentionItems = ({
                     <span
                       className={`rounded px-1.5 py-0.5 font-mono text-3xs font-bold uppercase border ${
                         isCritical
-                          ? 'bg-rose-950/60 text-rose-300 border-rose-500/40'
-                          : 'bg-amber-950/60 text-amber-300 border-amber-500/40'
+                          ? 'bg-rose-100 text-rose-700 border-rose-300 dark:bg-rose-950/60 dark:text-rose-300 dark:border-rose-500/40'
+                          : 'bg-amber-100 text-amber-700 border-amber-300 dark:bg-amber-950/60 dark:text-amber-300 dark:border-amber-500/40'
                       }`}
                     >
                       {item.severity}
@@ -92,14 +92,14 @@ export const ReportAttentionItems = ({
 
                 {/* Condition and Impact */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs">
-                  <div className="rounded bg-surface/80 p-2.5 border border-surface-border text-slate-300">
-                    <span className="text-3xs font-mono uppercase tracking-wider text-slate-400 block mb-1">
+                  <div className="rounded bg-surface p-2.5 border border-surface-border text-slate-700 dark:text-slate-300">
+                    <span className="text-3xs font-mono uppercase tracking-wider text-slate-500 dark:text-slate-400 block mb-1">
                       Observed Condition
                     </span>
                     <p className="text-3xs leading-relaxed">{item.condition}</p>
                   </div>
-                  <div className="rounded bg-surface/80 p-2.5 border border-surface-border text-amber-300">
-                    <span className="text-3xs font-mono uppercase tracking-wider text-slate-400 block mb-1">
+                  <div className="rounded bg-surface p-2.5 border border-surface-border text-amber-800 dark:text-amber-300">
+                    <span className="text-3xs font-mono uppercase tracking-wider text-slate-500 dark:text-slate-400 block mb-1">
                       Execution Impact
                     </span>
                     <p className="text-3xs leading-relaxed">{item.impact}</p>
@@ -107,11 +107,11 @@ export const ReportAttentionItems = ({
                 </div>
 
                 {/* Footer Row with Responsible Role and CTA */}
-                <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-surface-border/50 text-3xs font-mono">
-                  <div className="flex items-center gap-1.5 text-slate-400">
-                    <HardHat className="h-3 w-3 text-sky-400" />
+                <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-surface-border text-3xs font-mono">
+                  <div className="flex items-center gap-1.5 text-slate-500 dark:text-slate-400">
+                    <HardHat className="h-3 w-3 text-sky-600 dark:text-sky-400" />
                     <span>Responsible Role:</span>
-                    <strong className="text-slate-200">{item.responsibleRole}</strong>
+                    <strong className="text-slate-800 dark:text-slate-200">{item.responsibleRole}</strong>
                   </div>
 
                   {item.navRoute && (
@@ -120,7 +120,7 @@ export const ReportAttentionItems = ({
                       to={item.navRoute}
                       variant="ghost"
                       size="xs"
-                      className="h-6 px-2.5 text-3xs text-sky-400 hover:text-sky-300 gap-1"
+                      className="h-6 px-2.5 text-3xs text-sky-600 dark:text-sky-400 hover:text-sky-700 dark:hover:text-sky-300 gap-1"
                     >
                       <span>{item.navLabel || 'Open Context'}</span>
                       <ExternalLink className="h-2.5 w-2.5" />
