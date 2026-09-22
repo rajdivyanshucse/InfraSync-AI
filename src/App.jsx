@@ -15,6 +15,7 @@ import { SchedulePage } from './pages/SchedulePage';
 import { ProgressPage } from './pages/ProgressPage';
 import { SiteEvidencePage } from './pages/SiteEvidencePage';
 import { SiteViewPage } from './pages/SiteViewPage';
+import { VerificationPage } from './pages/VerificationPage';
 import { RiskIntelligencePage } from './pages/RiskIntelligencePage';
 import { AlertsPage } from './pages/AlertsPage';
 import { ContractorsPage } from './pages/ContractorsPage';
@@ -47,6 +48,7 @@ export function App() {
                 <Route path="/progress" element={<ProgressPage />} />
                 <Route path="/site-evidence" element={<SiteEvidencePage />} />
                 <Route path="/site-view" element={<SiteViewPage />} />
+                <Route path="/verification" element={<VerificationPage />} />
                 <Route path="/risk-intelligence" element={<RiskIntelligencePage />} />
                 <Route path="/alerts" element={<AlertsPage />} />
                 <Route path="/contractors" element={<ContractorsPage />} />
