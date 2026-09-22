@@ -38,7 +38,7 @@ export const ProjectFilters = ({
   ];
 
   return (
-    <div className="p-4 rounded-xl bg-surface border border-border/80 space-y-3">
+    <div className="p-3.5 sm:p-4 rounded-xl bg-surface border border-border shadow-xs space-y-3">
       <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
         {/* Search Field (5 Cols) */}
         <div className="md:col-span-4">
@@ -83,10 +83,10 @@ export const ProjectFilters = ({
               type="button"
               onClick={() => onViewModeChange('table')}
               className={cn(
-                'p-1.5 rounded text-xs transition-colors',
+                'p-1.5 rounded-md text-xs transition-colors',
                 viewMode === 'table'
-                  ? 'bg-surface text-brand-400 font-bold shadow-sm'
-                  : 'text-slate-400 hover:text-white'
+                  ? 'bg-surface text-brand-600 dark:text-brand-400 font-bold shadow-xs'
+                  : 'text-foreground-muted hover:text-foreground'
               )}
               title="Table View"
               aria-label="Table View"
@@ -97,10 +97,10 @@ export const ProjectFilters = ({
               type="button"
               onClick={() => onViewModeChange('grid')}
               className={cn(
-                'p-1.5 rounded text-xs transition-colors',
+                'p-1.5 rounded-md text-xs transition-colors',
                 viewMode === 'grid'
-                  ? 'bg-surface text-brand-400 font-bold shadow-sm'
-                  : 'text-slate-400 hover:text-white'
+                  ? 'bg-surface text-brand-600 dark:text-brand-400 font-bold shadow-xs'
+                  : 'text-foreground-muted hover:text-foreground'
               )}
               title="Grid View"
               aria-label="Grid View"

@@ -24,7 +24,7 @@ export const ProjectDetailHeader = ({ projectDetail }) => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <Link
           to="/projects"
-          className="inline-flex items-center gap-1.5 text-xs text-slate-400 hover:text-white transition-colors font-medium"
+          className="inline-flex items-center gap-1.5 text-xs text-foreground-muted hover:text-foreground transition-colors font-medium"
         >
           <ArrowLeft className="w-3.5 h-3.5" />
           <span>Back to All Projects</span>
@@ -35,7 +35,7 @@ export const ProjectDetailHeader = ({ projectDetail }) => {
           <Button
             variant="secondary"
             size="sm"
-            leftIcon={<LayoutDashboard className="w-3.5 h-3.5 text-brand-400" />}
+            leftIcon={<LayoutDashboard className="w-3.5 h-3.5 text-brand-600 dark:text-brand-400" />}
             onClick={() => navigate('/dashboard')}
           >
             Dashboard
@@ -44,7 +44,7 @@ export const ProjectDetailHeader = ({ projectDetail }) => {
           <Button
             variant="secondary"
             size="sm"
-            leftIcon={<CalendarRange className="w-3.5 h-3.5 text-sky-400" />}
+            leftIcon={<CalendarRange className="w-3.5 h-3.5 text-sky-600 dark:text-sky-400" />}
             onClick={() => navigate('/schedule')}
           >
             Schedule
@@ -53,7 +53,7 @@ export const ProjectDetailHeader = ({ projectDetail }) => {
           <Button
             variant="secondary"
             size="sm"
-            leftIcon={<Activity className="w-3.5 h-3.5 text-emerald-400" />}
+            leftIcon={<Activity className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />}
             onClick={() => navigate('/progress')}
           >
             Progress
@@ -87,30 +87,30 @@ export const ProjectDetailHeader = ({ projectDetail }) => {
       />
 
       {/* Sub-Header Metadata Bar */}
-      <div className="p-3.5 rounded-xl bg-surface-subtle/80 border border-border flex flex-wrap items-center justify-between gap-3 text-xs">
-        <div className="flex flex-wrap items-center gap-y-1 gap-x-4 text-slate-300">
+      <div className="p-3.5 rounded-xl bg-surface border border-border shadow-xs flex flex-wrap items-center justify-between gap-3 text-xs">
+        <div className="flex flex-wrap items-center gap-y-1 gap-x-4 text-foreground-subtle">
           <div className="flex items-center gap-1.5">
-            <MapPin className="w-3.5 h-3.5 text-brand-400 shrink-0" />
-            <span className="font-semibold text-slate-100">{projectDetail.location}</span>
+            <MapPin className="w-3.5 h-3.5 text-brand-600 dark:text-brand-400 shrink-0" />
+            <span className="font-semibold text-foreground">{projectDetail.location}</span>
           </div>
 
-          <span className="hidden sm:inline text-slate-600">•</span>
+          <span className="hidden sm:inline text-border">•</span>
 
-          <div className="flex items-center gap-1.5 text-slate-400">
-            <Layers className="w-3.5 h-3.5 text-slate-500 shrink-0" />
+          <div className="flex items-center gap-1.5 text-foreground-muted">
+            <Layers className="w-3.5 h-3.5 text-foreground-muted shrink-0" />
             <span>{projectDetail.disciplinesCount} Disciplines</span>
           </div>
 
-          <span className="hidden sm:inline text-slate-600">•</span>
+          <span className="hidden sm:inline text-border">•</span>
 
-          <div className="flex items-center gap-1.5 text-slate-400">
-            <FolderKanban className="w-3.5 h-3.5 text-slate-500 shrink-0" />
+          <div className="flex items-center gap-1.5 text-foreground-muted">
+            <FolderKanban className="w-3.5 h-3.5 text-foreground-muted shrink-0" />
             <span>{projectDetail.contractorCount} Subcontractors</span>
           </div>
         </div>
 
-        <div className="flex items-center gap-1.5 text-2xs font-mono text-slate-400 bg-surface px-2.5 py-1 rounded border border-border/70">
-          <Clock className="w-3 h-3 text-slate-500" />
+        <div className="flex items-center gap-1.5 text-2xs font-mono text-foreground-muted bg-surface-subtle px-2.5 py-1 rounded border border-border-subtle">
+          <Clock className="w-3 h-3 text-foreground-muted" />
           <span>Last sync: {projectDetail.lastUpdated}</span>
         </div>
       </div>

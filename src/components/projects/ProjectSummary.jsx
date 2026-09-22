@@ -11,11 +11,11 @@ export const ProjectSummary = ({ projects }) => {
   const completed = projects.filter((p) => p.status === 'completed').length;
 
   const stats = [
-    { label: 'Total Projects', value: total, icon: FolderKanban, color: 'text-slate-100', badge: 'Portfolio' },
-    { label: 'Active On Track', value: onTrack, icon: CheckCircle2, color: 'text-emerald-400', badge: 'Healthy' },
-    { label: 'Variance At Risk', value: atRisk, icon: AlertTriangle, color: 'text-amber-400', badge: 'Attention' },
-    { label: 'Schedule Delayed', value: delayed, icon: Clock, color: 'text-rose-400', badge: 'Critical' },
-    { label: 'Completed Packages', value: completed, icon: Layers, color: 'text-sky-400', badge: 'Certified' },
+    { label: 'Total Projects', value: total, icon: FolderKanban, color: 'text-foreground', badge: 'Portfolio', badgeCls: 'bg-surface-subtle text-foreground-muted border-border' },
+    { label: 'Active On Track', value: onTrack, icon: CheckCircle2, color: 'text-emerald-600 dark:text-emerald-400', badge: 'Healthy', badgeCls: 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/20' },
+    { label: 'Variance At Risk', value: atRisk, icon: AlertTriangle, color: 'text-amber-600 dark:text-amber-400', badge: 'Attention', badgeCls: 'bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-500/20' },
+    { label: 'Schedule Delayed', value: delayed, icon: Clock, color: 'text-rose-600 dark:text-rose-400', badge: 'Critical', badgeCls: 'bg-rose-500/10 text-rose-700 dark:text-rose-400 border-rose-500/20' },
+    { label: 'Completed Packages', value: completed, icon: Layers, color: 'text-sky-600 dark:text-sky-400', badge: 'Certified', badgeCls: 'bg-sky-500/10 text-sky-700 dark:text-sky-400 border-sky-500/20' },
   ];
 
   return (
@@ -25,10 +25,10 @@ export const ProjectSummary = ({ projects }) => {
         return (
           <Card
             key={idx}
-            className="p-3.5 bg-surface/80 border-border/80 hover:bg-surface-subtle transition-all flex flex-col justify-between space-y-2"
+            className="p-3.5 bg-surface border-border hover:bg-surface-subtle transition-all flex flex-col justify-between space-y-2 shadow-xs"
           >
             <div className="flex items-center justify-between">
-              <span className="text-2xs font-medium text-slate-400 truncate">{item.label}</span>
+              <span className="text-2xs font-medium text-foreground-muted truncate">{item.label}</span>
               <Icon className={cn('w-3.5 h-3.5', item.color)} />
             </div>
 
@@ -36,7 +36,7 @@ export const ProjectSummary = ({ projects }) => {
               <span className={cn('text-2xl font-bold font-mono tracking-tight', item.color)}>
                 {String(item.value).padStart(2, '0')}
               </span>
-              <span className="text-3xs font-mono px-1.5 py-0.2 rounded bg-surface-muted text-slate-400 border border-border/60">
+              <span className={cn('text-3xs font-mono px-1.5 py-0.5 rounded border font-semibold', item.badgeCls)}>
                 {item.badge}
               </span>
             </div>

@@ -17,21 +17,21 @@ export const ProjectOverview = ({ projectDetail }) => {
   ];
 
   return (
-    <Card className="bg-surface/90 border-border shadow-panel-sm">
-      <CardHeader className="pb-3 border-b border-border/70">
+    <Card className="bg-surface border-border shadow-panel-sm">
+      <CardHeader className="pb-3 border-b border-border-subtle">
         <div className="flex items-center gap-2">
-          <Building2 className="w-4 h-4 text-brand-400" />
-          <CardTitle>Project Master Parameters</CardTitle>
+          <Building2 className="w-4 h-4 text-brand-600 dark:text-brand-400" />
+          <CardTitle className="text-sm font-semibold text-foreground">Project Master Parameters</CardTitle>
         </div>
       </CardHeader>
 
       <CardContent className="pt-4 space-y-4">
         {/* Project Scope Statement */}
-        <div className="p-3 rounded-lg bg-surface-subtle border border-border/70 text-xs">
-          <span className="font-mono text-2xs font-semibold uppercase text-brand-400 block mb-1">
+        <div className="p-3.5 rounded-lg bg-surface-subtle border border-border-subtle text-xs">
+          <span className="font-mono text-2xs font-semibold uppercase text-brand-600 dark:text-brand-400 block mb-1">
             Package Scope Statement
           </span>
-          <p className="text-slate-300 leading-relaxed">
+          <p className="text-foreground-subtle leading-relaxed">
             {projectDetail.description}
           </p>
         </div>
@@ -43,13 +43,13 @@ export const ProjectOverview = ({ projectDetail }) => {
             return (
               <div
                 key={idx}
-                className="p-3 rounded-lg bg-surface-subtle/50 border border-border/60 space-y-1 hover:border-slate-700 transition-colors"
+                className="p-3 rounded-lg bg-surface-subtle border border-border-subtle space-y-1 hover:border-border transition-colors"
               >
-                <div className="flex items-center gap-1.5 text-2xs text-slate-400">
-                  <Icon className="w-3.5 h-3.5 text-slate-500 shrink-0" />
+                <div className="flex items-center gap-1.5 text-2xs text-foreground-muted">
+                  <Icon className="w-3.5 h-3.5 text-foreground-muted shrink-0" />
                   <span>{field.label}</span>
                 </div>
-                <div className={`font-semibold text-slate-100 truncate ${field.isMono ? 'font-mono text-brand-300' : ''}`}>
+                <div className={`font-semibold text-foreground truncate ${field.isMono ? 'font-mono text-brand-600 dark:text-brand-300' : ''}`}>
                   {field.value}
                 </div>
               </div>

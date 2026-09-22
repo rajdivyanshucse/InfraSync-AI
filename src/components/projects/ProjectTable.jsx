@@ -26,7 +26,7 @@ export const ProjectTable = ({ projects }) => {
       <div className="overflow-x-auto">
         <table className="w-full text-left border-collapse">
           <thead>
-            <tr className="border-b border-border bg-surface-subtle/70 text-2xs font-mono font-semibold uppercase text-slate-400">
+            <tr className="border-b border-border bg-surface-subtle text-2xs font-mono font-semibold uppercase text-foreground-muted">
               <th className="py-3 px-4">Project / Package</th>
               <th className="py-3 px-3">Location & Sector</th>
               <th className="py-3 px-3">Execution Status</th>
@@ -35,7 +35,7 @@ export const ProjectTable = ({ projects }) => {
               <th className="py-3 px-3 text-right">Actions</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-border/60 text-xs">
+          <tbody className="divide-y divide-border-subtle text-xs">
             {projects.map((project) => {
               const detail = getProjectDetail(project.id);
               const isSelected = project.id === currentProject?.id;
@@ -46,21 +46,21 @@ export const ProjectTable = ({ projects }) => {
                   key={project.id}
                   onClick={() => handleOpenProject(project.id)}
                   className={cn(
-                    'hover:bg-surface-subtle/80 transition-colors cursor-pointer group',
-                    isSelected && 'bg-brand-950/20'
+                    'hover:bg-surface-subtle transition-colors cursor-pointer group',
+                    isSelected && 'bg-brand-500/5 dark:bg-brand-950/20'
                   )}
                 >
                   {/* Project Name & Code */}
                   <td className="py-3.5 px-4">
                     <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-lg bg-surface-muted border border-border flex items-center justify-center text-brand-400 shrink-0 group-hover:border-brand-500/40">
+                      <div className="w-8 h-8 rounded-lg bg-surface-subtle border border-border flex items-center justify-center text-brand-600 dark:text-brand-400 shrink-0 group-hover:border-brand-500/40">
                         <FolderKanban className="w-4 h-4" />
                       </div>
                       <div>
-                        <span className="font-bold text-slate-100 block group-hover:text-brand-300 transition-colors">
+                        <span className="font-semibold text-foreground block group-hover:text-brand-600 dark:group-hover:text-brand-300 transition-colors">
                           {project.name}
                         </span>
-                        <span className="font-mono text-2xs text-brand-400">
+                        <span className="font-mono text-2xs text-brand-600 dark:text-brand-400 font-medium">
                           {project.code}
                         </span>
                       </div>
@@ -70,11 +70,11 @@ export const ProjectTable = ({ projects }) => {
                   {/* Location & Sector */}
                   <td className="py-3.5 px-3">
                     <div className="space-y-0.5">
-                      <div className="flex items-center gap-1 text-slate-200">
-                        <MapPin className="w-3 h-3 text-slate-500 shrink-0" />
-                        <span className="truncate max-w-[160px]">{project.location}</span>
+                      <div className="flex items-center gap-1 text-foreground">
+                        <MapPin className="w-3 h-3 text-foreground-muted shrink-0" />
+                        <span className="truncate max-w-[160px] font-medium">{project.location}</span>
                       </div>
-                      <span className="text-2xs text-slate-400 font-mono block">
+                      <span className="text-2xs text-foreground-muted font-mono block">
                         {project.category}
                       </span>
                     </div>
@@ -89,17 +89,17 @@ export const ProjectTable = ({ projects }) => {
                   <td className="py-3.5 px-4 min-w-[200px]">
                     <div className="space-y-1.5">
                       <div className="flex items-center justify-between text-2xs font-mono">
-                        <span className="font-bold text-slate-100">{detail.kpis.actualProgress}%</span>
+                        <span className="font-bold text-foreground">{detail.kpis.actualProgress}%</span>
                         <span
                           className={cn(
                             'font-semibold text-3xs',
-                            isPositiveVariance ? 'text-emerald-400' : 'text-amber-400'
+                            isPositiveVariance ? 'text-emerald-600 dark:text-emerald-400' : 'text-amber-600 dark:text-amber-400'
                           )}
                         >
                           {isPositiveVariance ? '+' : ''}{detail.kpis.variance}% Var ({detail.kpis.plannedProgress}% Plan)
                         </span>
                       </div>
-                      <div className="w-full h-1.5 rounded-full bg-surface-muted overflow-hidden">
+                      <div className="w-full h-1.5 rounded-full bg-surface-subtle border border-border-subtle overflow-hidden">
                         <div
                           className={cn(
                             'h-full rounded-full transition-all duration-300',
@@ -107,7 +107,7 @@ export const ProjectTable = ({ projects }) => {
                               ? 'bg-rose-500'
                               : project.status === 'atRisk'
                               ? 'bg-amber-500'
-                              : 'bg-brand-500'
+                              : 'bg-emerald-500'
                           )}
                           style={{ width: `${detail.kpis.actualProgress}%` }}
                         />
@@ -117,12 +117,12 @@ export const ProjectTable = ({ projects }) => {
 
                   {/* Disciplines & Milestones */}
                   <td className="py-3.5 px-3">
-                    <div className="space-y-0.5 text-2xs font-mono text-slate-400">
+                    <div className="space-y-0.5 text-2xs font-mono text-foreground-muted">
                       <div className="flex items-center gap-1">
-                        <Layers className="w-3 h-3 text-slate-500" />
-                        <span>{project.disciplinesCount} Disciplines</span>
+                        <Layers className="w-3 h-3 text-foreground-muted" />
+                        <span className="text-foreground-subtle font-medium">{project.disciplinesCount} Disciplines</span>
                       </div>
-                      <span className="text-3xs text-slate-500">
+                      <span className="text-3xs text-foreground-muted">
                         {detail.kpis.milestonesCompleted}/{detail.kpis.totalMilestones} Milestones
                       </span>
                     </div>
