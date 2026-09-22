@@ -50,18 +50,21 @@ export const ProgressPage = () => {
   }, [currentProject?.id]);
 
   // Master view state: 'overview' | 'variance' | 'breakdowns' | 'units' | 'readiness'
-  const [activeView, setActiveView] = useState('overview');
+  const [activeView, setActiveView] = useState(() => {
+    const v = searchParams.get('view');
+    return v === 'variance' || v === 'breakdowns' || v === 'units' || v === 'readiness' ? v : 'overview';
+  });
 
   // Filter states
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState(() => searchParams.get('search') || '');
   const [selectedPhase, setSelectedPhase] = useState('all');
-  const [selectedDiscipline, setSelectedDiscipline] = useState('all');
-  const [selectedContractor, setSelectedContractor] = useState('all');
+  const [selectedDiscipline, setSelectedDiscipline] = useState(() => searchParams.get('discipline') || 'all');
+  const [selectedContractor, setSelectedContractor] = useState(() => searchParams.get('contractor') || 'all');
   const [selectedStatus, setSelectedStatus] = useState('all');
   const [selectedProgressState, setSelectedProgressState] = useState('all');
   const [criticalPathOnly, setCriticalPathOnly] = useState(false);
   const [evidenceLinkedOnly, setEvidenceLinkedOnly] = useState(false);
-  const [selectedActivityId, setSelectedActivityId] = useState(null);
+  const [selectedActivityId, setSelectedActivityId] = useState(() => searchParams.get('activity') || null);
 
   // Selected item for detail drawer
   const [selectedMicroActivity, setSelectedMicroActivity] = useState(() => {
@@ -100,6 +103,26 @@ export const ProgressPage = () => {
     setCriticalPathOnly(false);
     setEvidenceLinkedOnly(false);
   }
+
+  // Deep linking sync effect
+  React.useEffect(() => {
+    const microParam = searchParams.get('microActivity');
+    const actParam = searchParams.get('activity');
+    if (microParam && executionData?.microActivities) {
+      const match = executionData.microActivities.find((m) => m.id === microParam);
+      if (match) {
+        setSelectedMicroActivity(match);
+        if (match.phaseId) setExpandedPhaseIds((prev) => [...new Set([...prev, match.phaseId])]);
+        if (match.activityId) {
+          setExpandedActivityIds((prev) => [...new Set([...prev, match.activityId])]);
+          setSelectedActivityId(match.activityId);
+        }
+      }
+    } else if (actParam) {
+      setSelectedActivityId(actParam);
+      setExpandedActivityIds((prev) => [...new Set([...prev, actParam])]);
+    }
+  }, [searchParams, executionData?.microActivities]);
 
   // Progress Intelligence Analytics Calculations
   const kpis = useMemo(() => {

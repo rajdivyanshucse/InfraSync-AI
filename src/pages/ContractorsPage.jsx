@@ -68,11 +68,14 @@ export const ContractorsPage = () => {
     return raw.map((c) => calculateContractorMetrics(c, executionData, scheduleData));
   }, [responsibilityData?.contractors, executionData, scheduleData]);
 
-  // Deep linking: auto-select contractor if contractorId param is present
+  // Deep linking: auto-select contractor if contractorId or contractor param is present
   useEffect(() => {
-    const cid = searchParams.get('contractorId');
+    const cid = searchParams.get('contractorId') || searchParams.get('contractor');
     if (cid && enrichedContractors.length > 0) {
-      const found = enrichedContractors.find((c) => c.id === cid || c.code === cid);
+      const q = cid.toLowerCase();
+      const found = enrichedContractors.find(
+        (c) => c.id.toLowerCase() === q || c.code.toLowerCase() === q || c.name.toLowerCase().includes(q)
+      );
       if (found) {
         setSelectedContractor(found);
       }

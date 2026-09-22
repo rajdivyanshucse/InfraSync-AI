@@ -46,7 +46,7 @@ export const SiteEvidencePage = () => {
 
   // Selected evidence for slide-over drawer
   const [selectedEvidence, setSelectedEvidence] = useState(() => {
-    const evidenceParam = searchParams.get('evidence');
+    const evidenceParam = searchParams.get('evidenceId') || searchParams.get('evidence');
     const microParam = searchParams.get('microActivity');
     const list = rawEvidenceData?.evidence || [];
     if (evidenceParam) {
@@ -66,16 +66,32 @@ export const SiteEvidencePage = () => {
   }
 
   // Active view: 'table' | 'timeline' | 'coverage'
-  const [activeView, setActiveView] = useState('table');
+  const [activeView, setActiveView] = useState(() => {
+    const v = searchParams.get('view');
+    return v === 'timeline' || v === 'coverage' ? v : 'table';
+  });
 
   // Filter states
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState(() => searchParams.get('capturePoint') || searchParams.get('search') || '');
   const [selectedType, setSelectedType] = useState('all');
   const [selectedSource, setSelectedSource] = useState('all');
-  const [selectedStatus, setSelectedStatus] = useState('all');
-  const [selectedContractor, setSelectedContractor] = useState('all');
-  const [selectedDiscipline, setSelectedDiscipline] = useState('all');
+  const [selectedStatus, setSelectedStatus] = useState(() => searchParams.get('status') || 'all');
+  const [selectedContractor, setSelectedContractor] = useState(() => searchParams.get('contractor') || 'all');
+  const [selectedDiscipline, setSelectedDiscipline] = useState(() => searchParams.get('discipline') || 'all');
   const [selectedPhase, setSelectedPhase] = useState('all');
+
+  // Deep-linking effect when URL params change
+  useEffect(() => {
+    const evidenceParam = searchParams.get('evidenceId') || searchParams.get('evidence');
+    const microParam = searchParams.get('microActivity');
+    if (evidenceParam && evidenceList.length > 0) {
+      const match = evidenceList.find((e) => e.id === evidenceParam);
+      if (match) setSelectedEvidence(match);
+    } else if (microParam && evidenceList.length > 0) {
+      const match = evidenceList.find((e) => e.microActivityId === microParam);
+      if (match) setSelectedEvidence(match);
+    }
+  }, [searchParams, evidenceList]);
 
   // Handler for session status updates (Verify / Reject / Reset)
   const handleUpdateStatus = (evidenceId, newStatus) => {

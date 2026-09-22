@@ -66,11 +66,14 @@ export const DisciplinesPage = () => {
     return raw.map((d) => calculateDisciplineMetrics(d, executionData, scheduleData));
   }, [responsibilityData?.disciplines, executionData, scheduleData]);
 
-  // Deep linking: auto-select discipline if disciplineId query param is present
+  // Deep linking: auto-select discipline if disciplineId or discipline query param is present
   useEffect(() => {
-    const did = searchParams.get('disciplineId');
+    const did = searchParams.get('disciplineId') || searchParams.get('discipline');
     if (did && enrichedDisciplines.length > 0) {
-      const found = enrichedDisciplines.find((d) => d.id === did || d.code === did);
+      const q = did.toLowerCase();
+      const found = enrichedDisciplines.find(
+        (d) => d.id.toLowerCase() === q || d.code.toLowerCase() === q || d.name.toLowerCase().includes(q)
+      );
       if (found) {
         setSelectedDiscipline(found);
       }

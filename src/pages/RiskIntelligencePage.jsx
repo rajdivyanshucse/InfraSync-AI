@@ -1,4 +1,5 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useProject } from '../context/useProject';
 import { useAuth } from '../context/useAuth';
 import { getScheduleData } from '../data/scheduleData';
@@ -32,6 +33,7 @@ import {
 export const RiskIntelligencePage = () => {
   const { currentProject } = useProject();
   const { currentUser } = useAuth();
+  const [searchParams] = useSearchParams();
 
   // Load project datasets
   const scheduleData = useMemo(() => {
@@ -47,15 +49,18 @@ export const RiskIntelligencePage = () => {
   }, [currentProject?.id]);
 
   // Master view state: 'warnings' | 'breakdowns' | 'actions' | 'timeline'
-  const [activeView, setActiveView] = useState('warnings');
+  const [activeView, setActiveView] = useState(() => {
+    const v = searchParams.get('view');
+    return v === 'breakdowns' || v === 'actions' || v === 'timeline' ? v : 'warnings';
+  });
 
   // Filter states
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedSeverity, setSelectedSeverity] = useState('all');
-  const [selectedType, setSelectedType] = useState('all');
+  const [selectedSeverity, setSelectedSeverity] = useState(() => searchParams.get('severity') || 'all');
+  const [selectedType, setSelectedType] = useState(() => searchParams.get('type') || 'all');
   const [selectedPhase, setSelectedPhase] = useState('all');
-  const [selectedContractor, setSelectedContractor] = useState('all');
-  const [selectedDiscipline, setSelectedDiscipline] = useState('all');
+  const [selectedContractor, setSelectedContractor] = useState(() => searchParams.get('contractor') || 'all');
+  const [selectedDiscipline, setSelectedDiscipline] = useState(() => searchParams.get('discipline') || 'all');
   const [criticalPathOnly, setCriticalPathOnly] = useState(false);
   const [evidenceLinkedOnly, setEvidenceLinkedOnly] = useState(false);
   const [showAcknowledgedOnly, setShowAcknowledgedOnly] = useState(false);
@@ -111,6 +116,17 @@ export const RiskIntelligencePage = () => {
   const kpis = useMemo(() => {
     return calculateRiskKpis(allRiskEvents);
   }, [allRiskEvents]);
+
+  // Deep-linking: auto-select risk event if risk or riskId query param is present
+  useEffect(() => {
+    const riskParam = searchParams.get('risk') || searchParams.get('riskId');
+    if (riskParam && allRiskEvents.length > 0) {
+      const match = allRiskEvents.find((r) => r.id === riskParam);
+      if (match) {
+        setSelectedRiskEvent(match);
+      }
+    }
+  }, [searchParams, allRiskEvents]);
 
   // Breakdowns
   const phaseBreakdown = useMemo(() => {

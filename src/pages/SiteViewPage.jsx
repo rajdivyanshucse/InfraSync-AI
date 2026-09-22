@@ -117,7 +117,9 @@ export const SiteViewPage = () => {
     return null;
   });
 
-  const [isZoneDrawerOpen, setIsZoneDrawerOpen] = useState(false);
+  const [isZoneDrawerOpen, setIsZoneDrawerOpen] = useState(() => {
+    return Boolean(searchParams.get('zone'));
+  });
 
   const [selectedCapturePoint, setSelectedCapturePoint] = useState(() => {
     const pointParam = searchParams.get('capturePoint');
@@ -135,6 +137,23 @@ export const SiteViewPage = () => {
     setSelectedCapturePoint(null);
     setIsZoneDrawerOpen(false);
   }
+
+  // Deep-linking sync effect
+  React.useEffect(() => {
+    const zoneParam = searchParams.get('zone');
+    const pointParam = searchParams.get('capturePoint');
+    if (zoneParam && siteViewData?.zones) {
+      const match = siteViewData.zones.find((z) => z.id === zoneParam);
+      if (match) {
+        setSelectedZone(match);
+        setIsZoneDrawerOpen(true);
+      }
+    }
+    if (pointParam && siteViewData?.capturePoints) {
+      const match = siteViewData.capturePoints.find((cp) => cp.id === pointParam || cp.code === pointParam);
+      if (match) setSelectedCapturePoint(match);
+    }
+  }, [searchParams, siteViewData]);
 
   // Filter reset handler
   const handleResetFilters = () => {

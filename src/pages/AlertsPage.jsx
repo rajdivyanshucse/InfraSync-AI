@@ -71,19 +71,19 @@ export const AlertsPage = () => {
   const [sessionAlerts, setSessionAlerts] = useState(initialAlerts);
 
   // Filter states
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedSeverity, setSelectedSeverity] = useState('all');
-  const [selectedType, setSelectedType] = useState('all');
-  const [selectedStatus, setSelectedStatus] = useState('all');
+  const [searchQuery, setSearchQuery] = useState(() => searchParams.get('search') || '');
+  const [selectedSeverity, setSelectedSeverity] = useState(() => searchParams.get('severity') || 'all');
+  const [selectedType, setSelectedType] = useState(() => searchParams.get('type') || 'all');
+  const [selectedStatus, setSelectedStatus] = useState(() => searchParams.get('status') || 'all');
   const [selectedEscalation, setSelectedEscalation] = useState('all');
-  const [selectedContractor, setSelectedContractor] = useState('all');
-  const [selectedDiscipline, setSelectedDiscipline] = useState('all');
+  const [selectedContractor, setSelectedContractor] = useState(() => searchParams.get('contractor') || 'all');
+  const [selectedDiscipline, setSelectedDiscipline] = useState(() => searchParams.get('discipline') || 'all');
   const [selectedPhase, setSelectedPhase] = useState('all');
-  const [selectedZone, setSelectedZone] = useState('all');
+  const [selectedZone, setSelectedZone] = useState(() => searchParams.get('zone') || 'all');
 
   // Selected alert for slide-over drawer
   const [selectedAlertId, setSelectedAlertId] = useState(() => {
-    return searchParams.get('alert') || null;
+    return searchParams.get('alertId') || searchParams.get('alert') || null;
   });
 
   // Track project ID to reset state cleanly on project switch during render
@@ -93,6 +93,15 @@ export const AlertsPage = () => {
     setSessionAlerts(initialAlerts);
     setSelectedAlertId(null);
   }
+
+  // Deep-linking sync effect
+  React.useEffect(() => {
+    const aParam = searchParams.get('alertId') || searchParams.get('alert');
+    if (aParam && sessionAlerts.length > 0) {
+      const match = sessionAlerts.find((a) => a.id === aParam);
+      if (match) setSelectedAlertId(match.id);
+    }
+  }, [searchParams, sessionAlerts]);
 
   // Active selected alert object
   const selectedAlert = useMemo(() => {

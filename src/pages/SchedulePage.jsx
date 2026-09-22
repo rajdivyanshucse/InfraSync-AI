@@ -28,15 +28,18 @@ export const SchedulePage = () => {
   }, [currentProject?.id]);
 
   // Master view state: 'wbs' | 'timeline' | 'milestones' | 'health'
-  const [activeView, setActiveView] = useState('wbs');
+  const [activeView, setActiveView] = useState(() => {
+    const v = searchParams.get('view');
+    return v === 'timeline' || v === 'milestones' || v === 'health' ? v : 'wbs';
+  });
 
   // Filter states
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedDiscipline, setSelectedDiscipline] = useState('all');
-  const [selectedContractor, setSelectedContractor] = useState('all');
+  const [searchQuery, setSearchQuery] = useState(() => searchParams.get('search') || '');
+  const [selectedDiscipline, setSelectedDiscipline] = useState(() => searchParams.get('discipline') || 'all');
+  const [selectedContractor, setSelectedContractor] = useState(() => searchParams.get('contractor') || 'all');
   const [selectedStatus, setSelectedStatus] = useState('all');
   const [selectedPhase, setSelectedPhase] = useState('all');
-  const [selectedWbs, setSelectedWbs] = useState('all');
+  const [selectedWbs, setSelectedWbs] = useState(() => searchParams.get('wbs') || 'all');
   const [criticalPathOnly, setCriticalPathOnly] = useState(false);
 
   // Tree and Activity Selection state
@@ -65,6 +68,19 @@ export const SchedulePage = () => {
     setSelectedActivity(null);
     setSelectedWbsId(null);
   }
+
+  // Deep linking sync effect
+  React.useEffect(() => {
+    const actParam = searchParams.get('activity');
+    if (actParam && scheduleData?.activities) {
+      const match = scheduleData.activities.find((a) => a.id === actParam);
+      if (match) {
+        setSelectedActivity(match);
+        if (match.phaseId) setExpandedPhaseIds((prev) => [...new Set([...prev, match.phaseId])]);
+        if (match.wbsId) setExpandedWbsIds((prev) => [...new Set([...prev, match.wbsId])]);
+      }
+    }
+  }, [searchParams, scheduleData?.activities]);
 
   // Extract unique disciplines & contractors for filter dropdowns
   const disciplines = useMemo(() => {
