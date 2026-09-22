@@ -27,35 +27,35 @@ export const SiteZoneExplorer = ({
   }, [siteZones, zoneSearch]);
 
   return (
-    <div className="flex flex-col h-full rounded-xl border border-surface-border bg-surface-card shadow-sm overflow-hidden">
+    <div className="flex flex-col h-full rounded-xl border border-surface-border bg-surface shadow-sm overflow-hidden">
       {/* Explorer Header */}
       <div className="p-4 border-b border-surface-border bg-surface-subtle/70 space-y-2.5">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <MapPin className="h-4 w-4 text-emerald-400" />
-            <h3 className="text-xs font-bold uppercase tracking-wider text-white">
+            <MapPin className="h-4 w-4 text-emerald-500 dark:text-emerald-400" />
+            <h3 className="text-xs font-bold uppercase tracking-wider text-foreground">
               Site Sectors & Zones
             </h3>
           </div>
-          <span className="font-mono text-3xs font-semibold text-slate-400 bg-surface px-2 py-0.5 rounded border border-surface-border">
+          <span className="font-mono text-[10px] font-semibold text-foreground-muted bg-surface px-2 py-0.5 rounded border border-surface-border">
             {siteZones.length} Zones
           </span>
         </div>
 
         {/* Quick Search */}
         <div className="relative">
-          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400" />
+          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-foreground-muted" />
           <input
             type="text"
             placeholder="Filter site sectors..."
             value={zoneSearch}
             onChange={(e) => setZoneSearch(e.target.value)}
-            className="w-full rounded-lg border border-surface-border bg-surface py-1.5 pl-8 pr-7 text-xs text-white placeholder-slate-400 focus:border-sky-500 focus:outline-none"
+            className="w-full rounded-lg border border-surface-border bg-surface py-1.5 pl-8 pr-7 text-xs text-foreground placeholder:text-foreground-muted/60 focus:border-brand focus:outline-none"
           />
           {zoneSearch && (
             <button
               onClick={() => setZoneSearch('')}
-              className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white"
+              className="absolute right-2 top-1/2 -translate-y-1/2 text-foreground-muted hover:text-foreground"
             >
               <X className="h-3 w-3" />
             </button>
@@ -66,7 +66,7 @@ export const SiteZoneExplorer = ({
       {/* Zone Cards List */}
       <div className="flex-1 overflow-y-auto p-3 space-y-2.5 max-h-[500px]">
         {filteredZones.length === 0 ? (
-          <div className="py-8 text-center text-xs text-slate-400">
+          <div className="py-8 text-center text-xs text-foreground-muted">
             No site sectors match your search.
           </div>
         ) : (

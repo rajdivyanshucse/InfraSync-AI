@@ -2,59 +2,62 @@ import React from 'react';
 import { 
   Camera, 
   Layers, 
-  HardHat, 
   Clock, 
   FileCheck2, 
   Table2, 
   CalendarDays, 
-  PieChart 
+  PieChart,
+  Plus,
+  Building2,
+  MapPin
 } from 'lucide-react';
 import { Button } from '../ui/Button';
 
 export const EvidenceHeader = ({
   project,
   evidenceMeta,
-  currentUser,
+  _currentUser,
   activeView,
   onViewChange,
+  onUploadClick,
 }) => {
   return (
-    <div className="rounded-xl border border-surface-border bg-gradient-to-b from-surface-card to-surface/80 p-5 shadow-lg backdrop-blur-sm">
-      {/* Top Row */}
+    <div className="rounded-xl border border-surface-border bg-surface-card p-5 shadow-sm transition-colors">
+      {/* Top Row: Title & Actions */}
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div className="space-y-1.5">
           <div className="flex flex-wrap items-center gap-2.5">
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-400 ring-1 ring-emerald-500/20">
+            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 ring-1 ring-emerald-500/20">
               <Camera className="h-5 w-5" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h1 className="text-xl font-bold tracking-tight text-white sm:text-2xl">
+                <h1 className="text-xl font-bold tracking-tight text-foreground sm:text-2xl">
                   Site Evidence
                 </h1>
-                <span className="hidden rounded bg-emerald-500/15 px-2 py-0.5 font-mono text-2xs font-semibold uppercase tracking-wider text-emerald-300 ring-1 ring-emerald-500/25 sm:inline-block">
-                  Registry Linked
+                <span className="hidden rounded bg-emerald-500/15 px-2 py-0.5 font-mono text-2xs font-semibold uppercase tracking-wider text-emerald-600 dark:text-emerald-300 ring-1 ring-emerald-500/25 sm:inline-block">
+                  Field Capture Intelligence
                 </span>
-                <span className="rounded bg-surface-muted/80 px-2 py-0.5 font-mono text-3xs font-medium text-slate-400 ring-1 ring-surface-border">
-                  Prototype Data
+                <span className="rounded bg-surface-subtle px-2 py-0.5 font-mono text-3xs font-medium text-foreground-muted ring-1 ring-surface-border">
+                  Audit Registry
                 </span>
               </div>
             </div>
           </div>
-          <p className="text-xs text-slate-400 sm:text-sm">
-            Field evidence linked to measurable execution units.
+          <p className="text-xs text-foreground-muted sm:text-sm">
+            Field Capture & Execution Evidence · Linking physical captures to execution units, schedule baselines, and audit sign-offs.
           </p>
         </div>
 
-        {/* View Switcher & User Role Context Pill */}
-        <div className="flex flex-wrap items-center gap-3">
+        {/* View Switcher & Actions */}
+        <div className="flex flex-wrap items-center gap-2.5">
           <div className="flex items-center rounded-lg border border-surface-border bg-surface-subtle p-1">
             <Button
               variant={activeView === 'table' ? 'secondary' : 'ghost'}
               size="sm"
               onClick={() => onViewChange('table')}
               className={`h-8 gap-1.5 text-xs font-medium ${
-                activeView === 'table' ? 'bg-surface text-white shadow-sm' : 'text-slate-400'
+                activeView === 'table' ? 'bg-surface text-foreground shadow-sm' : 'text-foreground-muted hover:text-foreground'
               }`}
             >
               <Table2 className="h-3.5 w-3.5" />
@@ -65,7 +68,7 @@ export const EvidenceHeader = ({
               size="sm"
               onClick={() => onViewChange('timeline')}
               className={`h-8 gap-1.5 text-xs font-medium ${
-                activeView === 'timeline' ? 'bg-surface text-white shadow-sm' : 'text-slate-400'
+                activeView === 'timeline' ? 'bg-surface text-foreground shadow-sm' : 'text-foreground-muted hover:text-foreground'
               }`}
             >
               <CalendarDays className="h-3.5 w-3.5" />
@@ -76,7 +79,7 @@ export const EvidenceHeader = ({
               size="sm"
               onClick={() => onViewChange('coverage')}
               className={`h-8 gap-1.5 text-xs font-medium ${
-                activeView === 'coverage' ? 'bg-surface text-white shadow-sm' : 'text-slate-400'
+                activeView === 'coverage' ? 'bg-surface text-foreground shadow-sm' : 'text-foreground-muted hover:text-foreground'
               }`}
             >
               <PieChart className="h-3.5 w-3.5" />
@@ -84,80 +87,52 @@ export const EvidenceHeader = ({
             </Button>
           </div>
 
-          {currentUser && (
-            <div className="flex items-center gap-2 rounded-lg border border-surface-border bg-surface-subtle/80 px-3 py-1.5 text-xs text-slate-300">
-              <HardHat className="h-3.5 w-3.5 text-amber-400 shrink-0" />
-              <span className="text-slate-400">Viewing as:</span>
-              <span className="font-semibold text-white">{currentUser.name}</span>
-              <span className="font-mono text-3xs text-brand-300 bg-brand-500/10 px-1.5 py-0.2 rounded">
-                {currentUser.roleName || currentUser.role}
-              </span>
-            </div>
-          )}
-
           {onUploadClick && (
             <Button
               variant="primary"
               size="sm"
               onClick={onUploadClick}
-              className="h-8 gap-1.5 text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white shadow-sm"
+              className="h-8 gap-1.5 text-xs font-semibold bg-brand-600 hover:bg-brand-500 text-white shadow-sm"
             >
-              <Camera className="h-3.5 w-3.5" />
+              <Plus className="h-3.5 w-3.5" />
               <span>Upload Evidence</span>
             </Button>
           )}
         </div>
       </div>
 
-      {/* Metadata Strip */}
-      <div className="mt-4 grid grid-cols-2 gap-3 border-t border-surface-border/70 pt-4 sm:grid-cols-4">
-        <div className="flex flex-col">
-          <span className="text-2xs font-medium uppercase tracking-wider text-slate-400">
-            Active Project
+      {/* Metadata Ribbon */}
+      <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-surface-border pt-3.5 text-3xs font-mono text-foreground-muted">
+        <div className="flex flex-wrap items-center gap-3.5">
+          <span className="flex items-center gap-1.5">
+            <Building2 className="h-3.5 w-3.5 text-brand-500" />
+            Project: <strong className="text-foreground">{project?.name || 'Corridor Package'}</strong> ({project?.code || project?.id || 'PRJ-01'})
           </span>
-          <span className="mt-0.5 truncate font-mono text-xs font-semibold text-slate-200">
-            {project?.code || 'PRJ-01'} • {project?.name || 'Selected Project'}
+          <span className="hidden text-surface-border sm:inline">•</span>
+          <span className="flex items-center gap-1.5">
+            <MapPin className="h-3.5 w-3.5 text-emerald-500" />
+            Location: <strong className="text-foreground">{project?.location || 'Bathinda Sector'}</strong>
+          </span>
+          <span className="hidden text-surface-border sm:inline">•</span>
+          <span className="flex items-center gap-1.5">
+            <FileCheck2 className="h-3.5 w-3.5 text-sky-500" />
+            Registry Ref: <strong className="text-foreground">{evidenceMeta?.registryRef || 'REG-EV-BASE'}</strong>
           </span>
         </div>
 
-        <div className="flex flex-col">
-          <span className="text-2xs font-medium uppercase tracking-wider text-slate-400">
-            Evidence Registry Ref
+        <div className="flex items-center gap-3">
+          <span className="flex items-center gap-1">
+            <Layers className="h-3 w-3 text-brand-400" />
+            <span>Unit Traceability Active</span>
           </span>
-          <div className="mt-0.5 flex items-center gap-1.5">
-            <FileCheck2 className="h-3.5 w-3.5 text-emerald-400" />
-            <span className="font-mono text-xs font-semibold text-emerald-300">
-              {evidenceMeta?.registryRef || 'REG-EV-BASE'}
-            </span>
-          </div>
-        </div>
-
-        <div className="flex flex-col">
-          <span className="text-2xs font-medium uppercase tracking-wider text-slate-400">
-            Traceability Link
+          <span className="flex items-center gap-1">
+            <Clock className="h-3 w-3 text-foreground-muted" />
+            <span>Last Field Sync: {evidenceMeta?.lastSyncTimestamp ? new Date(evidenceMeta.lastSyncTimestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '16:45'}</span>
           </span>
-          <div className="mt-0.5 flex items-center gap-1.5">
-            <Layers className="h-3.5 w-3.5 text-brand-400" />
-            <span className="font-mono text-xs font-semibold text-brand-300">
-              Execution Unit Anchors Active
-            </span>
-          </div>
-        </div>
-
-        <div className="flex flex-col">
-          <span className="text-2xs font-medium uppercase tracking-wider text-slate-400">
-            Last Field Sync
-          </span>
-          <div className="mt-0.5 flex items-center gap-1.5 font-mono text-xs text-slate-300">
-            <Clock className="h-3.5 w-3.5 text-slate-400" />
-            <span>
-              {evidenceMeta?.lastSyncTimestamp
-                ? new Date(evidenceMeta.lastSyncTimestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) + ' Today'
-                : '16:45 PM'}
-            </span>
-          </div>
         </div>
       </div>
     </div>
   );
 };
+
+export default EvidenceHeader;

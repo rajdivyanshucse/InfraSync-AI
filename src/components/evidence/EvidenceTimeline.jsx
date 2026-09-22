@@ -44,21 +44,21 @@ export const EvidenceTimeline = ({
   }, [sortedEvents]);
 
   const getTypeIcon = (type) => {
-    switch (type) {
+    switch (type?.toLowerCase()) {
       case 'photo':
-        return <Camera className="h-4 w-4 text-sky-400" />;
+        return <Camera className="h-4 w-4 text-sky-500" />;
       case 'video':
-        return <Video className="h-4 w-4 text-purple-400" />;
+        return <Video className="h-4 w-4 text-purple-500" />;
       case 'document':
-        return <FileText className="h-4 w-4 text-amber-400" />;
+        return <FileText className="h-4 w-4 text-amber-500" />;
       case 'measurement':
-        return <Ruler className="h-4 w-4 text-emerald-400" />;
+        return <Ruler className="h-4 w-4 text-emerald-500" />;
       case 'inspection':
-        return <ClipboardCheck className="h-4 w-4 text-indigo-400" />;
+        return <ClipboardCheck className="h-4 w-4 text-indigo-500" />;
       case 'certificate':
-        return <Award className="h-4 w-4 text-rose-400" />;
+        return <Award className="h-4 w-4 text-rose-500" />;
       default:
-        return <FileText className="h-4 w-4 text-slate-400" />;
+        return <FileText className="h-4 w-4 text-foreground-muted" />;
     }
   };
 
@@ -79,10 +79,10 @@ export const EvidenceTimeline = ({
 
   if (sortedEvents.length === 0) {
     return (
-      <div className="rounded-xl border border-surface-border bg-surface-card p-12 text-center">
-        <Calendar className="mx-auto h-10 w-10 text-slate-600 mb-3" />
-        <h3 className="text-sm font-semibold text-slate-300">No Evidence Timeline Available</h3>
-        <p className="text-xs text-slate-500 mt-1 max-w-sm mx-auto">
+      <div className="rounded-xl border border-surface-border bg-surface-card p-12 text-center shadow-sm">
+        <Calendar className="mx-auto h-10 w-10 text-foreground-muted opacity-40 mb-3" />
+        <h3 className="text-sm font-semibold text-foreground">No Evidence Timeline Available</h3>
+        <p className="text-xs text-foreground-muted mt-1 max-w-sm mx-auto">
           No field evidence captures match the current filters to display on the timeline.
         </p>
       </div>
@@ -95,12 +95,12 @@ export const EvidenceTimeline = ({
         <div key={dateStr} className="space-y-3">
           {/* Date Group Header */}
           <div className="flex items-center gap-2">
-            <div className="flex items-center gap-1.5 rounded-md bg-surface-card border border-surface-border px-3 py-1 font-mono text-xs font-bold text-slate-200">
-              <Calendar className="h-3.5 w-3.5 text-emerald-400" />
+            <div className="flex items-center gap-1.5 rounded-md bg-surface-card border border-surface-border px-3 py-1 font-mono text-xs font-bold text-foreground shadow-sm">
+              <Calendar className="h-3.5 w-3.5 text-brand-500" />
               <span>{dateStr}</span>
             </div>
             <div className="h-px flex-1 bg-surface-border" />
-            <span className="font-mono text-3xs text-slate-500">
+            <span className="font-mono text-3xs text-foreground-muted">
               {items.length} {items.length === 1 ? 'event' : 'events'}
             </span>
           </div>
@@ -118,10 +118,10 @@ export const EvidenceTimeline = ({
                 <div
                   key={ev.id}
                   onClick={() => onSelectEvidence(ev)}
-                  className="group relative cursor-pointer rounded-xl border border-surface-border bg-surface-card p-4 transition-all duration-200 hover:border-emerald-500/40 hover:bg-surface-elevated"
+                  className="group relative cursor-pointer rounded-xl border border-surface-border bg-surface-card p-4 transition-all duration-200 hover:border-brand-500/40 hover:bg-surface-elevated shadow-sm"
                 >
                   {/* Timeline Dot */}
-                  <div className="absolute -left-[31px] top-5 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-surface border-2 border-emerald-400 shadow-sm" />
+                  <div className="absolute -left-[31px] top-5 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-surface border-2 border-brand-500 shadow-sm" />
 
                   <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
                     <div className="flex items-start gap-3">
@@ -131,10 +131,10 @@ export const EvidenceTimeline = ({
 
                       <div className="space-y-1">
                         <div className="flex flex-wrap items-center gap-2">
-                          <span className="font-mono text-xs font-bold text-white">
+                          <span className="font-mono text-xs font-bold text-foreground">
                             {ev.id}
                           </span>
-                          <span className="rounded bg-surface px-1.5 py-0.5 font-mono text-3xs text-slate-400 border border-surface-border">
+                          <span className="rounded bg-surface-subtle px-1.5 py-0.5 font-mono text-3xs text-foreground-muted border border-surface-border">
                             {ev.captureSource}
                           </span>
                           <StatusBadge
@@ -144,19 +144,19 @@ export const EvidenceTimeline = ({
                           />
                         </div>
 
-                        <h4 className="text-sm font-semibold text-slate-100 group-hover:text-emerald-300 transition-colors">
+                        <h4 className="text-sm font-semibold text-foreground group-hover:text-brand-500 transition-colors">
                           {ev.title}
                         </h4>
 
-                        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-3xs font-mono text-slate-400 pt-0.5">
+                        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-3xs font-mono text-foreground-muted pt-0.5">
                           <div className="flex items-center gap-1">
-                            <Layers className="h-3 w-3 text-sky-400" />
-                            <span className="text-sky-300 font-bold">{ev.microActivityId}</span>
+                            <Layers className="h-3 w-3 text-brand-500" />
+                            <span className="text-foreground font-semibold">{ev.microActivityId}</span>
                             <span>• {matchingMicro?.contractor || 'General Works'}</span>
                           </div>
                           {ev.location?.label && (
-                            <div className="flex items-center gap-1 text-slate-400">
-                              <MapPin className="h-3 w-3 text-emerald-400" />
+                            <div className="flex items-center gap-1">
+                              <MapPin className="h-3 w-3 text-emerald-500" />
                               <span className="truncate max-w-xs">{ev.location.label}</span>
                             </div>
                           )}
@@ -165,14 +165,14 @@ export const EvidenceTimeline = ({
                     </div>
 
                     <div className="flex items-center justify-between md:flex-col md:items-end gap-1.5 shrink-0 border-t md:border-t-0 border-surface-border pt-2 md:pt-0">
-                      <div className="flex items-center gap-1 font-mono text-xs font-semibold text-slate-300">
-                        <Clock className="h-3 w-3 text-slate-500" />
+                      <div className="flex items-center gap-1 font-mono text-xs font-semibold text-foreground">
+                        <Clock className="h-3 w-3 text-foreground-muted" />
                         <span>{timeStr}</span>
                       </div>
-                      <span className="text-3xs text-slate-500 font-mono">
+                      <span className="text-3xs text-foreground-muted font-mono">
                         By: {ev.capturedBy}
                       </span>
-                      <div className="hidden md:flex items-center gap-1 text-3xs text-emerald-400 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <div className="hidden md:flex items-center gap-1 text-3xs text-brand-500 opacity-0 group-hover:opacity-100 transition-opacity">
                         <span>Inspect</span>
                         <ChevronRight className="h-3 w-3" />
                       </div>
@@ -187,3 +187,6 @@ export const EvidenceTimeline = ({
     </div>
   );
 };
+
+export default EvidenceTimeline;
+

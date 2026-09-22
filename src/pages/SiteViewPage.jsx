@@ -193,11 +193,6 @@ export const SiteViewPage = () => {
         return false;
       }
 
-      // Type filter
-      if (selectedType !== 'all' && item.type !== selectedType) {
-        return false;
-      }
-
       // Status filter
       if (selectedStatus !== 'all' && item.status !== selectedStatus) {
         return false;
@@ -221,6 +216,24 @@ export const SiteViewPage = () => {
         if (hasEvidence) return false;
       }
 
+      // Warning filter
+      if (warningFilter === 'withWarnings') {
+        const hasWarnings = riskEvents.some(
+          (w) =>
+            w.impactedScope?.zoneId === item.zoneId ||
+            (Array.isArray(item.linkedActivityIds) && item.linkedActivityIds.includes(w.impactedScope?.activityId))
+        );
+        if (!hasWarnings) return false;
+      }
+      if (warningFilter === 'noWarnings') {
+        const hasWarnings = riskEvents.some(
+          (w) =>
+            w.impactedScope?.zoneId === item.zoneId ||
+            (Array.isArray(item.linkedActivityIds) && item.linkedActivityIds.includes(w.impactedScope?.activityId))
+        );
+        if (hasWarnings) return false;
+      }
+
       return true;
     });
   }, [
@@ -231,6 +244,8 @@ export const SiteViewPage = () => {
     selectedStatus,
     selectedPhase,
     evidenceFilter,
+    warningFilter,
+    riskEvents,
     siteZones,
   ]);
 

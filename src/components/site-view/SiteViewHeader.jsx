@@ -17,30 +17,30 @@ export const SiteViewHeader = ({
   onViewChange,
 }) => {
   return (
-    <div className="rounded-xl border border-surface-border bg-gradient-to-b from-surface-card to-surface/80 p-5 shadow-lg backdrop-blur-sm">
+    <div className="rounded-xl border border-surface-border bg-surface p-5 shadow-sm">
       {/* Top Row */}
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div className="space-y-1.5">
           <div className="flex flex-wrap items-center gap-2.5">
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-sky-500/10 text-sky-400 ring-1 ring-sky-500/20">
+            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-brand/10 text-brand dark:bg-brand/20 dark:text-sky-300 ring-1 ring-brand/20">
               <Compass className="h-5 w-5" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h1 className="text-xl font-bold tracking-tight text-white sm:text-2xl">
-                  Spatial Execution Intelligence
+                <h1 className="text-xl font-bold tracking-tight text-foreground sm:text-2xl">
+                  Spatial Execution
                 </h1>
-                <span className="hidden rounded bg-sky-500/15 px-2 py-0.5 font-mono text-2xs font-semibold uppercase tracking-wider text-sky-300 ring-1 ring-sky-500/25 sm:inline-block">
-                  Spatial Matrix
+                <span className="hidden rounded bg-brand/10 dark:bg-brand/20 px-2 py-0.5 font-mono text-[11px] font-semibold uppercase tracking-wider text-brand dark:text-sky-300 ring-1 ring-brand/25 sm:inline-block">
+                  Site Matrix
                 </span>
-                <span className="rounded bg-surface-muted/80 px-2 py-0.5 font-mono text-3xs font-medium text-slate-400 ring-1 ring-surface-border">
-                  Prototype Registry
+                <span className="rounded bg-surface-subtle px-2 py-0.5 font-mono text-[10px] font-medium text-foreground-muted ring-1 ring-surface-border">
+                  Prototype Site Registry
                 </span>
               </div>
             </div>
           </div>
-          <p className="text-xs text-slate-400 sm:text-sm">
-            Connecting physical site zones and capture points with schedule baselines, execution tracking, field evidence, and early warnings.
+          <p className="text-xs text-foreground-muted sm:text-sm">
+            Site zones, capture points & execution context across project corridor.
           </p>
         </div>
 
@@ -52,7 +52,7 @@ export const SiteViewHeader = ({
               size="sm"
               onClick={() => onViewChange('split')}
               className={`h-8 gap-1.5 text-xs font-medium ${
-                activeView === 'split' ? 'bg-surface text-white shadow-sm' : 'text-slate-400'
+                activeView === 'split' ? 'bg-surface text-foreground shadow-sm' : 'text-foreground-muted hover:text-foreground'
               }`}
             >
               <LayoutGrid className="h-3.5 w-3.5" />
@@ -63,7 +63,7 @@ export const SiteViewHeader = ({
               size="sm"
               onClick={() => onViewChange('map')}
               className={`h-8 gap-1.5 text-xs font-medium ${
-                activeView === 'map' ? 'bg-surface text-white shadow-sm' : 'text-slate-400'
+                activeView === 'map' ? 'bg-surface text-foreground shadow-sm' : 'text-foreground-muted hover:text-foreground'
               }`}
             >
               <Map className="h-3.5 w-3.5" />
@@ -74,7 +74,7 @@ export const SiteViewHeader = ({
               size="sm"
               onClick={() => onViewChange('table')}
               className={`h-8 gap-1.5 text-xs font-medium ${
-                activeView === 'table' ? 'bg-surface text-white shadow-sm' : 'text-slate-400'
+                activeView === 'table' ? 'bg-surface text-foreground shadow-sm' : 'text-foreground-muted hover:text-foreground'
               }`}
             >
               <Table2 className="h-3.5 w-3.5" />
@@ -85,7 +85,7 @@ export const SiteViewHeader = ({
               size="sm"
               onClick={() => onViewChange('timeline')}
               className={`h-8 gap-1.5 text-xs font-medium ${
-                activeView === 'timeline' ? 'bg-surface text-white shadow-sm' : 'text-slate-400'
+                activeView === 'timeline' ? 'bg-surface text-foreground shadow-sm' : 'text-foreground-muted hover:text-foreground'
               }`}
             >
               <Clock className="h-3.5 w-3.5" />
@@ -95,8 +95,8 @@ export const SiteViewHeader = ({
 
           {currentUser && (
             <div className="flex items-center gap-2 rounded-lg border border-surface-border bg-surface-subtle px-3 py-1.5">
-              <HardHat className="h-3.5 w-3.5 text-sky-400" />
-              <span className="font-mono text-xs text-slate-300">
+              <HardHat className="h-3.5 w-3.5 text-brand dark:text-sky-400" />
+              <span className="font-mono text-xs text-foreground">
                 {currentUser.name || currentUser.role}
               </span>
             </div>
@@ -105,25 +105,25 @@ export const SiteViewHeader = ({
       </div>
 
       {/* Bottom Metadata Ribbon */}
-      <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-surface-border/60 pt-3 text-3xs font-mono text-slate-400">
+      <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-surface-border pt-3 text-[11px] font-mono text-foreground-muted">
         <div className="flex flex-wrap items-center gap-4">
           <span className="flex items-center gap-1.5">
-            <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
-            Project: <strong className="text-white">{project?.name || 'Project Corridor'}</strong> ({project?.id || 'proj-1'})
+            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+            Project: <strong className="text-foreground font-semibold">{project?.name || 'Project Corridor'}</strong> ({project?.id || 'proj-1'})
           </span>
-          <span className="hidden text-slate-600 sm:inline">•</span>
+          <span className="hidden text-surface-border sm:inline">•</span>
           <span className="flex items-center gap-1.5">
-            Alignment: <strong className="text-slate-200">{siteViewMeta?.siteBoundaries?.alignment || 'Corridor (CH 0+000 - CH 14+200)'}</strong>
+            Alignment: <strong className="text-foreground font-semibold">{siteViewMeta?.siteBoundaries?.alignment || 'Corridor (CH 0+000 - CH 14+200)'}</strong>
           </span>
-          <span className="hidden text-slate-600 sm:inline">•</span>
+          <span className="hidden text-surface-border sm:inline">•</span>
           <span className="flex items-center gap-1.5">
-            Datum: <strong className="text-slate-200">{siteViewMeta?.siteBoundaries?.datum || 'WGS84 / UTM Zone 43N'}</strong>
+            Datum: <strong className="text-foreground font-semibold">{siteViewMeta?.siteBoundaries?.datum || 'WGS84 / UTM Zone 43N'}</strong>
           </span>
         </div>
 
         <div className="flex items-center gap-2">
-          <span className="text-slate-400">Registry Ref:</span>
-          <span className="font-semibold text-slate-300">
+          <span>Registry Ref:</span>
+          <span className="font-semibold text-foreground font-mono">
             {siteViewMeta?.registryRef || 'REG-MON-METRO-01'}
           </span>
         </div>

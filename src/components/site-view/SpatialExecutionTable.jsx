@@ -10,7 +10,8 @@ import {
   AlertTriangle, 
   ChevronRight,
   TrendingDown,
-  TrendingUp
+  TrendingUp,
+  X
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '../ui/Button';
@@ -166,12 +167,12 @@ export const SpatialExecutionTable = ({
 
   const renderSortIcon = (field) => {
     if (sortField !== field) {
-      return <ArrowUpDown className="ml-1 h-3 w-3 text-slate-500 opacity-40 group-hover:opacity-100 inline" />;
+      return <ArrowUpDown className="ml-1 h-3 w-3 text-foreground-muted/40 group-hover:text-foreground-muted inline" />;
     }
     return sortDirection === 'asc' ? (
-      <ArrowUp className="ml-1 h-3 w-3 text-sky-400 inline" />
+      <ArrowUp className="ml-1 h-3 w-3 text-brand inline" />
     ) : (
-      <ArrowDown className="ml-1 h-3 w-3 text-sky-400 inline" />
+      <ArrowDown className="ml-1 h-3 w-3 text-brand inline" />
     );
   };
 
@@ -181,138 +182,150 @@ export const SpatialExecutionTable = ({
   }, [scheduleActivities]);
 
   return (
-    <div className="rounded-xl border border-surface-border bg-surface-card/90 shadow-lg backdrop-blur-sm p-4 sm:p-5 space-y-4">
-      {/* Table Header & Quick Filters */}
-      <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between border-b border-surface-border pb-4">
-        <div className="flex items-center gap-2">
-          <Activity className="h-4 w-4 text-sky-400" />
+    <div className="rounded-xl border border-surface-border bg-surface shadow-sm overflow-hidden space-y-0">
+      {/* Table Header & Scope Ribbon */}
+      <div className="p-4 sm:p-5 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between border-b border-surface-border bg-surface-subtle/50">
+        <div className="flex items-center gap-2.5">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand/10 text-brand border border-brand/20">
+            <Activity className="h-4 w-4" />
+          </div>
           <div>
-            <h3 className="text-sm font-bold text-white tracking-wide">
+            <h3 className="text-sm font-bold text-foreground tracking-wide">
               Spatial Execution Scope & Activity Matrix
             </h3>
-            <p className="text-3xs text-slate-400">
+            <p className="text-xs text-foreground-muted">
               Correlating schedule activities with site zones, ground execution, evidence, and early warnings.
             </p>
           </div>
         </div>
 
-        <span className="font-mono text-xs font-semibold text-slate-300 bg-surface px-2.5 py-1 rounded border border-surface-border self-start lg:self-auto">
+        <span className="font-mono text-xs font-semibold text-foreground-muted bg-surface px-2.5 py-1 rounded border border-surface-border self-start lg:self-auto">
           {sortedRows.length} Activities in Scope
         </span>
       </div>
 
       {/* Filter Row */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2.5">
-        {/* Search */}
-        <div className="relative lg:col-span-2">
-          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400" />
-          <input
-            type="text"
-            placeholder="Search activity, WBS, contractor..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full rounded-lg border border-surface-border bg-surface py-1.5 pl-8 pr-3 text-xs text-white placeholder-slate-400 focus:border-sky-500 focus:outline-none"
-          />
+      <div className="p-4 border-b border-surface-border bg-surface-subtle/20">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2.5">
+          {/* Search */}
+          <div className="relative lg:col-span-2">
+            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-foreground-muted" />
+            <input
+              type="text"
+              placeholder="Search activity, WBS, contractor..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full rounded-lg border border-surface-border bg-surface py-1.5 pl-8 pr-7 text-xs text-foreground placeholder:text-foreground-muted/60 focus:border-brand focus:outline-none"
+            />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery('')}
+                className="absolute right-2 top-1/2 -translate-y-1/2 text-foreground-muted hover:text-foreground"
+              >
+                <X className="h-3 w-3" />
+              </button>
+            )}
+          </div>
+
+          {/* Zone Filter */}
+          <select
+            value={zoneFilter}
+            onChange={(e) => setZoneFilter(e.target.value)}
+            className="rounded-lg border border-surface-border bg-surface px-2.5 py-1.5 text-xs text-foreground focus:border-brand focus:outline-none"
+          >
+            <option value="all">All Site Zones</option>
+            {siteZones.map((z) => (
+              <option key={z.id} value={z.id}>
+                {z.code} — {z.name.slice(0, 20)}...
+              </option>
+            ))}
+          </select>
+
+          {/* Phase Filter */}
+          <select
+            value={phaseFilter}
+            onChange={(e) => setPhaseFilter(e.target.value)}
+            className="rounded-lg border border-surface-border bg-surface px-2.5 py-1.5 text-xs text-foreground focus:border-brand focus:outline-none"
+          >
+            <option value="all">All Phases</option>
+            {phaseOptions.map((p) => (
+              <option key={p} value={p}>{p}</option>
+            ))}
+          </select>
+
+          {/* Variance Filter */}
+          <select
+            value={varianceFilter}
+            onChange={(e) => setVarianceFilter(e.target.value)}
+            className="rounded-lg border border-surface-border bg-surface px-2.5 py-1.5 text-xs text-foreground focus:border-brand focus:outline-none"
+          >
+            <option value="all">All Variance</option>
+            <option value="behind">Behind (&lt; -5 pp)</option>
+            <option value="nearPlan">Near Plan (±5 pp)</option>
+            <option value="ahead">Ahead (&gt; +5 pp)</option>
+          </select>
+
+          {/* Warning Filter */}
+          <select
+            value={warningFilter}
+            onChange={(e) => setWarningFilter(e.target.value)}
+            className="rounded-lg border border-surface-border bg-surface px-2.5 py-1.5 text-xs text-foreground focus:border-brand focus:outline-none"
+          >
+            <option value="all">All Warning States</option>
+            <option value="withWarnings">Active Warnings Only</option>
+            <option value="noWarnings">No Warnings</option>
+          </select>
+
+          {/* Evidence Filter */}
+          <select
+            value={evidenceFilter}
+            onChange={(e) => setEvidenceFilter(e.target.value)}
+            className="rounded-lg border border-surface-border bg-surface px-2.5 py-1.5 text-xs text-foreground focus:border-brand focus:outline-none"
+          >
+            <option value="all">All Evidence Coverage</option>
+            <option value="linked">Evidence Linked</option>
+            <option value="unlinked">Evidence Gap</option>
+          </select>
         </div>
-
-        {/* Zone Filter */}
-        <select
-          value={zoneFilter}
-          onChange={(e) => setZoneFilter(e.target.value)}
-          className="rounded-lg border border-surface-border bg-surface px-2.5 py-1.5 text-xs text-slate-300 focus:border-sky-500 focus:outline-none"
-        >
-          <option value="all">All Site Zones</option>
-          {siteZones.map((z) => (
-            <option key={z.id} value={z.id}>
-              {z.code} — {z.name.slice(0, 20)}...
-            </option>
-          ))}
-        </select>
-
-        {/* Phase Filter */}
-        <select
-          value={phaseFilter}
-          onChange={(e) => setPhaseFilter(e.target.value)}
-          className="rounded-lg border border-surface-border bg-surface px-2.5 py-1.5 text-xs text-slate-300 focus:border-sky-500 focus:outline-none"
-        >
-          <option value="all">All Phases</option>
-          {phaseOptions.map((p) => (
-            <option key={p} value={p}>{p}</option>
-          ))}
-        </select>
-
-        {/* Variance Filter */}
-        <select
-          value={varianceFilter}
-          onChange={(e) => setVarianceFilter(e.target.value)}
-          className="rounded-lg border border-surface-border bg-surface px-2.5 py-1.5 text-xs text-slate-300 focus:border-sky-500 focus:outline-none"
-        >
-          <option value="all">All Variance</option>
-          <option value="behind">Behind (&lt; -5 pp)</option>
-          <option value="nearPlan">Near Plan (±5 pp)</option>
-          <option value="ahead">Ahead (&gt; +5 pp)</option>
-        </select>
-
-        {/* Warning Filter */}
-        <select
-          value={warningFilter}
-          onChange={(e) => setWarningFilter(e.target.value)}
-          className="rounded-lg border border-surface-border bg-surface px-2.5 py-1.5 text-xs text-slate-300 focus:border-sky-500 focus:outline-none"
-        >
-          <option value="all">All Warning States</option>
-          <option value="withWarnings">Active Warnings Only</option>
-          <option value="noWarnings">No Warnings</option>
-        </select>
-
-        {/* Evidence Filter */}
-        <select
-          value={evidenceFilter}
-          onChange={(e) => setEvidenceFilter(e.target.value)}
-          className="rounded-lg border border-surface-border bg-surface px-2.5 py-1.5 text-xs text-slate-300 focus:border-sky-500 focus:outline-none"
-        >
-          <option value="all">All Evidence Coverage</option>
-          <option value="linked">Evidence Linked</option>
-          <option value="unlinked">Evidence Gap</option>
-        </select>
       </div>
 
       {/* Table Container */}
-      <div className="overflow-x-auto rounded-lg border border-surface-border bg-surface/60">
+      <div className="overflow-x-auto">
         <table className="w-full text-left text-xs">
-          <thead className="border-b border-surface-border bg-surface-subtle/80 font-mono text-3xs uppercase tracking-wider text-slate-400">
+          <thead className="border-b border-surface-border bg-surface-subtle/80 font-mono text-[10px] uppercase tracking-wider text-foreground-muted">
             <tr>
-              <th className="py-2.5 px-3 cursor-pointer group hover:text-white" onClick={() => handleSort('code')}>
+              <th className="py-2.5 px-3.5 cursor-pointer group hover:text-foreground" onClick={() => handleSort('code')}>
                 Activity Ref {renderSortIcon('code')}
               </th>
-              <th className="py-2.5 px-3 cursor-pointer group hover:text-white" onClick={() => handleSort('zoneCode')}>
+              <th className="py-2.5 px-3 cursor-pointer group hover:text-foreground" onClick={() => handleSort('zoneCode')}>
                 Site Zone {renderSortIcon('zoneCode')}
               </th>
-              <th className="py-2.5 px-3 cursor-pointer group hover:text-white" onClick={() => handleSort('wbsId')}>
+              <th className="py-2.5 px-3 cursor-pointer group hover:text-foreground" onClick={() => handleSort('wbsId')}>
                 WBS Code {renderSortIcon('wbsId')}
               </th>
-              <th className="py-2.5 px-3 text-right cursor-pointer group hover:text-white" onClick={() => handleSort('plannedProgress')}>
+              <th className="py-2.5 px-3 text-right cursor-pointer group hover:text-foreground" onClick={() => handleSort('plannedProgress')}>
                 Planned {renderSortIcon('plannedProgress')}
               </th>
-              <th className="py-2.5 px-3 text-right cursor-pointer group hover:text-white" onClick={() => handleSort('actualProgress')}>
+              <th className="py-2.5 px-3 text-right cursor-pointer group hover:text-foreground" onClick={() => handleSort('actualProgress')}>
                 Actual {renderSortIcon('actualProgress')}
               </th>
-              <th className="py-2.5 px-3 text-right cursor-pointer group hover:text-white" onClick={() => handleSort('variance')}>
+              <th className="py-2.5 px-3 text-right cursor-pointer group hover:text-foreground" onClick={() => handleSort('variance')}>
                 Variance {renderSortIcon('variance')}
               </th>
-              <th className="py-2.5 px-3 text-center cursor-pointer group hover:text-white" onClick={() => handleSort('evidenceCoveragePercent')}>
+              <th className="py-2.5 px-3 text-center cursor-pointer group hover:text-foreground" onClick={() => handleSort('evidenceCoveragePercent')}>
                 Evidence {renderSortIcon('evidenceCoveragePercent')}
               </th>
-              <th className="py-2.5 px-3 text-center cursor-pointer group hover:text-white" onClick={() => handleSort('warningCount')}>
+              <th className="py-2.5 px-3 text-center cursor-pointer group hover:text-foreground" onClick={() => handleSort('warningCount')}>
                 Warnings {renderSortIcon('warningCount')}
               </th>
               <th className="py-2.5 px-3">Contractor / Trade</th>
-              <th className="py-2.5 px-3 text-right">Actions</th>
+              <th className="py-2.5 px-3.5 text-right">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-surface-border font-sans">
             {sortedRows.length === 0 ? (
               <tr>
-                <td colSpan={10} className="py-8 text-center text-slate-400">
+                <td colSpan={10} className="py-12 text-center text-foreground-muted">
                   No execution activities match the active spatial filters.
                 </td>
               </tr>
@@ -322,19 +335,19 @@ export const SpatialExecutionTable = ({
                 return (
                   <tr
                     key={row.id}
-                    className="hover:bg-surface-elevated/80 transition-colors"
+                    className="hover:bg-surface-elevated/70 transition-colors"
                   >
                     {/* Activity */}
-                    <td className="py-3 px-3">
-                      <div className="font-mono text-3xs font-bold text-sky-400 flex items-center gap-1">
+                    <td className="py-3 px-3.5">
+                      <div className="font-mono text-xs font-bold text-brand flex items-center gap-1.5">
                         <span>{row.code}</span>
                         {row.isCriticalPath && (
-                          <span className="rounded bg-rose-950/60 px-1 py-0.2 text-3xs text-rose-400 border border-rose-500/40 uppercase">
+                          <span className="rounded bg-rose-500/10 px-1 py-0.5 text-[9px] font-bold text-rose-600 dark:text-rose-400 border border-rose-500/30 uppercase">
                             CP
                           </span>
                         )}
                       </div>
-                      <div className="text-xs font-semibold text-white mt-0.5 max-w-[200px] truncate" title={row.name}>
+                      <div className="text-xs font-medium text-foreground mt-0.5 max-w-[220px] truncate" title={row.name}>
                         {row.name}
                       </div>
                     </td>
@@ -344,45 +357,45 @@ export const SpatialExecutionTable = ({
                       {row.zone ? (
                         <button
                           onClick={() => onSelectZone && onSelectZone(row.zone)}
-                          className="font-mono text-3xs font-bold text-emerald-400 hover:underline flex items-center gap-1"
+                          className="font-mono text-xs font-semibold text-emerald-600 dark:text-emerald-400 hover:underline flex items-center gap-1"
                         >
                           <MapPin className="h-3 w-3" />
                           <span>{row.zoneCode}</span>
                         </button>
                       ) : (
-                        <span className="text-3xs text-slate-500 font-mono">—</span>
+                        <span className="text-xs text-foreground-muted font-mono">—</span>
                       )}
                     </td>
 
                     {/* WBS */}
-                    <td className="py-3 px-3 font-mono text-3xs text-slate-300">
+                    <td className="py-3 px-3 font-mono text-xs text-foreground-muted">
                       {row.wbsId}
                     </td>
 
                     {/* Planned */}
-                    <td className="py-3 px-3 text-right font-mono text-xs text-slate-300">
+                    <td className="py-3 px-3 text-right font-mono text-xs text-foreground-muted">
                       {row.plannedProgress.toFixed(1)}%
                     </td>
 
                     {/* Actual */}
-                    <td className="py-3 px-3 text-right font-mono text-xs font-bold text-white">
+                    <td className="py-3 px-3 text-right font-mono text-xs font-bold text-foreground">
                       {row.actualProgress.toFixed(1)}%
                     </td>
 
                     {/* Variance */}
                     <td className="py-3 px-3 text-right font-mono text-xs font-bold">
-                      <span className={`inline-flex items-center gap-0.5 ${isBehind ? 'text-amber-400' : 'text-emerald-400'}`}>
+                      <span className={`inline-flex items-center gap-0.5 ${isBehind ? 'text-amber-600 dark:text-amber-400' : 'text-emerald-600 dark:text-emerald-400'}`}>
                         {isBehind ? <TrendingDown className="h-3 w-3" /> : <TrendingUp className="h-3 w-3" />}
                         {row.variance > 0 ? `+${row.variance.toFixed(1)}` : row.variance.toFixed(1)} pp
                       </span>
                     </td>
 
                     {/* Evidence Coverage */}
-                    <td className="py-3 px-3 text-center font-mono text-3xs">
-                      <span className={`inline-flex items-center gap-1 rounded px-2 py-0.5 ${
+                    <td className="py-3 px-3 text-center font-mono text-xs">
+                      <span className={`inline-flex items-center gap-1 rounded px-2 py-0.5 text-[11px] font-semibold border ${
                         row.evidenceCoveragePercent > 0
-                          ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30'
-                          : 'bg-slate-800 text-slate-400'
+                          ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30'
+                          : 'bg-surface-subtle text-foreground-muted border-surface-border'
                       }`}>
                         <FileCheck2 className="h-2.5 w-2.5" />
                         {row.evidenceCoveragePercent}%
@@ -392,29 +405,29 @@ export const SpatialExecutionTable = ({
                     {/* Warnings */}
                     <td className="py-3 px-3 text-center">
                       {row.warningCount > 0 ? (
-                        <span className="inline-flex items-center gap-1 rounded bg-amber-500/15 px-2 py-0.5 font-mono text-3xs font-bold text-amber-400 border border-amber-500/30">
+                        <span className="inline-flex items-center gap-1 rounded bg-amber-500/10 px-2 py-0.5 font-mono text-[11px] font-bold text-amber-600 dark:text-amber-400 border border-amber-500/30">
                           <AlertTriangle className="h-2.5 w-2.5" />
                           {row.warningCount}
                         </span>
                       ) : (
-                        <span className="text-3xs font-mono text-slate-500">—</span>
+                        <span className="text-xs font-mono text-foreground-muted">—</span>
                       )}
                     </td>
 
                     {/* Contractor */}
-                    <td className="py-3 px-3 text-3xs text-slate-300 max-w-[150px] truncate" title={`${row.contractors} / ${row.disciplines}`}>
-                      <div className="font-medium text-white truncate">{row.contractors}</div>
-                      <div className="text-slate-400 font-mono truncate">{row.disciplines}</div>
+                    <td className="py-3 px-3 text-xs text-foreground-muted max-w-[150px] truncate" title={`${row.contractors} / ${row.disciplines}`}>
+                      <div className="font-medium text-foreground truncate">{row.contractors}</div>
+                      <div className="text-[10px] text-foreground-muted font-mono truncate">{row.disciplines}</div>
                     </td>
 
                     {/* Actions */}
-                    <td className="py-3 px-3 text-right">
+                    <td className="py-3 px-3.5 text-right">
                       <Button
                         as={Link}
                         to={`/progress?microActivity=${row.id}`}
                         variant="ghost"
                         size="xs"
-                        className="h-7 px-2 text-3xs text-sky-400 hover:text-sky-300 gap-1"
+                        className="h-7 px-2 text-xs text-brand hover:text-brand-dark gap-1"
                       >
                         <span>Inspect</span>
                         <ChevronRight className="h-3 w-3" />

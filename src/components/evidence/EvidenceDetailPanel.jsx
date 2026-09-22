@@ -42,7 +42,7 @@ export const EvidenceDetailPanel = ({
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [aiError, setAiError] = useState(null);
 
-  // Phase 23 Verification & Audit States
+  // Verification & Audit States
   const [verifications, setVerifications] = useState([]);
   const [loadingVerifications, setLoadingVerifications] = useState(false);
   const [decisionReason, setDecisionReason] = useState('');
@@ -189,14 +189,14 @@ export const EvidenceDetailPanel = ({
   return (
     <div className="fixed inset-y-0 right-0 z-50 flex w-full max-w-xl flex-col border-l border-surface-border bg-surface-card shadow-2xl backdrop-blur-xl">
       {/* Header */}
-      <div className="flex items-center justify-between border-b border-surface-border px-6 py-4">
+      <div className="flex items-center justify-between border-b border-surface-border px-6 py-4 bg-surface">
         <div className="flex items-center gap-3">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-400 ring-1 ring-emerald-500/20">
+          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 ring-1 ring-emerald-500/20">
             <FileCheck2 className="h-5 w-5" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <span className="font-mono text-sm font-bold text-white">
+              <span className="font-mono text-sm font-bold text-foreground">
                 {evidence.id}
               </span>
               <StatusBadge
@@ -205,7 +205,7 @@ export const EvidenceDetailPanel = ({
                 size="sm"
               />
             </div>
-            <span className="font-mono text-3xs text-emerald-400">
+            <span className="font-mono text-3xs text-foreground-muted">
               {evidence.evidenceAnchorId || `EV-ANCHOR-${evidence.microActivityId}`}
             </span>
           </div>
@@ -213,7 +213,8 @@ export const EvidenceDetailPanel = ({
 
         <button
           onClick={onClose}
-          className="rounded-lg p-1.5 text-slate-400 hover:bg-surface-elevated hover:text-white transition-colors"
+          className="rounded-lg p-1.5 text-foreground-muted hover:bg-surface-elevated hover:text-foreground transition-colors"
+          title="Close Inspector"
         >
           <X className="h-5 w-5" />
         </button>
@@ -226,27 +227,27 @@ export const EvidenceDetailPanel = ({
 
         {/* Section A: Evidence Identity & Description */}
         <div className="space-y-2">
-          <h3 className="text-3xs font-semibold uppercase tracking-wider text-slate-400">
+          <h3 className="text-3xs font-semibold uppercase tracking-wider text-foreground-muted">
             Record Scope & Description
           </h3>
-          <div className="rounded-xl border border-surface-border bg-surface-subtle/70 p-3.5 space-y-2">
-            <h4 className="text-sm font-bold text-white">{evidence.title}</h4>
-            <p className="text-xs text-slate-300 leading-relaxed">
+          <div className="rounded-xl border border-surface-border bg-surface-subtle p-3.5 space-y-2">
+            <h4 className="text-sm font-bold text-foreground">{evidence.title}</h4>
+            <p className="text-xs text-foreground-muted leading-relaxed">
               {evidence.description || 'No detailed field description recorded.'}
             </p>
           </div>
         </div>
 
-        {/* Section B: Field Capture Metadata */}
+        {/* Section B: Field Capture Context */}
         <div className="space-y-2">
-          <h3 className="text-3xs font-semibold uppercase tracking-wider text-slate-400">
+          <h3 className="text-3xs font-semibold uppercase tracking-wider text-foreground-muted">
             Field Capture Context
           </h3>
           <div className="grid grid-cols-2 gap-2 text-xs font-mono">
             <div className="rounded-lg border border-surface-border bg-surface-subtle p-3 space-y-1">
-              <span className="text-3xs text-slate-400 block uppercase">Captured At</span>
-              <div className="flex items-center gap-1.5 text-slate-200">
-                <Calendar className="h-3.5 w-3.5 text-sky-400 shrink-0" />
+              <span className="text-3xs text-foreground-muted block uppercase">Captured At</span>
+              <div className="flex items-center gap-1.5 text-foreground">
+                <Calendar className="h-3.5 w-3.5 text-sky-500 shrink-0" />
                 <span className="truncate">
                   {new Date(evidence.capturedAt).toLocaleString()}
                 </span>
@@ -254,9 +255,9 @@ export const EvidenceDetailPanel = ({
             </div>
 
             <div className="rounded-lg border border-surface-border bg-surface-subtle p-3 space-y-1">
-              <span className="text-3xs text-slate-400 block uppercase">Captured By</span>
-              <div className="flex items-center gap-1.5 text-slate-200">
-                <UserCheck className="h-3.5 w-3.5 text-emerald-400 shrink-0" />
+              <span className="text-3xs text-foreground-muted block uppercase">Captured By</span>
+              <div className="flex items-center gap-1.5 text-foreground">
+                <UserCheck className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
                 <span className="truncate font-sans font-medium text-xs">
                   {evidence.capturedBy}
                 </span>
@@ -264,43 +265,43 @@ export const EvidenceDetailPanel = ({
             </div>
 
             <div className="rounded-lg border border-surface-border bg-surface-subtle p-3 space-y-1">
-              <span className="text-3xs text-slate-400 block uppercase">Capture Source</span>
-              <span className="font-bold text-sky-400">{evidence.captureSource}</span>
+              <span className="text-3xs text-foreground-muted block uppercase">Capture Source</span>
+              <span className="font-bold text-sky-600 dark:text-sky-400">{evidence.captureSource}</span>
             </div>
 
             <div className="rounded-lg border border-surface-border bg-surface-subtle p-3 space-y-1">
-              <span className="text-3xs text-slate-400 block uppercase">Evidence Format</span>
-              <span className="font-bold text-purple-400 uppercase">{evidence.evidenceType}</span>
+              <span className="text-3xs text-foreground-muted block uppercase">Evidence Format</span>
+              <span className="font-bold text-purple-600 dark:text-purple-400 uppercase">{evidence.evidenceType}</span>
             </div>
           </div>
         </div>
 
         {/* Section C: Location & Geotag */}
         <div className="space-y-2">
-          <h3 className="text-3xs font-semibold uppercase tracking-wider text-slate-400 flex items-center justify-between">
+          <h3 className="text-3xs font-semibold uppercase tracking-wider text-foreground-muted flex items-center justify-between">
             <span>Location & Site Coordinates</span>
-            <span className="text-3xs text-amber-400/80 font-normal">Prototype GPS Data</span>
+            <span className="text-3xs text-foreground-muted font-normal">Prototype GPS Data</span>
           </h3>
-          <div className="rounded-xl border border-surface-border bg-surface-subtle/80 p-3.5 space-y-2.5">
+          <div className="rounded-xl border border-surface-border bg-surface-subtle p-3.5 space-y-2.5">
             <div className="flex items-start gap-2">
-              <MapPin className="h-4 w-4 text-emerald-400 shrink-0 mt-0.5" />
+              <MapPin className="h-4 w-4 text-emerald-500 shrink-0 mt-0.5" />
               <div className="min-w-0">
-                <div className="text-xs font-semibold text-white">
+                <div className="text-xs font-semibold text-foreground">
                   {evidence.location?.label || 'Project Site Coordinates'}
                 </div>
-                <div className="font-mono text-3xs text-slate-400 mt-0.5">
+                <div className="font-mono text-3xs text-foreground-muted mt-0.5">
                   Elevation: {evidence.location?.elevation || '270.0m MSL'}
                 </div>
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-2 font-mono text-3xs border-t border-surface-border/50 pt-2 text-slate-300">
+            <div className="grid grid-cols-2 gap-2 font-mono text-3xs border-t border-surface-border pt-2 text-foreground-muted">
               <div className="flex items-center gap-1">
-                <Compass className="h-3 w-3 text-sky-400" />
+                <Compass className="h-3 w-3 text-sky-500" />
                 <span>Lat: {evidence.location?.latitude || '30.7046'}° N</span>
               </div>
               <div className="flex items-center gap-1">
-                <Compass className="h-3 w-3 text-sky-400" />
+                <Compass className="h-3 w-3 text-sky-500" />
                 <span>Lon: {evidence.location?.longitude || '76.7179'}° E</span>
               </div>
             </div>
@@ -309,62 +310,62 @@ export const EvidenceDetailPanel = ({
 
         {/* Section D: Traceability to Execution & Schedule */}
         <div className="space-y-2">
-          <h3 className="text-3xs font-semibold uppercase tracking-wider text-slate-400">
+          <h3 className="text-3xs font-semibold uppercase tracking-wider text-foreground-muted">
             Execution Linkage & Schedule Alignment
           </h3>
-          <div className="rounded-xl border border-brand-500/20 bg-brand-950/10 p-4 space-y-3">
+          <div className="rounded-xl border border-brand-500/20 bg-surface-subtle p-4 space-y-3">
             <div className="space-y-2 text-xs">
-              <div className="flex items-start justify-between gap-2 border-b border-surface-border/50 pb-2">
+              <div className="flex items-start justify-between gap-2 border-b border-surface-border pb-2">
                 <div>
-                  <span className="text-3xs font-mono uppercase text-slate-400 block">
+                  <span className="text-3xs font-mono uppercase text-foreground-muted block">
                     Micro-Activity ID
                   </span>
-                  <span className="font-mono text-xs font-bold text-emerald-300">
+                  <span className="font-mono text-xs font-bold text-brand-600 dark:text-brand-400">
                     {evidence.microActivityId}
                   </span>
                 </div>
-                <span className="text-3xs font-mono text-slate-400">
+                <span className="text-3xs font-mono text-foreground-muted">
                   Unit: {linkedMicro?.unit || 'Units'}
                 </span>
               </div>
 
               <div>
-                <span className="text-3xs font-mono uppercase text-slate-400 block">
+                <span className="text-3xs font-mono uppercase text-foreground-muted block">
                   Execution Scope
                 </span>
-                <span className="font-medium text-slate-200">
+                <span className="font-medium text-foreground">
                   {linkedMicro?.microActivityName || 'Field execution task'}
                 </span>
               </div>
 
-              <div className="grid grid-cols-2 gap-2 text-3xs font-mono text-slate-300 pt-1">
+              <div className="grid grid-cols-2 gap-2 text-3xs font-mono text-foreground-muted pt-1">
                 <div>
-                  <span className="text-slate-400 block">Contractor:</span>
-                  <span className="font-semibold text-white">{linkedMicro?.contractor || 'General'}</span>
+                  <span className="text-foreground-muted block">Contractor:</span>
+                  <span className="font-semibold text-foreground">{linkedMicro?.contractor || 'General'}</span>
                 </div>
                 <div>
-                  <span className="text-slate-400 block">Discipline:</span>
-                  <span className="font-semibold text-white">{linkedMicro?.discipline || 'Civil'}</span>
+                  <span className="text-foreground-muted block">Discipline:</span>
+                  <span className="font-semibold text-foreground">{linkedMicro?.discipline || 'Civil'}</span>
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-2 text-3xs font-mono text-slate-300 border-t border-surface-border/50 pt-2">
+              <div className="grid grid-cols-2 gap-2 text-3xs font-mono text-foreground-muted border-t border-surface-border pt-2">
                 <div>
-                  <span className="text-slate-400 block">Parent Activity:</span>
-                  <span className="font-bold text-sky-400 truncate block">
+                  <span className="text-foreground-muted block">Parent Activity:</span>
+                  <span className="font-bold text-sky-600 dark:text-sky-400 truncate block">
                     {evidence.activityId} {linkedActivity?.activityName ? `• ${linkedActivity.activityName}` : ''}
                   </span>
                 </div>
                 <div>
-                  <span className="text-slate-400 block">WBS & Phase:</span>
-                  <span className="font-bold text-amber-400 truncate block">
+                  <span className="text-foreground-muted block">WBS & Phase:</span>
+                  <span className="font-bold text-amber-600 dark:text-amber-400 truncate block">
                     {evidence.wbsId} {linkedWbs?.name ? `• ${linkedWbs.name}` : ''} {linkedPhase?.code ? `(${linkedPhase.code})` : ''}
                   </span>
                 </div>
               </div>
             </div>
 
-            {/* Direct Cross-Navigation Actions */}
+            {/* Cross-Navigation Actions */}
             <div className="flex flex-col sm:flex-row items-center gap-2 pt-1">
               <Link
                 to={`/progress?microActivity=${evidence.microActivityId}`}
@@ -373,7 +374,7 @@ export const EvidenceDetailPanel = ({
                 <Button
                   variant="outline"
                   size="sm"
-                  className="w-full justify-center gap-1.5 text-xs text-emerald-300 border-emerald-500/30 hover:bg-emerald-500/10"
+                  className="w-full justify-center gap-1.5 text-xs text-brand-600 dark:text-brand-400 border-brand-500/30 hover:bg-brand-500/10"
                 >
                   <Layers className="h-3.5 w-3.5" />
                   <span>View Ground Execution</span>
@@ -387,7 +388,7 @@ export const EvidenceDetailPanel = ({
                 <Button
                   variant="outline"
                   size="sm"
-                  className="w-full justify-center gap-1.5 text-xs text-sky-300 border-sky-500/30 hover:bg-sky-500/10"
+                  className="w-full justify-center gap-1.5 text-xs text-sky-600 dark:text-sky-400 border-sky-500/30 hover:bg-sky-500/10"
                 >
                   <ExternalLink className="h-3.5 w-3.5" />
                   <span>View Schedule WBS</span>
@@ -397,24 +398,24 @@ export const EvidenceDetailPanel = ({
           </div>
         </div>
 
-        {/* Section: AI Evidence Analysis & Schedule-Linking Engine (Phase 21) */}
+        {/* Section: AI Evidence Analysis & Schedule-Linking Engine */}
         <div className="space-y-2">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-1.5">
-              <Sparkles className="h-3.5 w-3.5 text-brand-400" />
-              <h3 className="text-3xs font-semibold uppercase tracking-wider text-slate-300">
+              <Sparkles className="h-3.5 w-3.5 text-brand-500" />
+              <h3 className="text-3xs font-semibold uppercase tracking-wider text-foreground">
                 AI Evidence Analysis & Schedule-Linking Engine
               </h3>
             </div>
-            <span className="text-3xs font-mono text-slate-400">Phase 21</span>
+            <span className="text-3xs font-mono text-foreground-muted">Phase 21</span>
           </div>
 
-          <div className="rounded-xl border border-brand-500/20 bg-brand-950/20 p-4 space-y-3">
+          <div className="rounded-xl border border-brand-500/20 bg-surface-subtle p-4 space-y-3">
             {!aiAnalysis && !isAnalyzing && (
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
-                <div className="text-slate-300">
-                  <p className="font-medium text-white">Evaluate Schedule & Micro-Activity Linkage</p>
-                  <p className="text-3xs text-slate-400">
+                <div className="text-foreground-muted">
+                  <p className="font-medium text-foreground">Evaluate Schedule & Micro-Activity Linkage</p>
+                  <p className="text-3xs text-foreground-muted">
                     Runs deterministic signal evaluation across WBS, zones, disciplines, and execution windows.
                   </p>
                 </div>
@@ -431,18 +432,18 @@ export const EvidenceDetailPanel = ({
             )}
 
             {isAnalyzing && (
-              <div className="flex items-center justify-center gap-2 py-4 text-xs text-brand-300">
-                <Loader2 className="h-4 w-4 animate-spin text-brand-400" />
+              <div className="flex items-center justify-center gap-2 py-4 text-xs text-brand-600 dark:text-brand-400">
+                <Loader2 className="h-4 w-4 animate-spin text-brand-500" />
                 <span>Evaluating schedule context & multi-signal linkage...</span>
               </div>
             )}
 
             {aiError && (
-              <div className="rounded-lg border border-red-500/30 bg-red-950/30 p-3 text-xs text-red-300 flex items-start gap-2">
-                <AlertTriangle className="h-4 w-4 text-red-400 shrink-0 mt-0.5" />
+              <div className="rounded-lg border border-red-500/30 bg-red-500/10 p-3 text-xs text-red-600 dark:text-red-400 flex items-start gap-2">
+                <AlertTriangle className="h-4 w-4 text-red-500 shrink-0 mt-0.5" />
                 <div>
                   <span className="font-semibold block">AI Service Unavailable</span>
-                  <span className="text-3xs text-red-200/80">{aiError}</span>
+                  <span className="text-3xs text-red-600/80 dark:text-red-300">{aiError}</span>
                 </div>
               </div>
             )}
@@ -450,32 +451,32 @@ export const EvidenceDetailPanel = ({
             {aiAnalysis && (
               <div className="space-y-3 text-xs">
                 {/* Status & Confidence Bar */}
-                <div className="flex flex-wrap items-center justify-between gap-2 border-b border-surface-border/50 pb-2.5">
+                <div className="flex flex-wrap items-center justify-between gap-2 border-b border-surface-border pb-2.5">
                   <div className="flex items-center gap-2">
-                    <span className="text-3xs uppercase font-mono text-slate-400">Linkage State:</span>
+                    <span className="text-3xs uppercase font-mono text-foreground-muted">Linkage State:</span>
                     {aiAnalysis.scheduleLink?.linkType === 'explicit' ? (
-                      <span className="inline-flex items-center gap-1 rounded-md bg-emerald-500/10 px-2 py-0.5 text-3xs font-mono font-semibold text-emerald-400 ring-1 ring-emerald-500/20">
+                      <span className="inline-flex items-center gap-1 rounded-md bg-emerald-500/10 px-2 py-0.5 text-3xs font-mono font-semibold text-emerald-600 dark:text-emerald-400 ring-1 ring-emerald-500/20">
                         <CheckCircle2 className="h-3 w-3" /> Explicit System Link
                       </span>
                     ) : aiAnalysis.status === 'candidate' ? (
-                      <span className="inline-flex items-center gap-1 rounded-md bg-sky-500/10 px-2 py-0.5 text-3xs font-mono font-semibold text-sky-400 ring-1 ring-sky-500/20">
+                      <span className="inline-flex items-center gap-1 rounded-md bg-sky-500/10 px-2 py-0.5 text-3xs font-mono font-semibold text-sky-600 dark:text-sky-400 ring-1 ring-sky-500/20">
                         <Sparkles className="h-3 w-3" /> AI-Assisted Candidate
                       </span>
                     ) : (
-                      <span className="inline-flex items-center gap-1 rounded-md bg-amber-500/10 px-2 py-0.5 text-3xs font-mono font-semibold text-amber-400 ring-1 ring-amber-500/20">
+                      <span className="inline-flex items-center gap-1 rounded-md bg-amber-500/10 px-2 py-0.5 text-3xs font-mono font-semibold text-amber-600 dark:text-amber-400 ring-1 ring-amber-500/20">
                         <HelpCircle className="h-3 w-3" /> Needs Human Review
                       </span>
                     )}
                   </div>
 
                   <div className="flex items-center gap-1.5 font-mono text-3xs">
-                    <span className="text-slate-400">Confidence:</span>
+                    <span className="text-foreground-muted">Confidence:</span>
                     <span className={`font-bold ${
                       aiAnalysis.scheduleLink?.confidenceBand === 'high'
-                        ? 'text-emerald-400'
+                        ? 'text-emerald-600 dark:text-emerald-400'
                         : aiAnalysis.scheduleLink?.confidenceBand === 'medium'
-                        ? 'text-sky-400'
-                        : 'text-amber-400'
+                        ? 'text-sky-600 dark:text-sky-400'
+                        : 'text-amber-600 dark:text-amber-400'
                     }`}>
                       {aiAnalysis.scheduleLink?.confidence !== null
                         ? `${Math.round(aiAnalysis.scheduleLink?.confidence * 100)}% (${(aiAnalysis.scheduleLink?.confidenceBand || 'N/A').toUpperCase()})`
@@ -485,17 +486,17 @@ export const EvidenceDetailPanel = ({
                 </div>
 
                 {/* Target Scope */}
-                <div className="grid grid-cols-2 gap-2 text-3xs font-mono text-slate-300">
+                <div className="grid grid-cols-2 gap-2 text-3xs font-mono text-foreground-muted">
                   <div>
-                    <span className="text-slate-400 block uppercase">Candidate Activity</span>
-                    <span className="font-semibold text-white truncate block">
+                    <span className="text-foreground-muted block uppercase">Candidate Activity</span>
+                    <span className="font-semibold text-foreground truncate block">
                       {aiAnalysis.scheduleLink?.activityId || 'Unlinked'}
                       {aiAnalysis.scheduleLink?.activityName ? ` • ${aiAnalysis.scheduleLink?.activityName}` : ''}
                     </span>
                   </div>
                   <div>
-                    <span className="text-slate-400 block uppercase">Micro-Activity</span>
-                    <span className="font-semibold text-white truncate block">
+                    <span className="text-foreground-muted block uppercase">Micro-Activity</span>
+                    <span className="font-semibold text-foreground truncate block">
                       {aiAnalysis.scheduleLink?.microActivityId || 'Unlinked'}
                       {aiAnalysis.scheduleLink?.microActivityName ? ` • ${aiAnalysis.scheduleLink?.microActivityName}` : ''}
                     </span>
@@ -504,14 +505,14 @@ export const EvidenceDetailPanel = ({
 
                 {/* Explainable Reasons */}
                 {aiAnalysis.scheduleLink?.reasons?.length > 0 && (
-                  <div className="space-y-1 rounded-lg bg-surface/70 p-2.5 border border-surface-border">
-                    <span className="text-3xs uppercase font-mono text-slate-400 block">
+                  <div className="space-y-1 rounded-lg bg-surface p-2.5 border border-surface-border">
+                    <span className="text-3xs uppercase font-mono text-foreground-muted block">
                       Explainable Linkage Signals
                     </span>
-                    <ul className="space-y-1 text-3xs text-slate-300">
+                    <ul className="space-y-1 text-3xs text-foreground-muted">
                       {aiAnalysis.scheduleLink.reasons.map((r, i) => (
                         <li key={i} className="flex items-start gap-1.5">
-                          <CheckCircle2 className="h-3 w-3 text-emerald-400 shrink-0 mt-0.5" />
+                          <CheckCircle2 className="h-3 w-3 text-emerald-500 shrink-0 mt-0.5" />
                           <span>{r}</span>
                         </li>
                       ))}
@@ -519,47 +520,14 @@ export const EvidenceDetailPanel = ({
                   </div>
                 )}
 
-                {/* Factual Observations & Risk Signals */}
-                {aiAnalysis.observations?.length > 0 && (
-                  <div className="space-y-1">
-                    <span className="text-3xs uppercase font-mono text-slate-400 block">
-                      Factual Context Observations
-                    </span>
-                    <div className="space-y-1">
-                      {aiAnalysis.observations.map((obs, i) => (
-                        <div key={i} className="rounded bg-surface-subtle/80 px-2 py-1 text-3xs text-slate-300 border border-surface-border/40 flex items-center justify-between">
-                          <span>{obs.message}</span>
-                          <span className="text-slate-400 font-mono text-3xs uppercase">{obs.source}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {aiAnalysis.riskSignals?.length > 0 && (
-                  <div className="space-y-1">
-                    <span className="text-3xs uppercase font-mono text-amber-400 block">
-                      Data-Quality / Linkage Signals
-                    </span>
-                    <div className="space-y-1">
-                      {aiAnalysis.riskSignals.map((sig, i) => (
-                        <div key={i} className="rounded bg-amber-950/20 px-2.5 py-1 text-3xs text-amber-300 border border-amber-500/20 flex items-center gap-1.5">
-                          <AlertTriangle className="h-3 w-3 text-amber-400 shrink-0" />
-                          <span>{sig.message}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
                 {/* Prominent Verification Notice */}
-                <div className="rounded-lg border border-amber-500/30 bg-amber-950/20 p-2.5 text-3xs text-amber-300/90 space-y-1">
-                  <div className="flex items-center gap-1.5 font-semibold text-amber-200">
-                    <AlertTriangle className="h-3.5 w-3.5 text-amber-400" />
+                <div className="rounded-lg border border-amber-500/30 bg-amber-500/10 p-2.5 text-3xs text-amber-700 dark:text-amber-300 space-y-1">
+                  <div className="flex items-center gap-1.5 font-semibold text-amber-800 dark:text-amber-200">
+                    <AlertTriangle className="h-3.5 w-3.5 text-amber-500" />
                     <span>Requires Human Verification</span>
                   </div>
-                  <p className="text-amber-300/80">
-                    Inferred candidates are non-authoritative recommendations for field engineer confirmation. Physical construction progress percentage is not estimated from metadata.
+                  <p className="text-amber-700/80 dark:text-amber-300/80">
+                    Inferred candidates are non-authoritative recommendations for field engineer confirmation. Physical progress percentage is not estimated from metadata.
                   </p>
                 </div>
               </div>
@@ -567,16 +535,16 @@ export const EvidenceDetailPanel = ({
           </div>
         </div>
 
-        {/* Section E: Human Verification & Audit Workflow (Phase 23) */}
+        {/* Section E: Human Verification & Audit Workflow */}
         <div className="space-y-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-1.5">
-              <ShieldCheck className="h-4 w-4 text-emerald-400" />
-              <h3 className="text-3xs font-semibold uppercase tracking-wider text-slate-200">
+              <ShieldCheck className="h-4 w-4 text-emerald-500" />
+              <h3 className="text-3xs font-semibold uppercase tracking-wider text-foreground">
                 Human Verification & Audit Workflow
               </h3>
             </div>
-            <span className="text-3xs font-mono text-emerald-400">Phase 23</span>
+            <span className="text-3xs font-mono text-emerald-600 dark:text-emerald-400">Phase 23</span>
           </div>
 
           <div className="rounded-xl border border-surface-border bg-surface-subtle p-4 space-y-4">
@@ -588,21 +556,21 @@ export const EvidenceDetailPanel = ({
 
               if (isVerified) {
                 return (
-                  <div className="rounded-lg border border-emerald-500/30 bg-emerald-950/30 p-3 space-y-1">
+                  <div className="rounded-lg border border-emerald-500/30 bg-emerald-500/10 p-3 space-y-1">
                     <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-1.5 font-bold text-emerald-300 text-xs">
-                        <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0" />
+                      <div className="flex items-center gap-1.5 font-bold text-emerald-700 dark:text-emerald-300 text-xs">
+                        <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0" />
                         <span>HUMAN VERIFIED (Authoritative Finding)</span>
                       </div>
-                      <span className="text-3xs font-mono text-emerald-400/80">
+                      <span className="text-3xs font-mono text-emerald-600 dark:text-emerald-400">
                         {latestVer?.verificationId || 'VER-RECORDED'}
                       </span>
                     </div>
-                    <p className="text-3xs text-emerald-200/90">
+                    <p className="text-3xs text-emerald-700/90 dark:text-emerald-200">
                       Approved by <span className="font-semibold">{latestVer?.reviewer?.name || 'Project Manager'}</span> ({latestVer?.reviewer?.role || 'PM'}) on {latestVer?.decidedAt ? new Date(latestVer.decidedAt).toLocaleString() : new Date().toLocaleDateString()}.
                     </p>
                     {latestVer?.reason && (
-                      <p className="text-3xs text-emerald-300 italic pt-1 border-t border-emerald-500/20">
+                      <p className="text-3xs text-emerald-800 dark:text-emerald-300 italic pt-1 border-t border-emerald-500/20">
                         "{latestVer.reason}"
                       </p>
                     )}
@@ -612,21 +580,21 @@ export const EvidenceDetailPanel = ({
 
               if (isRejected) {
                 return (
-                  <div className="rounded-lg border border-rose-500/30 bg-rose-950/30 p-3 space-y-1">
+                  <div className="rounded-lg border border-rose-500/30 bg-rose-500/10 p-3 space-y-1">
                     <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-1.5 font-bold text-rose-300 text-xs">
-                        <XCircle className="h-4 w-4 text-rose-400 shrink-0" />
+                      <div className="flex items-center gap-1.5 font-bold text-rose-700 dark:text-rose-300 text-xs">
+                        <XCircle className="h-4 w-4 text-rose-500 shrink-0" />
                         <span>HUMAN REJECTED (Non-Authoritative)</span>
                       </div>
-                      <span className="text-3xs font-mono text-rose-400/80">
+                      <span className="text-3xs font-mono text-rose-600 dark:text-rose-400">
                         {latestVer?.verificationId || 'VER-REJECTED'}
                       </span>
                     </div>
-                    <p className="text-3xs text-rose-200/90">
+                    <p className="text-3xs text-rose-700/90 dark:text-rose-200">
                       Rejected by <span className="font-semibold">{latestVer?.reviewer?.name || 'Site Engineer'}</span> ({latestVer?.reviewer?.role || 'SE'}).
                     </p>
                     {latestVer?.reason && (
-                      <p className="text-3xs text-rose-300 italic pt-1 border-t border-rose-500/20">
+                      <p className="text-3xs text-rose-800 dark:text-rose-300 italic pt-1 border-t border-rose-500/20">
                         "{latestVer.reason}"
                       </p>
                     )}
@@ -635,15 +603,15 @@ export const EvidenceDetailPanel = ({
               }
 
               return (
-                <div className="rounded-lg border border-amber-500/30 bg-amber-950/25 p-3 space-y-1">
+                <div className="rounded-lg border border-amber-500/30 bg-amber-500/10 p-3 space-y-1">
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-1.5 font-bold text-amber-300 text-xs">
-                      <HelpCircle className="h-4 w-4 text-amber-400 shrink-0" />
+                    <div className="flex items-center gap-1.5 font-bold text-amber-700 dark:text-amber-300 text-xs">
+                      <HelpCircle className="h-4 w-4 text-amber-500 shrink-0" />
                       <span>AI-ASSISTED CANDIDATE (Awaiting Human Review)</span>
                     </div>
-                    <span className="text-3xs font-mono text-amber-400/80">UNVERIFIED</span>
+                    <span className="text-3xs font-mono text-amber-600 dark:text-amber-400">UNVERIFIED</span>
                   </div>
-                  <p className="text-3xs text-amber-200/90">
+                  <p className="text-3xs text-amber-700/90 dark:text-amber-200">
                     This finding is derived from AI schedule-linkage telemetry and requires formal review by an authorized engineer before entering project baseline intelligence.
                   </p>
                 </div>
@@ -652,18 +620,18 @@ export const EvidenceDetailPanel = ({
 
             {/* Role-Based Decision Form */}
             {currentUser?.role === 'contractor' ? (
-              <div className="rounded-lg bg-surface/60 p-3 border border-surface-border text-3xs text-slate-400">
-                <span className="font-semibold text-slate-300 block mb-0.5">Contractor Read-Only Access</span>
+              <div className="rounded-lg bg-surface p-3 border border-surface-border text-3xs text-foreground-muted">
+                <span className="font-semibold text-foreground block mb-0.5">Contractor Read-Only Access</span>
                 Authoritative verification and rejection decisions are restricted to Project Authority, Project Manager, Site Engineer, and Discipline Managers.
               </div>
             ) : (
-              <div className="space-y-2 border-t border-surface-border/60 pt-3">
+              <div className="space-y-2 border-t border-surface-border pt-3">
                 <div className="flex items-center justify-between">
-                  <label className="text-3xs font-semibold uppercase text-slate-300 flex items-center gap-1">
+                  <label className="text-3xs font-semibold uppercase text-foreground flex items-center gap-1">
                     <span>Record Human Decision Note</span>
-                    <span className="text-rose-400">*</span>
+                    <span className="text-rose-500">*</span>
                   </label>
-                  <span className="text-3xs font-mono text-slate-400">
+                  <span className="text-3xs font-mono text-foreground-muted">
                     Reviewer: {currentUser?.name || 'Project Manager'} ({currentUser?.role || 'PM'})
                   </span>
                 </div>
@@ -672,20 +640,20 @@ export const EvidenceDetailPanel = ({
                   value={decisionReason}
                   onChange={(e) => setDecisionReason(e.target.value)}
                   placeholder="Enter mandatory field justification, inspection cross-reference, or rejection rationale..."
-                  className="w-full rounded-lg border border-surface-border bg-surface px-3 py-2 text-xs text-white placeholder-slate-500 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 min-h-[64px]"
+                  className="w-full rounded-lg border border-surface-border bg-surface px-3 py-2 text-xs text-foreground placeholder-foreground-muted focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 min-h-[64px]"
                   disabled={submittingDecision}
                 />
 
                 {decisionFeedback && (
                   <div className={`rounded-md p-2 text-3xs flex items-center gap-1.5 ${
                     decisionFeedback.type === 'success'
-                      ? 'bg-emerald-950/30 text-emerald-300 border border-emerald-500/20'
-                      : 'bg-rose-950/30 text-rose-300 border border-rose-500/20'
+                      ? 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-500/20'
+                      : 'bg-rose-500/10 text-rose-700 dark:text-rose-300 border border-rose-500/20'
                   }`}>
                     {decisionFeedback.type === 'success' ? (
-                      <CheckCircle2 className="h-3.5 w-3.5 shrink-0 text-emerald-400" />
+                      <CheckCircle2 className="h-3.5 w-3.5 shrink-0 text-emerald-500" />
                     ) : (
-                      <AlertTriangle className="h-3.5 w-3.5 shrink-0 text-rose-400" />
+                      <AlertTriangle className="h-3.5 w-3.5 shrink-0 text-rose-500" />
                     )}
                     <span>{decisionFeedback.message}</span>
                   </div>
@@ -712,7 +680,7 @@ export const EvidenceDetailPanel = ({
                     size="sm"
                     onClick={() => handleDecision('rejected')}
                     disabled={submittingDecision || !decisionReason.trim()}
-                    className="flex-1 justify-center gap-1.5 text-xs border-rose-500/40 text-rose-400 hover:bg-rose-500/10 font-semibold"
+                    className="flex-1 justify-center gap-1.5 text-xs border-rose-500/40 text-rose-600 dark:text-rose-400 hover:bg-rose-500/10 font-semibold"
                   >
                     {submittingDecision ? (
                       <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -726,26 +694,26 @@ export const EvidenceDetailPanel = ({
             )}
 
             {/* Audit History Timeline */}
-            <div className="border-t border-surface-border/60 pt-3 space-y-2">
+            <div className="border-t border-surface-border pt-3 space-y-2">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-1.5">
-                  <History className="h-3.5 w-3.5 text-sky-400" />
-                  <span className="text-3xs font-semibold uppercase tracking-wider text-slate-300">
+                  <History className="h-3.5 w-3.5 text-sky-500" />
+                  <span className="text-3xs font-semibold uppercase tracking-wider text-foreground">
                     Append-Only Audit History
                   </span>
                 </div>
-                <span className="text-3xs font-mono text-slate-400">
+                <span className="text-3xs font-mono text-foreground-muted">
                   {verifications.flatMap((v) => v.auditHistory || []).length} Event(s)
                 </span>
               </div>
 
               {loadingVerifications ? (
-                <div className="py-2 text-center text-3xs text-slate-400 flex items-center justify-center gap-1.5">
+                <div className="py-2 text-center text-3xs text-foreground-muted flex items-center justify-center gap-1.5">
                   <Loader2 className="h-3.5 w-3.5 animate-spin" />
                   <span>Loading audit trail...</span>
                 </div>
               ) : verifications.length === 0 || verifications.flatMap((v) => v.auditHistory || []).length === 0 ? (
-                <div className="rounded-lg bg-surface/50 p-2.5 text-center text-3xs text-slate-400">
+                <div className="rounded-lg bg-surface p-2.5 text-center text-3xs text-foreground-muted">
                   No prior verification decisions recorded for this evidence.
                 </div>
               ) : (
@@ -753,42 +721,42 @@ export const EvidenceDetailPanel = ({
                   {verifications.flatMap((v) => v.auditHistory || []).map((evt, idx) => (
                     <div
                       key={evt.eventId || idx}
-                      className="rounded-lg border border-surface-border/60 bg-surface/80 p-2.5 space-y-1 text-3xs"
+                      className="rounded-lg border border-surface-border bg-surface p-2.5 space-y-1 text-3xs"
                     >
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-1.5">
                           {evt.action === 'VERIFY' ? (
-                            <span className="inline-flex items-center gap-0.5 rounded px-1.5 py-0.2 bg-emerald-500/10 text-emerald-400 font-mono font-bold">
+                            <span className="inline-flex items-center gap-0.5 rounded px-1.5 py-0.2 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-mono font-bold">
                               <CheckCircle2 className="h-3 w-3" /> VERIFY
                             </span>
                           ) : evt.action === 'REJECT' ? (
-                            <span className="inline-flex items-center gap-0.5 rounded px-1.5 py-0.2 bg-rose-500/10 text-rose-400 font-mono font-bold">
+                            <span className="inline-flex items-center gap-0.5 rounded px-1.5 py-0.2 bg-rose-500/10 text-rose-600 dark:text-rose-400 font-mono font-bold">
                               <XCircle className="h-3 w-3" /> REJECT
                             </span>
                           ) : evt.action === 'OVERRIDE' ? (
-                            <span className="inline-flex items-center gap-0.5 rounded px-1.5 py-0.2 bg-sky-500/10 text-sky-400 font-mono font-bold">
+                            <span className="inline-flex items-center gap-0.5 rounded px-1.5 py-0.2 bg-sky-500/10 text-sky-600 dark:text-sky-400 font-mono font-bold">
                               <RotateCcw className="h-3 w-3" /> OVERRIDE
                             </span>
                           ) : (
-                            <span className="inline-flex items-center gap-0.5 rounded px-1.5 py-0.2 bg-slate-700/50 text-slate-300 font-mono">
+                            <span className="inline-flex items-center gap-0.5 rounded px-1.5 py-0.2 bg-surface-subtle text-foreground-muted font-mono">
                               <Sparkles className="h-3 w-3" /> INITIALIZE
                             </span>
                           )}
-                          <span className="font-semibold text-white">
+                          <span className="font-semibold text-foreground">
                             {evt.reviewer?.name || 'System Engine'}
                           </span>
-                          <span className="text-slate-400 font-mono">
+                          <span className="text-foreground-muted font-mono">
                             ({evt.reviewer?.role || 'system'})
                           </span>
                         </div>
-                        <span className="text-slate-400 font-mono flex items-center gap-1">
+                        <span className="text-foreground-muted font-mono flex items-center gap-1">
                           <Clock className="h-3 w-3" />
                           {new Date(evt.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                         </span>
                       </div>
 
                       {evt.reason && (
-                        <p className="text-slate-300 italic pl-1 border-l-2 border-slate-600/50">
+                        <p className="text-foreground-muted italic pl-1 border-l-2 border-surface-border">
                           "{evt.reason}"
                         </p>
                       )}
@@ -802,26 +770,26 @@ export const EvidenceDetailPanel = ({
 
         {/* Section F: File Technical Metadata & Hash */}
         <div className="space-y-2">
-          <h3 className="text-3xs font-semibold uppercase tracking-wider text-slate-400">
+          <h3 className="text-3xs font-semibold uppercase tracking-wider text-foreground-muted">
             File Technical Metadata & Checksum
           </h3>
           <div className="rounded-xl border border-surface-border bg-surface-subtle p-3 space-y-2 text-xs font-mono">
-            <div className="flex items-center justify-between text-3xs text-slate-300">
-              <span className="text-slate-400">File Name:</span>
-              <span className="font-semibold text-white">{evidence.fileMeta?.fileName}</span>
+            <div className="flex items-center justify-between text-3xs text-foreground-muted">
+              <span>File Name:</span>
+              <span className="font-semibold text-foreground">{evidence.fileMeta?.fileName}</span>
             </div>
-            <div className="flex items-center justify-between text-3xs text-slate-300">
-              <span className="text-slate-400">MIME Type:</span>
+            <div className="flex items-center justify-between text-3xs text-foreground-muted">
+              <span>MIME Type:</span>
               <span>{evidence.fileMeta?.mimeType}</span>
             </div>
-            <div className="flex items-center justify-between text-3xs text-slate-300">
-              <span className="text-slate-400">File Size:</span>
+            <div className="flex items-center justify-between text-3xs text-foreground-muted">
+              <span>File Size:</span>
               <span>{evidence.fileMeta?.sizeKb} KB</span>
             </div>
             {evidence.fileMeta?.sha256Hash && (
-              <div className="border-t border-surface-border/50 pt-2 space-y-0.5">
-                <span className="text-3xs text-slate-400 block">SHA-256 Checksum:</span>
-                <span className="break-all text-3xs text-emerald-400/90 font-mono">
+              <div className="border-t border-surface-border pt-2 space-y-0.5">
+                <span className="text-3xs text-foreground-muted block">SHA-256 Checksum:</span>
+                <span className="break-all text-3xs text-emerald-600 dark:text-emerald-400 font-mono">
                   {evidence.fileMeta.sha256Hash}
                 </span>
               </div>
@@ -832,7 +800,7 @@ export const EvidenceDetailPanel = ({
         {/* Section G: Tags */}
         {evidence.tags && evidence.tags.length > 0 && (
           <div className="space-y-2">
-            <h3 className="text-3xs font-semibold uppercase tracking-wider text-slate-400 flex items-center gap-1">
+            <h3 className="text-3xs font-semibold uppercase tracking-wider text-foreground-muted flex items-center gap-1">
               <Tag className="h-3 w-3" />
               Categorization Tags
             </h3>
@@ -840,7 +808,7 @@ export const EvidenceDetailPanel = ({
               {evidence.tags.map((tag) => (
                 <span
                   key={tag}
-                  className="rounded-full border border-surface-border bg-surface px-2.5 py-0.5 font-mono text-3xs text-slate-300"
+                  className="rounded-full border border-surface-border bg-surface px-2.5 py-0.5 font-mono text-3xs text-foreground-muted"
                 >
                   #{tag}
                 </span>
@@ -859,3 +827,6 @@ export const EvidenceDetailPanel = ({
     </div>
   );
 };
+
+export default EvidenceDetailPanel;
+
