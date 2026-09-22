@@ -19,7 +19,6 @@ import {
   HardHat,
   ChevronLeft,
   ChevronRight,
-  Palette,
 } from 'lucide-react';
 import { useAuth } from '../../context/useAuth';
 
@@ -33,7 +32,7 @@ export const Sidebar = ({
 
   const rawSections = [
     {
-      title: 'INFRASTRUCTURE',
+      title: 'WORKSPACE',
       items: [
         { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
         { to: '/projects', label: 'Projects', icon: FolderKanban },
@@ -47,11 +46,6 @@ export const Sidebar = ({
             : 'Progress',
           icon: Activity,
         },
-      ],
-    },
-    {
-      title: 'FIELD INTELLIGENCE',
-      items: [
         { to: '/site-evidence', label: 'Site Evidence', icon: Camera },
         { to: '/site-view', label: 'Site View', icon: MapPin },
         { to: '/risk-intelligence', label: 'Risk Intelligence', icon: ShieldAlert, badge: '3' },
@@ -71,7 +65,6 @@ export const Sidebar = ({
       items: [
         { to: '/settings', label: 'Settings', icon: Settings },
         { to: '/help', label: 'Help & Docs', icon: HelpCircle },
-        { to: '/design-system', label: 'Design System', icon: Palette, badge: 'Phase 1' },
       ],
     },
   ];
@@ -87,24 +80,28 @@ export const Sidebar = ({
   return (
     <aside
       className={cn(
-        'h-full bg-surface border-r border-border/80 flex flex-col transition-all duration-200 z-30 select-none',
+        'h-full bg-[#0b132b] text-slate-200 border-r border-[#1e293b] flex flex-col transition-all duration-200 z-30 select-none',
         isCollapsed && !isMobile ? 'w-16' : 'w-64',
         isMobile ? 'w-72' : ''
       )}
     >
-      {/* Brand & Logo Area */}
-      <div className="flex items-center justify-between px-4 py-3.5 border-b border-border/80 h-14 shrink-0">
-        <Link to="/" className="flex items-center gap-2.5 overflow-hidden focus-visible:outline-none" title="Return to Landing & Project Selector">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-950 border border-brand-500/40 text-brand-400 shrink-0 shadow-sm">
-            <HardHat className="h-4 w-4 text-brand-400" />
+      {/* Brand & Header Area */}
+      <div className="flex items-center justify-between px-4 py-3.5 border-b border-slate-800/80 h-14 shrink-0 bg-[#080e1e]">
+        <Link
+          to="/"
+          className="flex items-center gap-2.5 overflow-hidden focus-visible:outline-none group"
+          title="Return to Landing & Project Selector"
+        >
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-950/80 border border-blue-500/40 text-blue-400 shrink-0 shadow-sm group-hover:border-blue-400 transition-colors">
+            <HardHat className="h-4 w-4 text-blue-400" />
           </div>
           {(!isCollapsed || isMobile) && (
             <div className="leading-tight overflow-hidden text-left">
               <span className="font-bold text-sm tracking-tight text-white flex items-center gap-1.5">
-                InfraSync <span className="text-brand-400 font-mono text-2xs px-1 py-0.2 rounded bg-brand-950 border border-brand-500/30">AI</span>
+                InfraSync <span className="text-blue-400 font-mono text-[10px] px-1 py-0.2 rounded bg-blue-950 border border-blue-500/40 font-semibold">AI</span>
               </span>
-              <p className="text-2xs text-slate-400 truncate font-medium">
-                Execution Intelligence
+              <p className="text-[10px] text-slate-400 truncate font-medium flex items-center gap-1 mt-0.5">
+                <span>Infrastructure Intelligence</span>
               </p>
             </div>
           )}
@@ -115,7 +112,7 @@ export const Sidebar = ({
           <button
             type="button"
             onClick={onToggleCollapse}
-            className="p-1 rounded text-slate-400 hover:text-slate-100 hover:bg-surface-subtle transition-colors focus-visible:outline-none"
+            className="p-1.5 rounded-md text-slate-400 hover:text-white hover:bg-slate-800/60 transition-colors focus-visible:outline-none"
             aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
           >
             {isCollapsed ? (
@@ -128,11 +125,11 @@ export const Sidebar = ({
       </div>
 
       {/* Navigation Groups (Scrollable) */}
-      <div className="flex-1 overflow-y-auto px-2 py-3 space-y-5">
+      <div className="flex-1 overflow-y-auto px-2.5 py-3 space-y-5 custom-scrollbar">
         {navSections.map((section, idx) => (
           <div key={section.title || idx} className="space-y-1">
             {(!isCollapsed || isMobile) && (
-              <div className="px-3 pb-1 text-2xs font-mono font-semibold tracking-wider text-slate-500 uppercase">
+              <div className="px-2.5 pb-1 text-[10px] font-mono font-semibold tracking-wider text-slate-400 uppercase">
                 {section.title}
               </div>
             )}
@@ -156,22 +153,22 @@ export const Sidebar = ({
 
       {/* Bottom User Area */}
       {currentUser && (
-        <div className="p-3 border-t border-border/80 shrink-0 bg-surface-subtle/30">
+        <div className="p-3 border-t border-slate-800/80 shrink-0 bg-[#080e1e]/60">
           <div
             className={cn(
               'flex items-center gap-2.5 rounded-lg p-1.5 transition-colors',
               isCollapsed && !isMobile ? 'justify-center' : ''
             )}
           >
-            <div className="w-8 h-8 rounded-full bg-brand-900/80 border border-brand-500/40 flex items-center justify-center font-mono text-xs font-bold text-brand-200 shrink-0 shadow-sm">
+            <div className="w-7 h-7 rounded-full bg-blue-900/80 border border-blue-500/40 flex items-center justify-center font-mono text-[11px] font-bold text-blue-200 shrink-0 shadow-sm">
               {currentUser.initials}
             </div>
             {(!isCollapsed || isMobile) && (
               <div className="overflow-hidden leading-tight flex-1">
-                <span className="block text-xs font-medium text-slate-200 truncate">
+                <span className="block text-xs font-semibold text-slate-200 truncate">
                   {currentUser.name}
                 </span>
-                <span className="block text-2xs text-slate-400 truncate">
+                <span className="block text-[10px] text-slate-400 truncate">
                   {selectedRole?.displayName || currentUser.roleName}
                 </span>
               </div>

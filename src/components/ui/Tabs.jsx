@@ -60,25 +60,25 @@ export const TabTrigger = React.forwardRef(
     const getTriggerStyles = () => {
       if (variant === 'underline') {
         return cn(
-          'relative pb-3 text-sm font-medium transition-colors select-none -mb-px',
+          'relative pb-3 text-sm font-medium transition-colors select-none -mb-px cursor-pointer',
           isActive
-            ? 'text-brand-400 font-semibold border-b-2 border-brand-500'
-            : 'text-slate-400 hover:text-slate-200 border-b-2 border-transparent'
+            ? 'text-brand-600 dark:text-brand-400 font-semibold border-b-2 border-brand-600 dark:border-brand-500'
+            : 'text-foreground-muted hover:text-foreground border-b-2 border-transparent'
         );
       }
       if (variant === 'pill') {
         return cn(
-          'px-3 py-1.5 text-xs font-medium rounded-md transition-all select-none',
+          'px-3 py-1.5 text-xs font-medium rounded-md transition-all select-none cursor-pointer',
           isActive
             ? 'bg-brand-600 text-white shadow-sm'
-            : 'text-slate-400 hover:text-slate-200 hover:bg-surface-elevated/50'
+            : 'text-foreground-muted hover:text-foreground hover:bg-surface-elevated/50'
         );
       }
       return cn(
-        'px-3 py-1.5 text-xs font-medium rounded transition-all text-center select-none',
+        'px-3 py-1.5 text-xs font-medium rounded transition-all text-center select-none cursor-pointer',
         isActive
-          ? 'bg-surface-elevated text-slate-100 shadow-sm border border-slate-700/50'
-          : 'text-slate-400 hover:text-slate-200'
+          ? 'bg-surface text-foreground shadow-sm border border-border'
+          : 'text-foreground-muted hover:text-foreground'
       );
     };
 
@@ -102,8 +102,8 @@ export const TabTrigger = React.forwardRef(
             className={cn(
               'px-1.5 py-0.5 text-2xs rounded-full font-mono',
               isActive
-                ? 'bg-brand-950 text-brand-300 border border-brand-500/30'
-                : 'bg-surface-muted text-slate-400'
+                ? 'bg-brand-100 text-brand-700 dark:bg-brand-950 dark:text-brand-300 border border-brand-300 dark:border-brand-500/30'
+                : 'bg-surface-muted text-foreground-muted'
             )}
           >
             {badge}

@@ -41,7 +41,7 @@ export const Modal = ({
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Backdrop */}
       <div
-        className="fixed inset-0 bg-canvas/80 backdrop-blur-sm transition-opacity animate-fade-in"
+        className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs transition-opacity animate-fade-in"
         onClick={onClose}
         aria-hidden="true"
       />
@@ -51,7 +51,7 @@ export const Modal = ({
         role="dialog"
         aria-modal="true"
         className={cn(
-          'relative w-full bg-surface-elevated border border-slate-700/80 rounded-xl shadow-panel-lg z-10 overflow-hidden animate-slide-up',
+          'relative w-full bg-surface-elevated border border-border rounded-xl shadow-panel-lg z-10 overflow-hidden animate-slide-up text-foreground',
           sizeStyles[size],
           className
         )}
@@ -59,13 +59,13 @@ export const Modal = ({
         {/* Header */}
         <div className="flex items-start justify-between p-5 border-b border-border/60">
           <div className="space-y-1 pr-6">
-            {title && <h2 className="text-base font-semibold text-slate-100">{title}</h2>}
-            {description && <p className="text-xs text-slate-400 leading-relaxed">{description}</p>}
+            {title && <h2 className="text-base font-semibold text-foreground">{title}</h2>}
+            {description && <p className="text-xs text-foreground-muted leading-relaxed">{description}</p>}
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="rounded p-1 text-slate-400 hover:text-slate-100 hover:bg-surface-subtle transition-colors focus-visible:outline-none"
+            className="rounded p-1 text-foreground-muted hover:text-foreground hover:bg-surface-subtle transition-colors focus-visible:outline-none cursor-pointer"
             aria-label="Close dialog"
           >
             <X className="w-4 h-4" />

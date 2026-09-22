@@ -9,17 +9,36 @@ export default {
     extend: {
       colors: {
         canvas: {
-          DEFAULT: '#0B0F17',
-          subtle: '#0E1420',
+          DEFAULT: 'var(--canvas)',
+          subtle: 'var(--canvas-subtle)',
         },
         surface: {
-          DEFAULT: '#111827',
-          subtle: '#151F30',
-          muted: '#1E293B',
-          card: '#0F172A',
-          elevated: '#1A2436',
-          border: '#1E293B',
-          hover: '#1B283E',
+          DEFAULT: 'var(--surface)',
+          subtle: 'var(--surface-subtle)',
+          muted: 'var(--surface-muted)',
+          card: 'var(--surface-card)',
+          elevated: 'var(--surface-elevated)',
+          border: 'var(--surface-border)',
+          hover: 'var(--surface-hover)',
+        },
+        border: {
+          DEFAULT: 'var(--border-base)',
+          subtle: 'var(--border-subtle)',
+          strong: 'var(--border-strong)',
+        },
+        foreground: {
+          DEFAULT: 'var(--text-primary)',
+          secondary: 'var(--text-secondary)',
+          muted: 'var(--text-muted)',
+          subtle: 'var(--text-subtle)',
+        },
+        sidebar: {
+          DEFAULT: 'var(--sidebar-bg)',
+          border: 'var(--sidebar-border)',
+          text: 'var(--sidebar-text)',
+          muted: 'var(--sidebar-muted)',
+          active: 'var(--sidebar-active-bg)',
+          activeBorder: 'var(--sidebar-active-border)',
         },
         brand: {
           50: '#F0F7FF',
@@ -28,24 +47,24 @@ export default {
           300: '#7CC4FA',
           400: '#38A3F6',
           500: '#1D82E2',
-          600: '#0B63C5',
-          700: '#094FA3',
-          800: '#0D4485',
-          900: '#103A6F',
-          950: '#0B2447',
+          600: '#1E40AF',
+          700: '#1D4ED8',
+          800: '#1E3A8A',
+          900: '#172554',
+          950: '#0B132B',
           accent: '#0284C7',
         },
         infra: {
-          track: '#10B981',      // On Track / Healthy Green
-          risk: '#F59E0B',       // At Risk / Warning Amber
-          delayed: '#EF4444',    // Delayed / Critical Red
-          info: '#0EA5E9',       // Engineering / Info Sky Blue
-          completed: '#64748B',  // Completed / Neutral Slate
-          pending: '#8B5CF6',    // Pending Review / Purple
+          track: 'var(--infra-track)',        // On Track / Healthy Green
+          risk: 'var(--infra-risk)',          // At Risk / Warning Amber
+          delayed: 'var(--infra-delayed)',    // Delayed / Critical Red
+          info: 'var(--infra-info)',          // Engineering / Info Sky Blue
+          completed: 'var(--infra-completed)',// Completed / Neutral Slate
+          pending: 'var(--infra-pending)',    // Pending Review / Purple
         },
         blueprint: {
-          grid: '#1E293B',
-          line: '#1E3A8A33',
+          grid: 'var(--border-base)',
+          line: 'var(--border-subtle)',
         }
       },
       fontFamily: {

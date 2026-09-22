@@ -4,20 +4,102 @@
 
 @layer base {
   :root {
-    --bg-canvas: #0B0F17;
-    --bg-surface: #111827;
-    --bg-card: #0F172A;
-    --border-base: #1E293B;
+    /* ═══════════════════════════════════════════════════════════════
+       LIGHT THEME (DEFAULT)
+       Polished, crisp, enterprise-grade infrastructure aesthetic
+       ═══════════════════════════════════════════════════════════════ */
+    --canvas: #f8fafc;              /* Slate 50 Workspace background */
+    --canvas-subtle: #f1f5f9;       /* Slate 100 */
+    --surface: #ffffff;             /* Crisp pure white cards */
+    --surface-subtle: #f8fafc;       /* Slate 50 */
+    --surface-muted: #f1f5f9;        /* Slate 100 */
+    --surface-card: #ffffff;
+    --surface-elevated: #ffffff;
+    --surface-border: #e2e8f0;      /* Slate 200 */
+    --surface-hover: #f1f5f9;
+
+    --border-base: #e2e8f0;         /* Slate 200 */
+    --border-subtle: #f1f5f9;       /* Slate 100 */
+    --border-strong: #cbd5e1;       /* Slate 300 */
+
+    --text-primary: #0f172a;        /* Slate 900 */
+    --text-secondary: #334155;      /* Slate 700 */
+    --text-muted: #64748b;          /* Slate 500 */
+    --text-subtle: #94a3b8;         /* Slate 400 */
+
+    --brand-primary: #1e40af;       /* Deep Infrastructure Blue */
+    --brand-accent: #2563eb;
+    
+    --sidebar-bg: #0b132b;          /* Deep Navy Sidebar */
+    --sidebar-border: #1e293b;
+    --sidebar-text: #f8fafc;
+    --sidebar-muted: #94a3b8;
+    --sidebar-active-bg: rgba(37, 99, 235, 0.16);
+    --sidebar-active-border: #3b82f6;
+
+    --infra-track: #16a34a;         /* Construction Healthy Green */
+    --infra-risk: #d97706;          /* Warning Amber */
+    --infra-delayed: #dc2626;       /* Critical Red */
+    --infra-info: #0284c7;          /* Info Sky Blue */
+    --infra-completed: #64748b;     /* Completed Slate */
+    --infra-pending: #7c3aed;       /* Pending Purple */
+
+    --shadow-panel: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.03);
+    --shadow-panel-md: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.04);
+    --shadow-panel-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
+  }
+
+  .dark {
+    /* ═══════════════════════════════════════════════════════════════
+       DARK THEME (Opt-in via Settings -> Appearance)
+       Engineered deep navy/charcoal for low-light enterprise use
+       ═══════════════════════════════════════════════════════════════ */
+    --canvas: #0b1120;              /* Deep Navy Slate */
+    --canvas-subtle: #0e1626;
+    --surface: #111827;             /* Elevated Slate 900 */
+    --surface-subtle: #151f32;
+    --surface-muted: #1e293b;        /* Slate 800 */
+    --surface-card: #0f172a;
+    --surface-elevated: #1e293b;
+    --surface-border: #1e293b;
+    --surface-hover: #1b283e;
+
+    --border-base: #1e293b;         /* Slate 800 */
     --border-subtle: #162032;
-    --text-primary: #F8FAFC;
-    --text-secondary: #94A3B8;
-    --text-muted: #64748B;
+    --border-strong: #334155;       /* Slate 700 */
+
+    --text-primary: #f8fafc;        /* Slate 50 */
+    --text-secondary: #94a3b8;      /* Slate 400 */
+    --text-muted: #64748b;          /* Slate 500 */
+    --text-subtle: #475569;         /* Slate 600 */
+
+    --brand-primary: #3b82f6;       /* Vibrant Tech Blue */
+    --brand-accent: #60a5fa;
+
+    --sidebar-bg: #080d1a;          /* Ultra Deep Navy */
+    --sidebar-border: #1e293b;
+    --sidebar-text: #f8fafc;
+    --sidebar-muted: #64748b;
+    --sidebar-active-bg: rgba(59, 130, 246, 0.2);
+    --sidebar-active-border: #60a5fa;
+
+    --infra-track: #10b981;
+    --infra-risk: #f59e0b;
+    --infra-delayed: #ef4444;
+    --infra-info: #0ea5e9;
+    --infra-completed: #94a3b8;
+    --infra-pending: #8b5cf6;
+
+    --shadow-panel: 0 1px 3px 0 rgba(0, 0, 0, 0.4), 0 1px 2px -1px rgba(0, 0, 0, 0.35);
+    --shadow-panel-md: 0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -2px rgba(0, 0, 0, 0.45);
+    --shadow-panel-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.6), 0 4px 6px -4px rgba(0, 0, 0, 0.5);
   }
 
   body {
-    background-color: #0B0F17;
-    color: #F8FAFC;
+    background-color: var(--canvas);
+    color: var(--text-primary);
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    transition: background-color 0.15s ease, color 0.15s ease;
   }
 
   /* Custom enterprise technical scrollbar */
@@ -27,16 +109,16 @@
   }
 
   ::-webkit-scrollbar-track {
-    background: #0B0F17;
+    background: transparent;
   }
 
   ::-webkit-scrollbar-thumb {
-    background: #1E293B;
+    background: var(--border-strong);
     border-radius: 3px;
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    background: #334155;
+    background: var(--text-muted);
   }
 }
 
@@ -44,16 +126,26 @@
   .blueprint-grid {
     background-size: 24px 24px;
     background-image: 
-      linear-gradient(to right, rgba(30, 41, 59, 0.35) 1px, transparent 1px),
-      linear-gradient(to bottom, rgba(30, 41, 59, 0.35) 1px, transparent 1px);
+      linear-gradient(to right, rgba(148, 163, 184, 0.12) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(148, 163, 184, 0.12) 1px, transparent 1px);
+  }
+
+  .dark .blueprint-grid {
+    background-image: 
+      linear-gradient(to right, rgba(30, 41, 59, 0.4) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(30, 41, 59, 0.4) 1px, transparent 1px);
   }
 
   .blueprint-dots {
-    background-image: radial-gradient(rgba(51, 65, 85, 0.4) 1px, transparent 1px);
+    background-image: radial-gradient(rgba(148, 163, 184, 0.2) 1px, transparent 1px);
     background-size: 16px 16px;
   }
 
+  .dark .blueprint-dots {
+    background-image: radial-gradient(rgba(51, 65, 85, 0.4) 1px, transparent 1px);
+  }
+
   .focus-ring {
-    @apply outline-none ring-2 ring-brand-500/50 ring-offset-2 ring-offset-canvas;
+    @apply outline-none ring-2 ring-brand-500/40 ring-offset-2 ring-offset-surface;
   }
 }

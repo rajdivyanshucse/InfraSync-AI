@@ -1,5 +1,5 @@
-import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { ThemeProvider } from './context/ThemeContext';
 import { AuthProvider } from './context/AuthContext';
 import { ProjectProvider } from './context/ProjectContext';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
@@ -26,9 +26,10 @@ import { DesignSystemPage } from './pages/DesignSystemPage';
 
 export function App() {
   return (
-    <AuthProvider>
-      <ProjectProvider>
-        <BrowserRouter>
+    <ThemeProvider>
+      <AuthProvider>
+        <ProjectProvider>
+          <BrowserRouter>
           <Routes>
             {/* Public Routes */}
             <Route path="/" element={<LandingPage />} />
@@ -62,6 +63,7 @@ export function App() {
         </BrowserRouter>
       </ProjectProvider>
     </AuthProvider>
+  </ThemeProvider>
   );
 }
 

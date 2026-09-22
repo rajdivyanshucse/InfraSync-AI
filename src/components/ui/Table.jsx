@@ -3,7 +3,7 @@ import { cn } from '../../lib/utils';
 import { ChevronUp, ChevronDown } from 'lucide-react';
 
 export const Table = React.forwardRef(({ className, ...props }, ref) => (
-  <div className="w-full overflow-x-auto border border-border rounded-lg bg-surface/60">
+  <div className="w-full overflow-x-auto border border-border rounded-lg bg-surface shadow-panel">
     <table ref={ref} className={cn('w-full caption-bottom text-xs text-left', className)} {...props} />
   </div>
 ));
@@ -13,7 +13,7 @@ export const TableHeader = React.forwardRef(({ className, ...props }, ref) => (
   <thead
     ref={ref}
     className={cn(
-      'bg-surface-subtle/80 border-b border-border text-slate-400 uppercase font-medium tracking-wider text-2xs',
+      'bg-surface-subtle/90 border-b border-border text-foreground-muted uppercase font-semibold tracking-wider text-2xs',
       className
     )}
     {...props}
@@ -44,8 +44,8 @@ export const TableHead = React.forwardRef(
       ref={ref}
       onClick={sortable ? onSort : undefined}
       className={cn(
-        'h-9 px-4 text-left align-middle font-medium select-none',
-        sortable && 'cursor-pointer hover:text-slate-200 transition-colors',
+        'h-9 px-4 text-left align-middle font-medium select-none text-foreground-muted',
+        sortable && 'cursor-pointer hover:text-foreground transition-colors',
         className
       )}
       {...props}
@@ -53,12 +53,12 @@ export const TableHead = React.forwardRef(
       <div className="flex items-center gap-1.5">
         <span>{children}</span>
         {sortable && (
-          <span className="flex flex-col text-slate-500">
+          <span className="flex flex-col text-foreground-muted/60">
             <ChevronUp
-              className={cn('w-2.5 h-2.5 -mb-1', sortDirection === 'asc' && 'text-brand-400 font-bold')}
+              className={cn('w-2.5 h-2.5 -mb-1', sortDirection === 'asc' && 'text-brand-500 font-bold')}
             />
             <ChevronDown
-              className={cn('w-2.5 h-2.5', sortDirection === 'desc' && 'text-brand-400 font-bold')}
+              className={cn('w-2.5 h-2.5', sortDirection === 'desc' && 'text-brand-500 font-bold')}
             />
           </span>
         )}
@@ -69,6 +69,6 @@ export const TableHead = React.forwardRef(
 TableHead.displayName = 'TableHead';
 
 export const TableCell = React.forwardRef(({ className, ...props }, ref) => (
-  <td ref={ref} className={cn('p-3.5 px-4 align-middle text-slate-300 font-normal', className)} {...props} />
+  <td ref={ref} className={cn('p-3.5 px-4 align-middle text-foreground font-normal', className)} {...props} />
 ));
 TableCell.displayName = 'TableCell';

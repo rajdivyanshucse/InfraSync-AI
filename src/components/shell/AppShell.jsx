@@ -10,9 +10,9 @@ export const AppShell = () => {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-canvas text-slate-100 flex overflow-hidden selection:bg-brand-600 selection:text-white">
-      {/* Desktop Persistent Sidebar */}
-      <div className="hidden md:block shrink-0 h-screen sticky top-0">
+    <div className="min-h-screen bg-canvas text-foreground flex overflow-hidden selection:bg-brand-600 selection:text-white transition-colors">
+      {/* Desktop Persistent Deep Navy Sidebar */}
+      <div className="hidden md:block shrink-0 h-screen sticky top-0 z-30">
         <Sidebar
           isCollapsed={isCollapsed}
           onToggleCollapse={() => setIsCollapsed(!isCollapsed)}
@@ -24,18 +24,18 @@ export const AppShell = () => {
         <div className="fixed inset-0 z-50 md:hidden flex">
           {/* Backdrop */}
           <div
-            className="fixed inset-0 bg-canvas/80 backdrop-blur-sm transition-opacity animate-fade-in"
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity animate-fade-in"
             onClick={() => setIsMobileOpen(false)}
             aria-hidden="true"
           />
 
           {/* Drawer Sidebar */}
-          <div className="relative flex-1 flex flex-col max-w-xs w-full bg-surface z-10 shadow-panel-lg animate-slide-up">
+          <div className="relative flex-1 flex flex-col max-w-xs w-full bg-[#0b132b] z-10 shadow-panel-lg animate-slide-up">
             <div className="absolute top-2.5 right-2 z-20">
               <button
                 type="button"
                 onClick={() => setIsMobileOpen(false)}
-                className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-surface-subtle"
+                className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800"
                 aria-label="Close mobile menu"
               >
                 <X className="w-5 h-5" />
@@ -49,8 +49,8 @@ export const AppShell = () => {
         </div>
       )}
 
-      {/* Main Content Area */}
-      <div className="flex-1 flex flex-col min-w-0 h-screen overflow-y-auto">
+      {/* Main Content Area with Light Workspace Background */}
+      <div className="flex-1 flex flex-col min-w-0 h-screen overflow-y-auto bg-canvas">
         <TopBar onOpenMobileMenu={() => setIsMobileOpen(true)} />
 
         <main className="flex-1 p-4 sm:p-6 md:p-8 max-w-7xl w-full mx-auto">

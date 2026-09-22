@@ -35,7 +35,7 @@ export const Tooltip = ({
         <div
           role="tooltip"
           className={cn(
-            'absolute z-50 px-2.5 py-1 text-xs font-normal text-slate-200 bg-surface-elevated border border-slate-700/80 rounded shadow-panel-md whitespace-nowrap pointer-events-none animate-fade-in',
+            'absolute z-50 px-2.5 py-1 text-xs font-normal text-foreground bg-surface-elevated border border-border rounded shadow-panel-md whitespace-nowrap pointer-events-none animate-fade-in',
             positionStyles[position],
             className
           )}

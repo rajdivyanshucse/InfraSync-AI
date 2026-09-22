@@ -33,7 +33,7 @@ export const Dropdown = ({
       {isOpen && (
         <div
           className={cn(
-            'absolute z-50 mt-1.5 w-48 rounded-md bg-surface-elevated border border-slate-700/80 shadow-panel-lg p-1 animate-slide-up focus:outline-none',
+            'absolute z-50 mt-1.5 w-48 rounded-lg bg-surface-elevated border border-border shadow-panel-lg p-1 animate-slide-up focus:outline-none text-foreground',
             align === 'right' ? 'right-0' : 'left-0',
             className
           )}
@@ -52,14 +52,14 @@ export const Dropdown = ({
                   setIsOpen(false);
                 }}
                 className={cn(
-                  'flex items-center w-full gap-2 px-2.5 py-1.5 text-xs rounded transition-colors text-left select-none',
+                  'flex items-center w-full gap-2 px-2.5 py-1.5 text-xs rounded transition-colors text-left select-none cursor-pointer',
                   item.disabled && 'opacity-40 cursor-not-allowed',
                   item.danger
-                    ? 'text-rose-400 hover:bg-infra-delayed/15'
-                    : 'text-slate-200 hover:bg-surface-subtle hover:text-white'
+                    ? 'text-rose-600 hover:bg-rose-50 dark:text-rose-400 dark:hover:bg-rose-950/40'
+                    : 'text-foreground hover:bg-surface-subtle'
                 )}
               >
-                {item.icon && <span className="w-4 h-4 shrink-0 text-slate-400">{item.icon}</span>}
+                {item.icon && <span className="w-4 h-4 shrink-0 text-foreground-muted">{item.icon}</span>}
                 <span className="flex-1">{item.label}</span>
               </button>
             );

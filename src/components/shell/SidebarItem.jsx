@@ -18,10 +18,10 @@ export const SidebarItem = ({
       onClick={onClick}
       className={({ isActive }) =>
         cn(
-          'group relative flex items-center gap-3 rounded-md px-3 py-2 text-xs font-medium transition-all duration-150 select-none',
+          'group relative flex items-center gap-3 rounded-lg px-2.5 py-2 text-xs font-medium transition-all duration-150 select-none',
           isActive
-            ? 'bg-brand-600/15 text-brand-300 font-semibold border border-brand-500/30 shadow-sm'
-            : 'text-slate-400 hover:bg-surface-subtle hover:text-slate-200 border border-transparent',
+            ? 'bg-blue-600/20 text-blue-300 font-semibold shadow-sm'
+            : 'text-slate-300 hover:bg-slate-800/60 hover:text-white',
           isCollapsed ? 'justify-center px-2' : ''
         )
       }
@@ -30,20 +30,20 @@ export const SidebarItem = ({
         <>
           {/* Active Accent Bar on Left */}
           {isActive && (
-            <span className="absolute left-0 top-1.5 bottom-1.5 w-1 rounded-r bg-brand-400" />
+            <span className="absolute left-0 top-1.5 bottom-1.5 w-1 rounded-r-full bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.6)]" />
           )}
 
           {/* Icon */}
           <span
             className={cn(
               'shrink-0 transition-colors',
-              isActive ? 'text-brand-400' : 'text-slate-400 group-hover:text-slate-200'
+              isActive ? 'text-blue-400' : 'text-slate-400 group-hover:text-slate-200'
             )}
           >
             {Icon && <Icon className="w-4 h-4" />}
           </span>
 
-          {/* Text Label (when not collapsed) */}
+          {/* Text Label */}
           {!isCollapsed && (
             <span className="flex-1 truncate tracking-tight">{label}</span>
           )}
@@ -52,10 +52,10 @@ export const SidebarItem = ({
           {!isCollapsed && badge && (
             <span
               className={cn(
-                'ml-auto rounded px-1.5 py-0.5 font-mono text-2xs font-semibold',
+                'ml-auto rounded-full px-1.5 py-0.2 font-mono text-[10px] font-semibold',
                 badgeVariant === 'alert'
-                  ? 'bg-rose-950/60 text-rose-400 border border-rose-500/30'
-                  : 'bg-surface-muted text-slate-400 border border-border/40'
+                  ? 'bg-rose-500/20 text-rose-300 border border-rose-500/30'
+                  : 'bg-slate-800 text-slate-300 border border-slate-700'
               )}
             >
               {badge}

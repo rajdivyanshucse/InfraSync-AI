@@ -11,21 +11,21 @@ export const PageHeader = ({
   className,
 }) => {
   return (
-    <div className={cn('flex flex-col gap-3 pb-6 border-b border-border/70', className)}>
+    <div className={cn('flex flex-col gap-3 pb-5 border-b border-border/70', className)}>
       {breadcrumbs && breadcrumbs.length > 0 && (
-        <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-xs text-slate-400">
+        <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-xs text-foreground-muted">
           {breadcrumbs.map((item, index) => (
             <React.Fragment key={index}>
-              {index > 0 && <ChevronRight className="w-3.5 h-3.5 text-slate-600" />}
+              {index > 0 && <ChevronRight className="w-3.5 h-3.5 text-foreground-muted/60" />}
               {item.href ? (
                 <a
                   href={item.href}
-                  className="hover:text-slate-200 transition-colors"
+                  className="hover:text-foreground transition-colors"
                 >
                   {item.label}
                 </a>
               ) : (
-                <span className={index === breadcrumbs.length - 1 ? 'text-slate-200 font-medium' : ''}>
+                <span className={index === breadcrumbs.length - 1 ? 'text-foreground font-medium' : ''}>
                   {item.label}
                 </span>
               )}
@@ -37,13 +37,13 @@ export const PageHeader = ({
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="space-y-1">
           <div className="flex items-center gap-2.5 flex-wrap">
-            <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-50">
+            <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-foreground">
               {title}
             </h1>
             {badge}
           </div>
           {tagline && (
-            <p className="text-xs sm:text-sm text-slate-400 font-normal">
+            <p className="text-xs sm:text-sm text-foreground-muted font-normal">
               {tagline}
             </p>
           )}
