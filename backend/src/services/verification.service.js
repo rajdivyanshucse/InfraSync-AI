@@ -202,14 +202,19 @@ export class VerificationService {
 
       const created = await verificationRepository.create(newRecordPayload);
       try {
-        await systemAuditService.recordEvent({
-          eventType: action === 'VERIFY' ? 'VERIFICATION' : 'REJECTION',
-          userId: reviewer.userId || 'USR-AUTH',
-          role: roleNormalized,
-          projectId,
-          resourceType: 'verification',
-          resourceId: created.verificationId,
-          action: `${action}_${targetType.toUpperCase()}`,
+        await systemAuditService.logEvent({
+          action: action === 'VERIFY' ? 'VERIFICATION' : 'REJECTION',
+          actor: {
+            userId: reviewer.userId || 'USR-AUTH',
+            name: reviewer.name || 'Authorized Reviewer',
+            role: roleNormalized,
+          },
+          target: {
+            type: 'verification',
+            id: created.verificationId,
+            projectId,
+          },
+          message: `${action === 'VERIFY' ? 'Verified' : 'Rejected'} ${targetType}: ${targetId}`,
           metadata: { targetId, reason },
         });
       } catch (auditErr) {
@@ -257,14 +262,19 @@ export class VerificationService {
 
     const updated = await verificationRepository.update(record.verificationId, updates);
     try {
-      await systemAuditService.recordEvent({
-        eventType: action === 'VERIFY' ? 'VERIFICATION' : 'REJECTION',
-        userId: reviewer.userId || 'USR-AUTH',
-        role: roleNormalized,
-        projectId,
-        resourceType: 'verification',
-        resourceId: updated.verificationId,
-        action: `${action}_${targetType.toUpperCase()}`,
+      await systemAuditService.logEvent({
+        action: action === 'VERIFY' ? 'VERIFICATION' : 'REJECTION',
+        actor: {
+          userId: reviewer.userId || 'USR-AUTH',
+          name: reviewer.name || 'Authorized Reviewer',
+          role: roleNormalized,
+        },
+        target: {
+          type: 'verification',
+          id: updated.verificationId,
+          projectId,
+        },
+        message: `${action === 'VERIFY' ? 'Verified' : 'Rejected'} ${targetType}: ${targetId}`,
         metadata: { targetId, reason },
       });
     } catch (auditErr) {
