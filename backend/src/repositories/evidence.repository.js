@@ -29,6 +29,26 @@ export class EvidenceRepository {
     return evidencePayload;
   }
 
+  async update(evidenceId, updates) {
+    if (config.dataSource === 'mongodb' && mongoose.connection.readyState === 1) {
+      const doc = await Evidence.findOneAndUpdate(
+        { id: evidenceId },
+        { $set: updates },
+        { new: true, runValidators: true }
+      ).lean();
+      return doc ? this._cleanDoc(doc) : null;
+    }
+
+    const index = evidencesData.findIndex((e) => e.id === evidenceId);
+    if (index === -1) return null;
+    evidencesData[index] = {
+      ...evidencesData[index],
+      ...updates,
+      updatedAt: new Date().toISOString(),
+    };
+    return evidencesData[index];
+  }
+
   _cleanDoc(doc) {
     if (!doc) return null;
     const { _id, __v, ...rest } = doc;

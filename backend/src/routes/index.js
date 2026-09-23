@@ -9,6 +9,7 @@ import alertRoutes from './alert.routes.js';
 import reportRoutes from './report.routes.js';
 import aiRoutes from './ai.routes.js';
 import verificationRoutes from './verification.routes.js';
+import auditRoutes from './audit.routes.js';
 import { successResponse } from '../utils/apiResponse.js';
 import { config } from '../config/env.js';
 import { getDatabaseStatus } from '../config/database.js';
@@ -31,6 +32,7 @@ router.get('/health', (req, res) => {
 
 // Domain Routes (Mounted under /api)
 router.use('/ai', aiRoutes);       // /ai/health, /ai/analyze
+router.use('/', auditRoutes);     // /audit-logs
 router.use('/', evidenceRoutes); // /projects/:projectId/evidence, /evidence/:evidenceId
 router.use('/', alertRoutes);    // /projects/:projectId/alerts, /alerts/:alertId
 router.use('/', verificationRoutes); // /projects/:projectId/verifications, /verifications/:verificationId

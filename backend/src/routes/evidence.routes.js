@@ -10,5 +10,7 @@ router.post('/projects/:projectId/evidence', validateParams(['projectId']), hand
 
 router.get('/evidence/:evidenceId/file', validateParams(['evidenceId']), (req, res, next) => evidenceController.getEvidenceFile(req, res, next));
 router.get('/evidence/:evidenceId', validateParams(['evidenceId']), (req, res, next) => evidenceController.getEvidenceById(req, res, next));
+router.patch('/evidence/:evidenceId/review', validateParams(['evidenceId']), (req, res, next) => evidenceController.updateReviewStatus(req, res, next));
+router.put('/evidence/:evidenceId/review', validateParams(['evidenceId']), (req, res, next) => evidenceController.updateReviewStatus(req, res, next));
 
 export default router;

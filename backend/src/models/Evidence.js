@@ -11,6 +11,12 @@ const StorageMetaSchema = new mongoose.Schema({
   uploadedAt: { type: String },
 }, { _id: false });
 
+const EvidenceReviewSchema = new mongoose.Schema({
+  reviewer: { type: String },
+  reviewedAt: { type: String },
+  note: { type: String },
+}, { _id: false });
+
 const EvidenceSchema = new mongoose.Schema({
   id: { type: String, required: true, unique: true, index: true },
   projectId: { type: String, required: true, index: true },
@@ -21,9 +27,11 @@ const EvidenceSchema = new mongoose.Schema({
   zoneId: { type: String },
   evidenceType: { type: String, default: 'PHOTO' },
   captureSource: { type: String },
+  status: { type: String, default: 'awaitingReview' },
   verificationStatus: { type: String, default: 'pendingReview' },
   capturedAt: { type: String },
   capturedBy: { type: String },
+  review: EvidenceReviewSchema,
   metadata: {
     stationing: { type: String },
     gpsCoords: { type: String },

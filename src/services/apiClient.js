@@ -158,13 +158,48 @@ export const apiClient = {
   },
 
   /**
-   * AI Service Endpoints (Phase 20-22)
+   * Projects Endpoints
+   */
+  getProjects: () => apiClient.get('/projects'),
+  getProjectById: (projectId) => apiClient.get(`/projects/${projectId}`),
+
+  /**
+   * Schedule Endpoints
+   */
+  getSchedule: (projectId) => apiClient.get(`/projects/${projectId}/schedule`),
+  getActivities: (projectId) => apiClient.get(`/projects/${projectId}/activities`),
+  getMilestones: (projectId) => apiClient.get(`/projects/${projectId}/milestones`),
+
+  /**
+   * Progress & Execution Endpoints
+   */
+  getExecution: (projectId) => apiClient.get(`/projects/${projectId}/execution`),
+  getMicroActivities: (projectId) => apiClient.get(`/projects/${projectId}/micro-activities`),
+  getExecutionUnits: (projectId) => apiClient.get(`/projects/${projectId}/execution-units`),
+
+  /**
+   * Site Evidence & QA Review Endpoints
+   */
+  getEvidence: (projectId) => apiClient.get(`/projects/${projectId}/evidence`),
+  getEvidenceById: (evidenceId) => apiClient.get(`/evidence/${evidenceId}`),
+  uploadEvidence: (projectId, formData) => apiClient.upload(`/projects/${projectId}/evidence`, formData),
+  updateEvidenceReview: (evidenceId, payload) => apiClient.patch(`/evidence/${evidenceId}/review`, payload),
+
+  /**
+   * Site View & Spatial Endpoints
+   */
+  getSiteView: (projectId) => apiClient.get(`/projects/${projectId}/site-view`),
+  getZones: (projectId) => apiClient.get(`/projects/${projectId}/zones`),
+  getCapturePoints: (projectId) => apiClient.get(`/projects/${projectId}/capture-points`),
+
+  /**
+   * AI Service Endpoints
    */
   getAiHealth: () => apiClient.get('/ai/health'),
   analyzeEvidence: (payload) => apiClient.post('/ai/analyze', payload),
 
   /**
-   * Human Verification & Audit Workflow (Phase 23)
+   * Human Verification & Audit Workflow
    */
   getVerifications: (projectId, filters = {}) => {
     const params = new URLSearchParams();
@@ -177,6 +212,39 @@ export const apiClient = {
   getVerificationById: (verificationId) => apiClient.get(`/verifications/${verificationId}`),
   verifyFinding: (payload) => apiClient.post('/verifications/verify', payload),
   rejectFinding: (payload) => apiClient.post('/verifications/reject', payload),
+
+  /**
+   * Risk Intelligence & Early Warning Endpoints
+   */
+  getRiskEvents: (projectId) => apiClient.get(`/projects/${projectId}/risk-events`),
+  acknowledgeRisk: (projectId, riskId, acknowledged = true, actor = null) =>
+    apiClient.post(`/projects/${projectId}/risk-events/${riskId}/acknowledge`, { acknowledged, actor }),
+
+  /**
+   * Operational Alerts & Intervention Workbench Endpoints
+   */
+  getAlerts: (projectId) => apiClient.get(`/projects/${projectId}/alerts`),
+  getAlertById: (alertId) => apiClient.get(`/alerts/${alertId}`),
+  updateAlertIntervention: (alertId, payload) => apiClient.put(`/alerts/${alertId}`, payload),
+  signoffAlert: (alertId, payload) => apiClient.post(`/alerts/${alertId}/signoff`, payload),
+
+  /**
+   * Reports Endpoints
+   */
+  getReportSummary: (projectId) => apiClient.get(`/projects/${projectId}/reports/summary`),
+
+  /**
+   * System Audit Log Endpoints
+   */
+  getAuditLogs: (filters = {}) => {
+    const params = new URLSearchParams();
+    if (filters.action) params.append('action', filters.action);
+    if (filters.projectId) params.append('projectId', filters.projectId);
+    if (filters.limit) params.append('limit', filters.limit);
+    const queryString = params.toString() ? `?${params.toString()}` : '';
+    return apiClient.get(`/audit-logs${queryString}`);
+  },
+  logAuditEvent: (payload) => apiClient.post('/audit-logs', payload),
 };
 
 export default apiClient;

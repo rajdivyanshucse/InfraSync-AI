@@ -55,6 +55,17 @@ export class EvidenceController {
       next(err);
     }
   }
+
+  async updateReviewStatus(req, res, next) {
+    try {
+      const { evidenceId } = req.params;
+      const actor = req.user || req.body.actor;
+      const updated = await evidenceService.updateReviewStatus(evidenceId, req.body, actor);
+      return successResponse(res, updated, 200);
+    } catch (err) {
+      next(err);
+    }
+  }
 }
 
 export const evidenceController = new EvidenceController();

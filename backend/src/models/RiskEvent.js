@@ -35,6 +35,10 @@ const RiskEventSchema = new mongoose.Schema({
   contractor: { type: String },
   discipline: { type: String },
   timestamp: { type: String },
+  acknowledged: { type: Boolean, default: false },
+  acknowledgedBy: { type: String },
+  acknowledgedAt: { type: String },
+  resolutionNote: { type: String },
 }, {
   timestamps: true,
   toJSON: {

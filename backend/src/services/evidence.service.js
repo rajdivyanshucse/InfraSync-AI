@@ -145,6 +145,60 @@ export class EvidenceService {
       checksum: evidence.storage.checksum,
     };
   }
+
+  async updateReviewStatus(evidenceId, payload, actor = null) {
+    const evidence = await evidenceRepository.findById(evidenceId);
+    if (!evidence) {
+      const error = new Error(`Evidence record not found: ${evidenceId}`);
+      error.statusCode = 404;
+      error.code = 'EVIDENCE_NOT_FOUND';
+      throw error;
+    }
+
+    const timestamp = new Date().toISOString();
+    const newStatus = payload.status || 'verified';
+    const isVerified = newStatus === 'verified';
+    const isRejected = newStatus === 'rejected';
+
+    const review = {
+      reviewer: actor?.name || actor?.userId || payload.reviewer || 'QA Reviewer',
+      reviewedAt: timestamp,
+      note: payload.note || payload.remarks || (
+        isVerified
+          ? 'QA compliance sign-off recorded.'
+          : isRejected
+          ? 'Marked non-compliant in site inspection review.'
+          : 'Status updated.'
+      ),
+    };
+
+    const updates = {
+      status: newStatus,
+      verificationStatus: isVerified ? 'verified' : isRejected ? 'rejected' : 'pendingReview',
+      review,
+    };
+
+    const updated = await evidenceRepository.update(evidenceId, updates);
+
+    // Immutable system audit log
+    await systemAuditService.logEvent({
+      action: isVerified ? 'EVIDENCE_QA_VERIFIED' : isRejected ? 'EVIDENCE_QA_REJECTED' : 'EVIDENCE_REVIEW_UPDATED',
+      actor: {
+        userId: actor?.userId || 'USR-AUTH',
+        name: review.reviewer,
+        role: actor?.role || 'site_engineer',
+      },
+      target: {
+        projectId: evidence.projectId,
+        entityType: 'EVIDENCE',
+        entityId: evidenceId,
+      },
+      message: `Site evidence ${evidenceId} review status updated to '${newStatus}' by ${review.reviewer}.`,
+      metadata: { review },
+    });
+
+    return updated;
+  }
 }
 
 export const evidenceService = new EvidenceService();

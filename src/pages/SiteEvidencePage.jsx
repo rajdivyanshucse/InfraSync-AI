@@ -1,7 +1,8 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useProject } from '../context/useProject';
 import { useAuth } from '../context/useAuth';
+import apiClient from '../services/apiClient';
 import { getEvidenceData } from '../data/evidenceData';
 import { getExecutionData } from '../data/executionData';
 import { getScheduleData } from '../data/scheduleData';
@@ -94,24 +95,27 @@ export const SiteEvidencePage = () => {
   }, [searchParams, evidenceList]);
 
   // Handler for session status updates (Verify / Reject / Reset)
-  const handleUpdateStatus = (evidenceId, newStatus) => {
+  const handleUpdateStatus = async (evidenceId, newStatus) => {
+    const isVerified = newStatus === 'verified';
+    const isRejected = newStatus === 'rejected';
+    const reviewerName = isVerified || isRejected ? (currentUser?.name || 'QA Reviewer (Session)') : null;
+    const reviewDate = isVerified || isRejected ? new Date().toISOString() : null;
+    const reviewNote = isVerified
+      ? 'QA sign-off recorded for active session.'
+      : isRejected
+      ? 'Marked non-compliant in review session.'
+      : null;
+
     setEvidenceList((prev) =>
       prev.map((item) => {
         if (item.id === evidenceId) {
-          const isVerified = newStatus === 'verified';
-          const isRejected = newStatus === 'rejected';
-
           return {
             ...item,
             status: newStatus,
             review: {
-              reviewer: isVerified || isRejected ? (currentUser?.name || 'QA Reviewer (Session)') : null,
-              reviewedAt: isVerified || isRejected ? new Date().toISOString() : null,
-              note: isVerified
-                ? 'Prototype QA sign-off recorded for active session.'
-                : isRejected
-                ? 'Marked non-compliant in prototype review session.'
-                : null,
+              reviewer: reviewerName,
+              reviewedAt: reviewDate,
+              note: reviewNote,
             },
           };
         }
@@ -122,23 +126,32 @@ export const SiteEvidencePage = () => {
     // Also update selectedEvidence in-place if open
     setSelectedEvidence((prev) => {
       if (!prev || prev.id !== evidenceId) return prev;
-      const isVerified = newStatus === 'verified';
-      const isRejected = newStatus === 'rejected';
-
       return {
         ...prev,
         status: newStatus,
         review: {
-          reviewer: isVerified || isRejected ? (currentUser?.name || 'QA Reviewer (Session)') : null,
-          reviewedAt: isVerified || isRejected ? new Date().toISOString() : null,
-          note: isVerified
-            ? 'Prototype QA sign-off recorded for active session.'
-            : isRejected
-            ? 'Marked non-compliant in prototype review session.'
-            : null,
+          reviewer: reviewerName,
+          reviewedAt: reviewDate,
+          note: reviewNote,
         },
       };
     });
+
+    try {
+      await apiClient.updateEvidenceReview(evidenceId, {
+        status: newStatus,
+        reviewer: reviewerName,
+        note: reviewNote,
+      });
+      apiClient.logAuditEvent({
+        action: isVerified ? 'EVIDENCE_VERIFIED' : isRejected ? 'EVIDENCE_REJECTED' : 'EVIDENCE_STATUS_UPDATED',
+        entityId: evidenceId,
+        projectId: currentProject?.id || 'proj-1',
+        details: { status: newStatus, reviewer: reviewerName },
+      }).catch(() => {});
+    } catch (err) {
+      console.warn('[SiteEvidencePage] Backend sync unavailable, state preserved locally:', err.message);
+    }
   };
 
   // Reset all filters

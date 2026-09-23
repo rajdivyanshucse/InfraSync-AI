@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   History, 
   CalendarRange, 
@@ -11,6 +11,7 @@ import {
   ExternalLink 
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import apiClient from '../../services/apiClient';
 
 const SYSTEM_AUDIT_EVENTS = [
   {
@@ -109,8 +110,42 @@ const SYSTEM_AUDIT_EVENTS = [
 export const AuditLogSection = () => {
   const [filterModule, setFilterModule] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
+  const [auditEvents, setAuditEvents] = useState(SYSTEM_AUDIT_EVENTS);
 
-  const filteredEvents = SYSTEM_AUDIT_EVENTS.filter((evt) => {
+  useEffect(() => {
+    let isMounted = true;
+    apiClient.getAuditLogs({ limit: 50 })
+      .then((res) => {
+        if (!isMounted || !res || !Array.isArray(res)) return;
+        const normalized = res.map((item) => ({
+          id: item.auditId || item.id || `AUD-${Math.floor(1000 + Math.random() * 9000)}`,
+          timestamp: item.timestamp ? new Date(item.timestamp).toLocaleString('sv-SE').replace('T', ' ') : new Date().toLocaleString(),
+          actor: item.actor?.name || item.actor?.userId || 'System',
+          role: item.actor?.role || 'System',
+          module: item.module || (item.target?.type ? item.target.type.charAt(0).toUpperCase() + item.target.type.slice(1) : 'Operational'),
+          action: item.message || item.action || 'System Action Executed',
+          object: item.target?.id || item.target?.projectId || 'Operational Context',
+          status: item.status || 'Recorded',
+          statusColor: item.status === 'FAILURE' 
+            ? 'text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-500/10 border-rose-200 dark:border-rose-500/30'
+            : 'text-teal-600 dark:text-teal-400 bg-teal-50 dark:bg-teal-500/10 border-teal-200 dark:border-teal-500/30',
+          icon: ShieldCheck,
+          link: item.target?.projectId ? `/projects/${item.target.projectId}` : null,
+        }));
+
+        if (normalized.length > 0) {
+          // Combine fresh server logs at top with default catalog
+          setAuditEvents([...normalized, ...SYSTEM_AUDIT_EVENTS]);
+        }
+      })
+      .catch((err) => {
+        console.warn('[AuditLogSection] Backend audit logs offline, using local store:', err.message);
+      });
+
+    return () => { isMounted = false; };
+  }, []);
+
+  const filteredEvents = auditEvents.filter((evt) => {
     if (filterModule !== 'all' && evt.module.toLowerCase() !== filterModule.toLowerCase()) {
       return false;
     }

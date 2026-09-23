@@ -1,5 +1,7 @@
+import crypto from 'crypto';
 import { aiService } from '../services/ai.service.js';
 import { aiContextService } from '../services/aiContext.service.js';
+import { verificationRepository } from '../repositories/verification.repository.js';
 import { successResponse, errorResponse } from '../utils/apiResponse.js';
 
 /**
@@ -59,6 +61,98 @@ export const analyzeEvidence = async (req, res) => {
     }
 
     const data = await aiService.analyzeEvidence(payload);
+
+    // Register candidate verification proposal for human review if candidate exists
+    if (data?.scheduleLink?.activityId) {
+      const targetId = data.scheduleLink.activityId;
+      const existing = await verificationRepository.findByTarget(projectId, evidenceId, 'schedule_link', targetId);
+      if (!existing) {
+        const verificationId = `VER-${crypto.randomBytes(4).toString('hex').toUpperCase()}`;
+        await verificationRepository.create({
+          verificationId,
+          projectId,
+          evidenceId,
+          sourceAnalysisId: data.analysisId,
+          targetType: 'schedule_link',
+          targetId,
+          status: data.scheduleLink.status === 'candidate' ? 'candidate' : 'needs_review',
+          decision: null,
+          reviewer: null,
+          reason: null,
+          candidateContext: {
+            activityId: data.scheduleLink.activityId,
+            activityName: data.scheduleLink.activityName,
+            microActivityId: data.scheduleLink.microActivityId,
+            microActivityName: data.scheduleLink.microActivityName,
+            confidence: data.scheduleLink.confidence,
+            confidenceBand: data.scheduleLink.confidenceBand,
+            reasons: data.scheduleLink.reasons || [],
+            linkType: data.scheduleLink.linkType || 'inferred',
+          },
+          auditHistory: [
+            {
+              eventId: `AUD-${crypto.randomBytes(4).toString('hex').toUpperCase()}`,
+              action: 'INITIALIZE_CANDIDATE',
+              previousStatus: null,
+              newStatus: data.scheduleLink.status === 'candidate' ? 'candidate' : 'needs_review',
+              reviewer: {
+                userId: 'SYSTEM',
+                name: 'AI Schedule Linker Engine',
+                role: 'system',
+              },
+              reason: 'Automated candidate proposal generated from field evidence analysis.',
+              timestamp: new Date().toISOString(),
+            },
+          ],
+        });
+      }
+    }
+
+    // Register any candidate risk signals
+    if (Array.isArray(data?.riskSignals) && data.riskSignals.length > 0) {
+      for (const signal of data.riskSignals) {
+        const targetId = signal.signalType;
+        const existing = await verificationRepository.findByTarget(projectId, evidenceId, 'risk_signal', targetId);
+        if (!existing) {
+          const verificationId = `VER-${crypto.randomBytes(4).toString('hex').toUpperCase()}`;
+          await verificationRepository.create({
+            verificationId,
+            projectId,
+            evidenceId,
+            sourceAnalysisId: data.analysisId,
+            targetType: 'risk_signal',
+            targetId,
+            status: 'candidate',
+            decision: null,
+            reviewer: null,
+            reason: null,
+            candidateContext: {
+              signalType: signal.signalType,
+              severity: signal.severity,
+              title: signal.title,
+              triggerCondition: signal.triggerCondition,
+              reasons: signal.contributingFactors || [signal.explanation],
+            },
+            auditHistory: [
+              {
+                eventId: `AUD-${crypto.randomBytes(4).toString('hex').toUpperCase()}`,
+                action: 'INITIALIZE_CANDIDATE',
+                previousStatus: null,
+                newStatus: 'candidate',
+                reviewer: {
+                  userId: 'SYSTEM',
+                  name: 'AI Risk Analyzer Engine',
+                  role: 'system',
+                },
+                reason: `Deterministic signal: ${signal.triggerCondition}`,
+                timestamp: new Date().toISOString(),
+              },
+            ],
+          });
+        }
+      }
+    }
+
     return successResponse(res, data, 200);
   } catch (err) {
     const statusCode = err.statusCode || 503;

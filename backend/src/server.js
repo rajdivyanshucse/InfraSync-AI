@@ -58,12 +58,19 @@ app.get('/', (req, res) => {
 // Mount API Router under prefix (e.g. /api)
 app.use(config.apiPrefix, apiRouter);
 
+import { fileURLToPath } from 'url';
+
 // 404 & Centralized Error Handlers
 app.use(notFound);
 app.use(errorHandler);
 
 // Start Server if directly executed
-if (process.env.NODE_ENV !== 'test') {
+const isDirectEntry = process.argv[1] && (
+  process.argv[1].endsWith('server.js') || 
+  fileURLToPath(import.meta.url) === process.argv[1]
+);
+
+if (isDirectEntry && process.env.NODE_ENV !== 'test') {
   // Connect to Database if DATA_SOURCE is mongodb
   if (config.dataSource === 'mongodb') {
     connectDatabase().catch((err) => {

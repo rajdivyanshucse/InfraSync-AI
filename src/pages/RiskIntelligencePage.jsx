@@ -29,6 +29,7 @@ import {
   HardHat, 
   ShieldCheck 
 } from 'lucide-react';
+import { apiClient } from '../services/apiClient';
 
 export const RiskIntelligencePage = () => {
   const { currentProject } = useProject();
@@ -99,8 +100,10 @@ export const RiskIntelligencePage = () => {
     );
   }, [currentProject?.id, scheduleData, executionData, siteViewData]);
 
-  // Toggle acknowledge state for a risk event
-  const handleToggleAcknowledge = (riskId) => {
+  // Toggle acknowledge state for a risk event (Optimistic local update + Persistent server sync)
+  const handleToggleAcknowledge = async (riskId) => {
+    const nextState = !acknowledgedIds.has(riskId);
+
     setAcknowledgedIds((prev) => {
       const next = new Set(prev);
       if (next.has(riskId)) {
@@ -110,6 +113,17 @@ export const RiskIntelligencePage = () => {
       }
       return next;
     });
+
+    try {
+      await apiClient.acknowledgeRisk(
+        currentProject?.id || 'proj-1',
+        riskId,
+        nextState,
+        currentUser
+      );
+    } catch (err) {
+      console.warn('[RiskIntelligencePage] Server sync failed for risk acknowledgement:', err.message);
+    }
   };
 
   // KPIs

@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useProject } from '../context/useProject';
 import { useAuth } from '../context/useAuth';
+import apiClient from '../services/apiClient';
 import { getScheduleData } from '../data/scheduleData';
 import { getExecutionData } from '../data/executionData';
 import { getSiteViewData } from '../data/siteViewData';
@@ -194,8 +195,10 @@ export const AlertsPage = () => {
   };
 
   // Workflow Actions
-  const handleAcknowledge = (alertId) => {
+  const handleAcknowledge = async (alertId) => {
     const now = new Date().toISOString();
+    const actor = currentUser?.name || 'Authorized Engineer';
+
     setSessionAlerts((prev) =>
       prev.map((a) => {
         if (a.id !== alertId) return a;
@@ -203,7 +206,7 @@ export const AlertsPage = () => {
           ...a,
           status: 'acknowledged',
           acknowledgedAt: now,
-          acknowledgedBy: currentUser?.name || 'Authorized Engineer',
+          acknowledgedBy: actor,
           workflowHistory: [
             ...a.workflowHistory,
             {
@@ -211,17 +214,35 @@ export const AlertsPage = () => {
               type: 'acknowledged',
               title: 'Alert Acknowledged',
               timestamp: now,
-              actor: currentUser?.name || 'Authorized Engineer',
+              actor,
               note: 'Condition reviewed and acknowledged in session workspace.',
             },
           ],
         };
       })
     );
+
+    try {
+      await apiClient.updateAlertIntervention(alertId, {
+        status: 'acknowledged',
+        actor,
+        note: 'Condition reviewed and acknowledged in session workspace.',
+      });
+      apiClient.logAuditEvent({
+        action: 'ALERT_ACKNOWLEDGED',
+        entityId: alertId,
+        projectId: currentProject?.id || 'proj-1',
+        details: { actor, timestamp: now },
+      }).catch(() => {});
+    } catch (err) {
+      console.warn('[AlertsPage] Backend sync unavailable, state preserved locally:', err.message);
+    }
   };
 
-  const handleStartAction = (alertId) => {
+  const handleStartAction = async (alertId) => {
     const now = new Date().toISOString();
+    const actor = currentUser?.name || 'Site Engineer';
+
     setSessionAlerts((prev) =>
       prev.map((a) => {
         if (a.id !== alertId) return a;
@@ -236,21 +257,40 @@ export const AlertsPage = () => {
               type: 'actionInProgress',
               title: 'Action In Progress',
               timestamp: now,
-              actor: currentUser?.name || 'Site Engineer',
+              actor,
               note: 'Mitigation measures initiated at the workfront.',
             },
           ],
         };
       })
     );
+
+    try {
+      await apiClient.updateAlertIntervention(alertId, {
+        status: 'actionInProgress',
+        actor,
+        note: 'Mitigation measures initiated at the workfront.',
+      });
+      apiClient.logAuditEvent({
+        action: 'INTERVENTION_STARTED',
+        entityId: alertId,
+        projectId: currentProject?.id || 'proj-1',
+        details: { actor, timestamp: now },
+      }).catch(() => {});
+    } catch (err) {
+      console.warn('[AlertsPage] Backend sync unavailable, state preserved locally:', err.message);
+    }
   };
 
-  const handleEscalate = (alertId) => {
+  const handleEscalate = async (alertId) => {
     const now = new Date().toISOString();
+    const actor = currentUser?.name || 'Intervention Lead';
+    const targetAlert = sessionAlerts.find((a) => a.id === alertId);
+    const newEscalation = targetAlert?.escalationLevel === 'normal' ? 'escalated' : 'critical';
+
     setSessionAlerts((prev) =>
       prev.map((a) => {
         if (a.id !== alertId) return a;
-        const newEscalation = a.escalationLevel === 'normal' ? 'escalated' : 'critical';
         return {
           ...a,
           escalationLevel: newEscalation,
@@ -261,17 +301,35 @@ export const AlertsPage = () => {
               type: 'escalated',
               title: `Escalated to ${newEscalation === 'critical' ? 'Project Authority' : 'Project Manager'}`,
               timestamp: now,
-              actor: currentUser?.name || 'Intervention Lead',
+              actor,
               note: `Escalation raised to ${newEscalation} priority level.`,
             },
           ],
         };
       })
     );
+
+    try {
+      await apiClient.updateAlertIntervention(alertId, {
+        escalationLevel: newEscalation,
+        actor,
+        note: `Escalation raised to ${newEscalation} priority level.`,
+      });
+      apiClient.logAuditEvent({
+        action: 'ALERT_ESCALATED',
+        entityId: alertId,
+        projectId: currentProject?.id || 'proj-1',
+        details: { escalationLevel: newEscalation, actor },
+      }).catch(() => {});
+    } catch (err) {
+      console.warn('[AlertsPage] Backend sync unavailable, state preserved locally:', err.message);
+    }
   };
 
-  const handleResolve = (alertId, resolutionNote) => {
+  const handleResolve = async (alertId, resolutionNote) => {
     const now = new Date().toISOString();
+    const actor = currentUser?.name || 'Project Manager';
+
     setSessionAlerts((prev) =>
       prev.map((a) => {
         if (a.id !== alertId) return a;
@@ -287,17 +345,35 @@ export const AlertsPage = () => {
               type: 'resolved',
               title: 'Alert Resolved & Verified',
               timestamp: now,
-              actor: currentUser?.name || 'Project Manager',
+              actor,
               note: resolutionNote,
             },
           ],
         };
       })
     );
+
+    try {
+      await apiClient.updateAlertIntervention(alertId, {
+        status: 'resolved',
+        resolutionNote,
+        actor,
+      });
+      apiClient.logAuditEvent({
+        action: 'INTERVENTION_RESOLVED',
+        entityId: alertId,
+        projectId: currentProject?.id || 'proj-1',
+        details: { actor, resolutionNote },
+      }).catch(() => {});
+    } catch (err) {
+      console.warn('[AlertsPage] Backend sync unavailable, state preserved locally:', err.message);
+    }
   };
 
-  const handleDismiss = (alertId, reason) => {
+  const handleDismiss = async (alertId, reason) => {
     const now = new Date().toISOString();
+    const actor = currentUser?.name || 'Authorized Lead';
+
     setSessionAlerts((prev) =>
       prev.map((a) => {
         if (a.id !== alertId) return a;
@@ -313,13 +389,23 @@ export const AlertsPage = () => {
               type: 'dismissed',
               title: 'Alert Dismissed',
               timestamp: now,
-              actor: currentUser?.name || 'Authorized Lead',
+              actor,
               note: reason,
             },
           ],
         };
       })
     );
+
+    try {
+      await apiClient.updateAlertIntervention(alertId, {
+        status: 'dismissed',
+        resolutionNote: reason,
+        actor,
+      });
+    } catch (err) {
+      console.warn('[AlertsPage] Backend sync unavailable, state preserved locally:', err.message);
+    }
   };
 
   return (
