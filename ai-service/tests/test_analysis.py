@@ -281,3 +281,32 @@ def test_analyze_ambiguous_candidates():
     assert data["status"] == "needs_review"
     assert data["scheduleLink"]["status"] == "needs_review"
     assert any(sig.get("code") == "AMBIGUOUS_CANDIDATES" or sig.get("signalType") == "AMBIGUOUS_CANDIDATES" for sig in data["riskSignals"])
+
+
+def test_analyze_validation_missing_evidence_id():
+    response = client.post("/analyze", json={"projectId": "proj-1"})
+    assert response.status_code == 422
+
+
+def test_analyze_validation_missing_project_id():
+    response = client.post("/analyze", json={"evidenceId": "EV-100"})
+    assert response.status_code == 422
+
+
+def test_analyze_empty_schedule_context():
+    payload = {
+        "evidenceId": "EV-EMPTY-SCHED",
+        "projectId": "proj-1",
+        "evidenceContext": {
+            "evidenceId": "EV-EMPTY-SCHED",
+            "projectId": "proj-1",
+            "title": "General photo",
+            "capturedAt": "2026-03-10T10:00:00.000Z",
+        },
+        "scheduleContext": [],
+    }
+    response = client.post("/analyze", json=payload)
+    assert response.status_code == 200
+    data = response.json()["data"]
+    assert data["status"] in ["not_found", "needs_review"]
+    assert data["requiresHumanVerification"] is True
