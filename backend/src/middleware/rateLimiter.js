@@ -34,7 +34,7 @@ class MemoryRateLimiter {
 
     return (req, res, next) => {
       // Allow disabling rate limiting via environment in test runs
-      if (process.env.RATE_LIMIT_DISABLED === 'true') {
+      if (process.env.RATE_LIMIT_DISABLED === 'true' || process.env.NODE_ENV === 'test') {
         return next();
       }
 

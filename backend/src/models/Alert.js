@@ -67,5 +67,8 @@ const AlertSchema = new mongoose.Schema({
   }
 });
 
+AlertSchema.index({ projectId: 1, status: 1 });
+AlertSchema.index({ projectId: 1, severity: 1 });
+
 export const Alert = mongoose.models.Alert || mongoose.model('Alert', AlertSchema);
 export default Alert;

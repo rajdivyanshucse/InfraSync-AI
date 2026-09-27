@@ -50,5 +50,8 @@ const RiskEventSchema = new mongoose.Schema({
   }
 });
 
+RiskEventSchema.index({ projectId: 1, severity: 1 });
+RiskEventSchema.index({ projectId: 1, acknowledged: 1 });
+
 export const RiskEvent = mongoose.models.RiskEvent || mongoose.model('RiskEvent', RiskEventSchema);
 export default RiskEvent;

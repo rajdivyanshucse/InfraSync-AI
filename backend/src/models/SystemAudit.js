@@ -55,5 +55,8 @@ const SystemAuditSchema = new mongoose.Schema({
   },
 });
 
+SystemAuditSchema.index({ 'target.projectId': 1, timestamp: -1 });
+SystemAuditSchema.index({ action: 1, timestamp: -1 });
+
 export const SystemAudit = mongoose.models.SystemAudit || mongoose.model('SystemAudit', SystemAuditSchema);
 export default SystemAudit;

@@ -12,3 +12,13 @@ def test_get_health():
     assert json_data["data"]["status"] == "ok"
     assert json_data["data"]["environment"] == "development"
     assert json_data["data"]["aiMode"] == "demo"
+
+def test_get_ready():
+    response = client.get("/ready")
+    assert response.status_code == 200
+    json_data = response.json()
+    assert json_data["success"] is True
+    assert json_data["data"]["service"] == "infrasync-ai-service"
+    assert json_data["data"]["status"] == "ready"
+    assert json_data["data"]["ready"] is True
+    assert len(json_data["data"]["loadedComponents"]) >= 3

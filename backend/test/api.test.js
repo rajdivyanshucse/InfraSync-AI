@@ -12,6 +12,7 @@ export async function runTests() {
 
   const tests = [
     { name: 'GET /api/health', url: `${BASE_URL}/health`, expectStatus: 200, validate: (res) => res.data.status === 'ok' && !!res.data.database },
+    { name: 'GET /api/ready', url: `${BASE_URL}/ready`, expectStatus: 200, validate: (res) => res.data.status === 'ready' && res.data.ready === true },
     { name: 'GET /api/projects', url: `${BASE_URL}/projects`, expectStatus: 200, validate: (res) => Array.isArray(res.data) && res.data.length > 0 },
     { name: 'GET /api/projects/proj-1', url: `${BASE_URL}/projects/proj-1`, expectStatus: 200, validate: (res) => res.data.id === 'proj-1' },
     { name: 'GET /api/projects/proj-1/schedule', url: `${BASE_URL}/projects/proj-1/schedule`, expectStatus: 200, validate: (res) => res.data.projectId === 'proj-1' },

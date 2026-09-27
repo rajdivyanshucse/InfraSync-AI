@@ -49,5 +49,8 @@ const EvidenceSchema = new mongoose.Schema({
   }
 });
 
+EvidenceSchema.index({ projectId: 1, status: 1 });
+EvidenceSchema.index({ projectId: 1, microActivityId: 1 });
+
 export const Evidence = mongoose.models.Evidence || mongoose.model('Evidence', EvidenceSchema);
 export default Evidence;

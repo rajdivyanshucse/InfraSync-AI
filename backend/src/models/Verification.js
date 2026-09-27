@@ -76,5 +76,8 @@ const VerificationSchema = new mongoose.Schema({
   },
 });
 
+VerificationSchema.index({ projectId: 1, status: 1 });
+VerificationSchema.index({ projectId: 1, targetType: 1, targetId: 1 });
+
 export const Verification = mongoose.models.Verification || mongoose.model('Verification', VerificationSchema);
 export default Verification;
