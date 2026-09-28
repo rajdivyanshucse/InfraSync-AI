@@ -27,11 +27,14 @@ export const validateConfig = () => {
   }
 
   if (config.nodeEnv === 'production') {
-    if (config.dataSource === 'mock') {
-      warnings.push('[Config Warning] Server is running in production mode with DATA_SOURCE=mock. Persistent MongoDB is recommended for live multi-tenant production.');
+    if (config.dataSource !== 'mongodb') {
+      errors.push(`[Config Error] Production environment requires DATA_SOURCE=mongodb. Got: "${config.dataSource}". Silent fallback to mock is prohibited in production.`);
     }
     if (config.corsOrigin === '*') {
-      warnings.push('[Config Warning] CORS_ORIGIN is set to wildcard "*" in production. A specific origin list is strongly recommended.');
+      errors.push('[Config Error] CORS_ORIGIN cannot be wildcard "*" in production mode.');
+    }
+    if (!process.env.MONGODB_URI) {
+      errors.push('[Config Error] MONGODB_URI environment variable is required in production mode.');
     }
   }
 

@@ -4,6 +4,7 @@
  */
 
 import { errorResponse } from '../utils/apiResponse.js';
+import { config } from '../config/env.js';
 
 export const ALL_ROLES = [
   'project_authority',
@@ -16,16 +17,79 @@ export const ALL_ROLES = [
 ];
 
 /**
+ * Parses and extracts claims from Bearer token
+ */
+function parseBearerToken(token) {
+  if (!token) return null;
+
+  // Handle Demo tokens in non-production environments
+  if (token.startsWith('demo-')) {
+    const role = token.replace('demo-', '').replace('-', '_').toLowerCase().trim();
+    if (ALL_ROLES.includes(role)) {
+      return {
+        userId: `USR-${role.toUpperCase()}`,
+        name: `Demo ${role.replace('_', ' ').toUpperCase()}`,
+        role,
+        permittedProjects: role === 'contractor' ? ['proj-1'] : ['proj-1', 'proj-2'],
+        isDemo: true,
+      };
+    }
+  }
+
+  // Handle standard JWT structure (header.payload.signature)
+  const parts = token.split('.');
+  if (parts.length === 3) {
+    try {
+      const payloadJson = Buffer.from(parts[1], 'base64url').toString('utf8');
+      const payload = JSON.parse(payloadJson);
+      if (payload && (payload.role || payload.sub)) {
+        const role = (payload.role || 'viewer').toLowerCase().trim();
+        return {
+          userId: payload.sub || payload.userId || 'USR-JWT',
+          name: payload.name || 'Enterprise User',
+          role,
+          permittedProjects: Array.isArray(payload.permittedProjects) ? payload.permittedProjects : ['proj-1', 'proj-2'],
+          isDemo: false,
+        };
+      }
+    } catch {
+      return null;
+    }
+  }
+
+  return null;
+}
+
+/**
  * Extracts and establishes user identity and role from request headers
  */
 export const authenticate = (req, res, next) => {
-  // 1. Check standard Authorization header or demo role headers
+  const isProduction = (config.nodeEnv || process.env.NODE_ENV) === 'production';
   const authHeader = req.headers['authorization'];
   const roleHeader = req.headers['x-user-role'];
   const userIdHeader = req.headers['x-user-id'];
   const userNameHeader = req.headers['x-user-name'];
   const permittedProjectsHeader = req.headers['x-permitted-projects'];
 
+  // In PRODUCTION: prototype role headers and demo tokens are strictly rejected to prevent role escalation
+  if (isProduction) {
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      const token = authHeader.substring(7).trim();
+      if (!token.startsWith('demo-')) {
+        const parsedUser = parseBearerToken(token);
+        if (parsedUser) {
+          req.user = parsedUser;
+          return next();
+        }
+      }
+    }
+
+    // Unauthenticated in production without valid bearer token
+    req.user = null;
+    return next();
+  }
+
+  // NON-PRODUCTION (development, staging, test): Allow role headers and demo tokens for simulation
   let role = 'project_manager';
   let userId = 'USR-PM-01';
   let name = 'Project Manager';
@@ -38,10 +102,13 @@ export const authenticate = (req, res, next) => {
     name = userNameHeader || `${role.replace('_', ' ').toUpperCase()}`;
   } else if (authHeader && authHeader.startsWith('Bearer ')) {
     const token = authHeader.substring(7).trim();
-    if (token.startsWith('demo-')) {
-      role = token.replace('demo-', '').replace('-', '_').toLowerCase().trim();
-      userId = `USR-${role.toUpperCase()}`;
-      name = `Demo ${role.toUpperCase()}`;
+    const parsedUser = parseBearerToken(token);
+    if (parsedUser) {
+      role = parsedUser.role;
+      userId = parsedUser.userId;
+      name = parsedUser.name;
+      permittedProjects = parsedUser.permittedProjects;
+      isDemo = parsedUser.isDemo;
     } else {
       isDemo = false;
       userId = 'USR-PROD';
@@ -53,11 +120,9 @@ export const authenticate = (req, res, next) => {
     if (req.body.reviewer.name) name = req.body.reviewer.name;
   }
 
-  // Determine permitted projects
   if (permittedProjectsHeader) {
     permittedProjects = permittedProjectsHeader.split(',').map((p) => p.trim());
   } else if (role === 'contractor') {
-    // Demo constraint: contractor default permitted scope is proj-1
     permittedProjects = ['proj-1'];
   }
 

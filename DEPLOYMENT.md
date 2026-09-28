@@ -166,7 +166,7 @@ docker-compose down
 npx oxlint .
 npm run build
 
-# Backend Test Suite (Smoke + Hardening + Staging: 66 tests)
+# Backend Test Suite (Smoke + Hardening + Staging + Security/Production: 78 tests)
 cd backend && npm test && cd ..
 
 # AI Service Test Suite (Pytest: 12 tests)
