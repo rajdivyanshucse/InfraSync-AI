@@ -53,18 +53,24 @@ export class AiService {
   /**
    * Request evidence analysis from Python AI service
    * @param {Object} payload - { evidenceId, projectId, fileKey, activityId, microActivityId }
+   * @param {Object} options - { requestId }
    */
-  async analyzeEvidence(payload) {
+  async analyzeEvidence(payload, options = {}) {
     try {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), this.timeoutMs);
 
+      const headers = {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      };
+      if (options.requestId) {
+        headers['X-Request-Id'] = options.requestId;
+      }
+
       const response = await fetch(`${this.serviceUrl}/analyze`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
+        headers,
         body: JSON.stringify({
           evidenceId: payload.evidenceId,
           projectId: payload.projectId,

@@ -60,7 +60,7 @@ export const analyzeEvidence = async (req, res) => {
       });
     }
 
-    const data = await aiService.analyzeEvidence(payload);
+    const data = await aiService.analyzeEvidence(payload, { requestId: req.id });
 
     // Register candidate verification proposal for human review if candidate exists
     if (data?.scheduleLink?.activityId) {
