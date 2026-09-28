@@ -8,6 +8,7 @@ import { spawn } from 'child_process';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import app from '../src/server.js';
+import { aiService } from '../src/services/ai.service.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -314,6 +315,8 @@ export async function runStagingValidationTests() {
     const s = app.listen(0, () => resolve(s));
   });
   const offlinePort = offlineBackendServer.address().port;
+  const originalAiServiceUrl = aiService.serviceUrl;
+  aiService.serviceUrl = 'http://127.0.0.1:59999'; // Point to unreachable offline port
 
   try {
     const offlineAiRes = await fetch(`http://localhost:${offlinePort}/api/ai/analyze`, {
@@ -330,6 +333,7 @@ export async function runStagingValidationTests() {
       offlineAiRes.status === 503 && offlineAiData.error?.code === 'AI_SERVICE_UNAVAILABLE'
     );
   } finally {
+    aiService.serviceUrl = originalAiServiceUrl;
     offlineBackendServer.close();
   }
 
